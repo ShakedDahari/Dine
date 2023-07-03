@@ -7,6 +7,7 @@ import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Home from './Pages/Home';
 import Order from './Pages/Order';
+import Admin from './Pages/Admin';
 import ContextProvider from './Context/ContextProvider';
 
 
@@ -14,12 +15,12 @@ import { useEffect } from 'react';
 
 import { apiUrl } from './utils/api_url';
 import { I18nManager } from 'react-native';
-import Admin from './Pages/Admin';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
-I18nManager.allowRTL(false);  //feature to set app as english left to right language
+I18nManager.allowRTL(false);
+
 //creates the popup hamburger menu with the pages options
 function MyDrawer() {
   return (            //startup page 
@@ -47,12 +48,12 @@ function MyDrawer() {
        <Drawer.Screen
         name="Order"
         component={Order}
-        options={{ drawerLabel: 'Order' }}
+        options={{ drawerLabel: 'Order' }} //hides from menu bar {drawerItemStyle: { height: 0 }}
       />
-      <Drawer.Screen
-      name="Admin"
-      component={Admin}
-      // options={{drawerItemStyle: { height: 0 }}} //hides the admin page from menu bar
+       <Drawer.Screen
+        name="Admin"
+        component={Admin}
+        options={{ drawerLabel: 'Admin' }}
       />
     </Drawer.Navigator>
   );
@@ -85,7 +86,7 @@ export default function App() {
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Order" component={Order} />
-        <Stack.Screen name="Admin" component={Admin}/>
+        <Stack.Screen name="Admin" component={Admin} />
       </Stack.Navigator>
       </MyDrawer>
   </NavigationContainer>

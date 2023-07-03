@@ -50,14 +50,14 @@ usersRoute.post('/add', async (req, res) => {
     }
 });
 
-
-usersRoute.delete('/delete/:id', async (req, res) => {
+usersRoute.delete('/delete/:id', async (req, res) =>{
     try {
         let { id } = req.params;
         let data = await User.DeleteUser(id);
-        res.status(201).json(data)
+        res.status(201).json(data);
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        res.status(500).json({ error : error.message });
     }
-})
+});
+
 module.exports = usersRoute;

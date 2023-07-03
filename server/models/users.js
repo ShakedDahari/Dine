@@ -38,8 +38,9 @@ class User {
     static async InsertOne(){
         return await new DB().Insert(User.collection, this);
     }
+
     static async DeleteUser(id){
-        return await new DB().DeleteUser(User.collection,id)
+        return await new DB().DeleteUserById(User.collection, id);
     }
 }
 

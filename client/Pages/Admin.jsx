@@ -27,14 +27,14 @@ export default function Admin(props) {
     );
   };
 
-//   const deleteUserByID = async (id) => {
-//     // try {
-//     //   await axios.delete(`https://your-backend-api.com/api/users/${id}`); // Replace with your API endpoint
-//     //   fetchUsers(); // Refresh the user list after deletion
-//     // } catch (error) {
-//     //   console.error('Error deleting user:', error);
-//     // }
-//   };
+  // const deleteUserById = async (id) => {
+  //   // try {
+  //   //   await axios.delete(`https://your-backend-api.com/api/users/${id}`); // Replace with your API endpoint
+  //   //   fetchUsers(); // Refresh the user list after deletion
+  //   // } catch (error) {
+  //   //   console.error('Error deleting user:', error);
+  //   // }
+  // };
 
   const renderUserItem = ({ item }) => (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>

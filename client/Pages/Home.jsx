@@ -5,7 +5,7 @@ import { ContextPage } from "../Context/ContextProvider";
 
 export default function Home(props) {
 
-  const { location, setLocation, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible, 
+  const { location, setLocation, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible,
     setFoodListVisible, dinersListVisible, setDinersListVisible, foodTypes, dinersList, findRestaurants, LoadFoodTypes, setIsLoading } = useContext(ContextPage);
 
     const cities = require('../utils/cities.json');
@@ -100,8 +100,7 @@ export default function Home(props) {
     return degrees * (Math.PI / 180);
   }
 
-
-
+  
   let text = "Searching for Location..";
   if (errorMsg) {
     text = errorMsg;
@@ -113,6 +112,7 @@ export default function Home(props) {
       text = JSON.stringify(location);
     }
   }
+
 
   const handleFind = () => {
     console.log(location, foodType, diners);

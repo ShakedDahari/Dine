@@ -167,7 +167,6 @@ export default function Register(props) {
               <MaterialIcons name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
             </TouchableOpacity>
             </View>
-
             <View style={styles.pass}>
             <TextInput style={{top:5}} 
               placeholder="Verify"
@@ -178,7 +177,6 @@ export default function Register(props) {
             <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsVerifyVisible(!isVerifyVisible)}>
               <MaterialIcons name={isVerifyVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
             </TouchableOpacity>
-            
             </View>
             </View>
             <TouchableOpacity style={styles.btn} onPress={handleRegister}>
@@ -236,7 +234,7 @@ const styles = StyleSheet.create({
     },
     pass: {
         height: 50,
-        width: '40%',
+        width: "40%",
         alignSelf: "center",
         borderColor: "#B0B0B0",
         borderWidth: 1,

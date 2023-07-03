@@ -150,12 +150,12 @@ export default function Register(props) {
               onChangeText={setUserName}
               value={userName}
             />
-            <View style={{flexDirection:'row', justifyContent:'center'}}>
+            <View style={{flexDirection:'row-reverse', justifyContent:'center'}}>
               <TouchableOpacity onPress={handleAddImage}><MaterialIcons style={styles.imgBtn} name="add-a-photo" /></TouchableOpacity>
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
             </View>
             {imgSrc && <Image source={{ uri: imgSrc }} style={{ width: 100, height: 100, alignSelf:'center' }} />}
-            <View style={{flexDirection:'row', justifyContent:'center'}}>
+            <View style={{flexDirection:'row-reverse', justifyContent:'center'}}>
             <View style={styles.pass}>
             <TextInput  style={{top:5}}           
               placeholder="Password"
@@ -163,11 +163,10 @@ export default function Register(props) {
               onChangeText={setPassword}
               value={password}
             />
-            <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+            <TouchableOpacity style={{ position: 'absolute', top: '25%' }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
               <MaterialIcons name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
             </TouchableOpacity>
             </View>
-
             <View style={styles.pass}>
             <TextInput style={{top:5}} 
               placeholder="Verify"
@@ -175,10 +174,9 @@ export default function Register(props) {
               onChangeText={setConfirm}
               value={confirm}
             />
-            <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsVerifyVisible(!isVerifyVisible)}>
+            <TouchableOpacity style={{ position: 'absolute', top: '25%' }} onPress={() => setIsVerifyVisible(!isVerifyVisible)}>
               <MaterialIcons name={isVerifyVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
             </TouchableOpacity>
-            
             </View>
             </View>
             <TouchableOpacity style={styles.btn} onPress={handleRegister}>
@@ -227,7 +225,7 @@ const styles = StyleSheet.create({
     },
     input: {
       height: 50,
-      width: "85%",
+      width: "75%",
       alignSelf: "center",
       borderColor: "#B0B0B0",
       borderWidth: 1,
@@ -236,7 +234,7 @@ const styles = StyleSheet.create({
     },
     pass: {
         height: 50,
-        width: '40%',
+        width: "35%",
         alignSelf: "center",
         borderColor: "#B0B0B0",
         borderWidth: 1,

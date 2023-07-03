@@ -31,10 +31,12 @@ export default function Login(props) {
         }  });
     } 
     console.log(foundUser);
-    if (userName === "Admin1" || userName === "Admin2") {
-      props.navigation.navigate("Admin");
-    } else {
+    if (foundUser) {
+      sendNotification('Login Successful', 'Welcome to the app!');
       props.navigation.navigate("Main");
+    } else {
+      alert('Invalid username or password');
+      return;
     }
         
     

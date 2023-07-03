@@ -106,20 +106,6 @@ export default function ContextProvider(props) {
     }
   };
 
-  const deleteUser = async (id) => {
-    try {
-      let res = await fetch(`${apiUrl}/api/users/delete/${id}`, {
-        method: "DELETE",
-      });
-      let data = await res.json();
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      LoadUsers();
-    }
-  };
-
 
   const findRestaurants = async (location, foodType, diners) => {
     try {
@@ -224,8 +210,7 @@ export default function ContextProvider(props) {
     setIsLoading,
     updateSeats,
     filteredRestaurants, 
-    setFilteredRestaurants,
-    deleteUser,
+    setFilteredRestaurants
   };
 
   return (

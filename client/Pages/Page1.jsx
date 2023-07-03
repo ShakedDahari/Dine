@@ -85,7 +85,7 @@ export default function Page1(props) {
             data = {foodTypes}
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingVertical: 10, flexDirection: "row-reverse" }}
+            contentContainerStyle={{ paddingVertical: 10, flexDirection: "row" }}
             keyExtractor={(item) => item._id.toString()}
             renderItem={renderItem}
             // renderItem={({ item }) => (

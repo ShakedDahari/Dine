@@ -35,8 +35,11 @@ class User {
         return await new DB().FindUsername(User.collection, username);
     }
 
-    async InsertOne(){
+    static async InsertOne(){
         return await new DB().Insert(User.collection, this);
+    }
+    static async DeleteUser(id){
+        return await new DB().DeleteUser(User.collection,id)
     }
 }
 

@@ -100,7 +100,8 @@ export default function Home(props) {
     return degrees * (Math.PI / 180);
   }
 
-  
+
+
   let text = "Searching for Location..";
   if (errorMsg) {
     text = errorMsg;
@@ -139,6 +140,7 @@ export default function Home(props) {
             style={styles.input}
             placeholder="Search By Location"
             onChangeText={setLocation}
+            editable={false}
             value={text}
           />
           <TouchableOpacity onPress={() => setFoodListVisible(true)}>

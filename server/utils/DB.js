@@ -10,7 +10,7 @@ class DB {
         this.client = new MongoClient(process.env.DB_URI);
         this.dbName = process.env.DB_NAME;
     }
-    
+
     async FindAll(collection, query = {}, projection = {}) {
         try {
             await this.client.connect();
@@ -41,7 +41,7 @@ class DB {
             return await this.client.db(this.dbName).collection(collection).findOne({ email: email });
         } catch (error) {
             return error;
-        } 
+        }
         finally {
             await this.client.close();
         }
@@ -53,7 +53,7 @@ class DB {
             return await this.client.db(this.dbName).collection(collection).findOne({ username: username });
         } catch (error) {
             return error;
-        } 
+        }
         finally {
             await this.client.close();
         }
@@ -76,15 +76,15 @@ class DB {
 
             const agg = [
                 {
-                  '$match': {
-                    location: location, 
-                    foodType: foodType, 
-                    availableSeats: {
-                      '$gte': parseInt(diners)
+                    '$match': {
+                        location: location,
+                        foodType: foodType,
+                        availableSeats: {
+                            '$gte': parseInt(diners)
+                        }
                     }
-                  }
                 }
-              ];
+            ];
             return await this.client.db(this.dbName).collection(collection).aggregate(agg).toArray();
         } catch (error) {
             return error;
@@ -96,18 +96,29 @@ class DB {
 
     async UpdateSeatsByReservation(collection, id, seatType, numDiners) {
         try {
-            await this.client.connect();   
+            await this.client.connect();
             // console.log("server" + id, seatType, numDiners);     
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
-            {
-            $inc: {
-                [`locationSeats.${seatType}`]: - parseInt(numDiners),
-                availableSeats: - parseInt(numDiners)
-              }
-            });     
+                {
+                    $inc: {
+                        [`locationSeats.${seatType}`]: - parseInt(numDiners),
+                        availableSeats: - parseInt(numDiners)
+                    }
+                });
         } catch (error) {
             return error;
+        } finally {
+            await this.client.close();
+        }
+    }
+
+    async DeleteUser(collection, id) {
+        try {
+            await this.client.connect()
+            return await this.client.db(this.dbName).collection(collection).deleteOne({ _id: new ObjectId(id) })
+        } catch (error) {
+            return error
         } finally {
             await this.client.close();
         }

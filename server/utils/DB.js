@@ -113,7 +113,7 @@ class DB {
         }
     }
 
-    async DeleteUserById(collection, id) {
+    async DeleteById(collection, id) {
         try {
             await this.client.connect();
             return await this.client.db(this.dbName).collection(collection).deleteOne({ _id: new ObjectId(id) });

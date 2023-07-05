@@ -36,6 +36,10 @@ class Restaurant {
     static async UpdateSeats(id, seatType, numDiners) {
         return await new DB().UpdateSeatsByReservation(Restaurant.collection, id, seatType, numDiners);
     }
+
+    static async DeleteRestaurant(id){
+        return await new DB().DeleteById(Restaurant.collection, id);
+    }
 }
 
 

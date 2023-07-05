@@ -40,7 +40,7 @@ class User {
     }
 
     static async DeleteUser(id){
-        return await new DB().DeleteUserById(User.collection, id);
+        return await new DB().DeleteById(User.collection, id);
     }
 }
 

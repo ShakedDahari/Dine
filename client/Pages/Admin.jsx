@@ -1,11 +1,16 @@
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, FlatList } from 'react-native';
-import React, { useContext } from 'react';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, FlatList, Alert } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 
 export default function Admin(props) {
 
-    const { users, deleteUser } = useContext(ContextPage);
+    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant } = useContext(ContextPage);
+    const [usersListVisible, setUsersListVisible] = useState(false);
+    const [businessListVisible, setBusinessListVisible] = useState(false);
 
+    useEffect(() => {
+      LoadRestaurants();
+    }, []);
     
   const handleEditUser = (id) => {
     // Handle edit action for the user with the specified id
@@ -15,7 +20,7 @@ export default function Admin(props) {
   const handleDeleteUser = (id) => {
     // Handle delete action for the user with the specified id
     console.log(`Delete user with ID: ${id}`);
-    // You can also show a confirmation alert before deleting the user
+    // show a confirmation alert before deleting the user
     Alert.alert(
       'Delete User',
       'Are you sure you want to delete this user?',
@@ -27,16 +32,34 @@ export default function Admin(props) {
     );
   };
 
-  // const deleteUserById = async (id) => {
-  //   // try {
-  //   //   await axios.delete(`https://your-backend-api.com/api/users/${id}`); // Replace with your API endpoint
-  //   //   fetchUsers(); // Refresh the user list after deletion
-  //   // } catch (error) {
-  //   //   console.error('Error deleting user:', error);
-  //   // }
-  // };
+  const handleDeleteBusiness = (id) => {
+    // Handle delete action for the user with the specified id
+    console.log(`Delete business with ID: ${id}`);
+    // show a confirmation alert before deleting the user
+    Alert.alert(
+      'Delete Business',
+      'Are you sure you want to delete this business?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => deleteRestaurant(id) },
+      ],
+      { cancelable: true }
+    );
+  };
 
-  const renderUserItem = ({ item }) => (
+  const handleShowUsers = () => {
+    setBusinessListVisible(false);
+    setUsersListVisible(true);
+  }
+
+  const handleShowBusinesses = () => {
+    setUsersListVisible(false);
+    setBusinessListVisible(true);
+  }
+
+
+  const renderUserItem = ({ item }) => {
+    return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
       <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25 }} />
 
@@ -57,7 +80,32 @@ export default function Admin(props) {
         <Text style={{ color: 'red' }}>Delete</Text>
       </TouchableOpacity>
     </View>
-  );
+  )};
+
+  const renderBusinessItem = ({ item }) => {
+    
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
+      {/* <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25 }} /> */}
+
+      <View style={{ flex: 1 }}>
+        <Text>{item.name}</Text>
+        <View style={styles.column}>
+          <Text>{item.location}</Text>
+        </View>
+        <View style={styles.column}>
+          <Text>{item.foodType}</Text>
+        </View>
+      </View>
+
+      <TouchableOpacity onPress={() => handleEditUser(item._id)}>
+        <Text style={{ color: 'blue', marginRight: 10 }}>Edit</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => handleDeleteBusiness(item._id)}>
+        <Text style={{ color: 'red' }}>Delete</Text>
+      </TouchableOpacity>
+    </View>
+    )};
 
   return (
     <View style={styles.container}>
@@ -67,27 +115,35 @@ export default function Admin(props) {
           <Text style={styles.text}>DineInTime</Text>
         </View>
         <View style={styles.page}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleShowUsers}>
                 <Text style={styles.head}>Users</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleShowBusinesses}>
                 <Text style={styles.head}>Businesses</Text>
             </TouchableOpacity>
         </View>
         </ScrollView>
         <View style={{ flex: 2.5, paddingHorizontal: 16, paddingTop: 16 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-        <Text style={styles.columnHeader}>Email:</Text>
-        <Text style={styles.columnHeader}>Name:</Text>
-        <Text style={styles.columnHeader}>Phone:</Text>
-      </View>
-      <FlatList
-        data={users}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item._id} // Assuming the MongoDB document has an "_id" field
-        renderItem={renderUserItem}
-        ListEmptyComponent={() => <Text>No users found</Text>}
-      />
+          <View>
+      {usersListVisible && ( 
+        <FlatList
+          data={users}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item._id}
+          renderItem={renderUserItem}
+          ListEmptyComponent={() => <Text>No users found</Text>}
+        />
+      )}
+      {businessListVisible && (
+        <FlatList
+          data={restaurants}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item._id}
+          renderItem={renderBusinessItem}
+          ListEmptyComponent={() => <Text>No businesses found</Text>}
+        />
+      )}
+    </View>
     </View>
     </View>
   )

@@ -3,18 +3,32 @@ const DB = require('../utils/DB');
 class Restaurant {
     static collection = 'restaurants';
 
+    email;
+    phone;
     name;
-    location;
-    foodType;
-    availableSeats;
+    location; 
+    address;
+    foodType; 
+    image;
+    availableSeats; 
     locationSeats;
+    // inside;
+    // outside;
+    // bar;
 
-    constructor(name, location, foodType, availableSeats, locationSeats) {
+    constructor(email, phone, name, location, address, foodType, image, availableSeats, locationSeats) {
+        this.email = email;
+        this.phone = phone;
         this.name = name;
         this.location = location;
+        this.address = address;
         this.foodType = foodType;
+        this.image = image;
         this.availableSeats = availableSeats;
         this.locationSeats = locationSeats;
+        // this.inside = inside;
+        // this.outside = outside;
+        // this.bar = bar;
     }
 
     static async FindAllRestaurants() {

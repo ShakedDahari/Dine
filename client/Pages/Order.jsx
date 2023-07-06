@@ -34,7 +34,10 @@ export default function Order(props) {
             {
               text: 'Yes',
               onPress: () => {
-               if (id && seatType && numDiners) { updateSeats(id, seatType, numDiners) };
+               if (id && seatType && numDiners) { 
+                updateSeats(id, seatType, numDiners);
+                props.navigation.navigate("Main");               
+              };
               },
             },
           ]

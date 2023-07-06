@@ -22,11 +22,11 @@ restaurantsRoute.get('/:id', async (req, res) => {
 
 restaurantsRoute.post('/add', async (req, res) => {
     try {
-        let { name, location, foodType, availableSeats, locationSeats } = req.body;
-        let data = await new Restaurant(name, location, foodType, availableSeats, locationSeats).InsertOne();
+        let { email, phone, name, location, address, foodType, image, availableSeats, locationSeats, inside, outside, bar } = req.body;
+        let data = await new Restaurant(email, phone, name, location, address,foodType, image, availableSeats, locationSeats, inside, outside, bar).InsertOne();
         res.status(201).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error: error.message });
     }
 });
 

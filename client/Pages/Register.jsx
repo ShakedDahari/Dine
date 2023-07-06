@@ -131,6 +131,9 @@ export default function Register(props) {
             <Image source={require("../assets/icon.png")} style={styles.icon}/>
             <Text style={styles.text}>DineInTime</Text>
           </View>
+          <TouchableOpacity>
+              <Text style={styles.reg} onPress={() => props.navigation.navigate("BusinessRegistration")}>Business owner? Click here</Text>
+          </TouchableOpacity>
           <View style={styles.inputCon}>
           <TextInput
               style={styles.input}
@@ -220,6 +223,7 @@ const styles = StyleSheet.create({
       margin: 30,
       padding: 20,
       marginTop: 10,
+      marginBottom: 0,
       height: '100%',
       justifyContent: "center",
     },
@@ -297,5 +301,6 @@ const styles = StyleSheet.create({
       alignSelf: "center",
       fontSize: 18,
       color: "#D9D9D9",
+      margin: 10,
     },
   });

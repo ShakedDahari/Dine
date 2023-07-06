@@ -147,5 +147,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontSize: 18,
     color: "#D9D9D9",
+    margin: 10,
   },
 });

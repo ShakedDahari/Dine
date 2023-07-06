@@ -40,6 +40,10 @@ class Restaurant {
     static async DeleteRestaurant(id){
         return await new DB().DeleteById(Restaurant.collection, id);
     }
+
+    static async AddOrder(id, userId, seatType, diners) {
+        return await new DB().UpdateOrder(Restaurant.collection, id, userId, seatType, diners);
+    }
 }
 
 

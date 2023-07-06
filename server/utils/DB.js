@@ -123,6 +123,26 @@ class DB {
             await this.client.close();
         }
     }
+
+    async UpdateOrder(collection, id, userId, seatType, diners) {
+        try {
+            await this.client.connect();
+            let order = {
+                userId: new ObjectId(userId),
+                diners: diners,
+                seatType: seatType,
+                createdAt: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' })
+            };
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $push: { orders: order } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
 }
 
 module.exports = DB;

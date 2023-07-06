@@ -10,6 +10,7 @@ export default function ContextProvider(props) {
   const [userName, setUserName] = useState();
   const [password, setPassword] = useState();
   const [confirm, setConfirm] = useState();
+  const [loginUser, setLoginUser] = useState();
 
   const [users, setUsers] = useState([]);
   const [foodTypes, setFoodTypes] = useState([]);
@@ -170,7 +171,6 @@ export default function ContextProvider(props) {
   };
 
   const updateSeats = async (id, seatType, numDiners) => {
-    //console.log("client    "  + id, seatType, numDiners);
     try {
       let res = await fetch(`${apiUrl}/api/restaurants/seats`, {
         method: 'PUT',
@@ -184,8 +184,10 @@ export default function ContextProvider(props) {
         const data = await res.json();
         console.log(data);
         if (data) {
-          sendNotification('Reservation Successful', 'Thank you for the reservation!');
-          //TODO ------------------------------------------------- move the user to another page
+          sendNotification('Reservation Request Send', 'We will keep you informed once your reservation request is approved by the restaurant.');
+          //-------------------------------------------------------------------handle reservation requests
+          AddReservationRequest(id, loginUser._id, seatType, numDiners);
+          props.navigation.navigate("Home");
         }
         return data;
       } else {
@@ -198,19 +200,41 @@ export default function ContextProvider(props) {
     }
   };
 
+  const AddReservationRequest = async (id, userId, seatType, diners) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/orders/${id}`, {
+          method: "POST",
+          body: JSON.stringify({ userId, seatType, diners }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (res.ok) {
+          const text = await res.text();
+          let data;
+    
+          try {
+            data = await JSON.parse(text);
+          } catch (error) {
+            throw new Error('Invalid JSON response');
+          }
+          console.log(data);          
+          return data;
+        } else {
+          throw new Error(`Request failed ${res.status}`);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+  }
 
 
   const value = {
-    email,
-    setEmail,
-    phone,
-    setPhone,
-    userName,
-    setUserName,
-    password,
-    setPassword,
-    confirm,
-    setConfirm,
+    email, setEmail,
+    phone, setPhone,
+    userName, setUserName,
+    password, setPassword,
+    confirm, setConfirm,
     addUser,
     LoadUsers,
     LoadFoodTypes,
@@ -218,30 +242,22 @@ export default function ContextProvider(props) {
     users,
     checkEmail,
     checkUsername,
-    location,
-    setLocation,
-    errorMsg,
-    setErrorMsg,
-    foodType,
-    setFoodType,
-    diners,
-    setDiners,
-    foodListVisible,
-    setFoodListVisible,
-    dinersListVisible, 
-    setDinersListVisible,
+    location,setLocation,
+    errorMsg,setErrorMsg,
+    foodType,setFoodType,
+    diners,setDiners,
+    foodListVisible,setFoodListVisible,
+    dinersListVisible, setDinersListVisible,
     foodTypes,
     dinersList,
-    restaurants,
-    setRestaurants,
+    restaurants,setRestaurants,
     findRestaurants,
-    isLoading,
-    setIsLoading,
+    isLoading,setIsLoading,
     updateSeats,
-    filteredRestaurants, 
-    setFilteredRestaurants,
+    filteredRestaurants, setFilteredRestaurants,
     deleteUser,
     deleteRestaurant,
+    loginUser, setLoginUser,
   };
 
   return (

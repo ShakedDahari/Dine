@@ -40,6 +40,17 @@ restaurantsRoute.post('/find', async (req, res) => {
     }
 });
 
+restaurantsRoute.post('/orders/:id', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { userId, seatType, diners } = req.body;
+        let data = await Restaurant.AddOrder(id, userId, seatType, diners);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
 restaurantsRoute.put('/seats', async (req, res) => {
     try {
       let { id, seatType, numDiners } = req.body;

@@ -6,7 +6,7 @@ export default function Admin(props) {
 
     const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant } = useContext(ContextPage);
     const [usersListVisible, setUsersListVisible] = useState(false);
-    const [businessListVisible, setBusinessListVisible] = useState(false);
+    const [restaurantListVisible, setRestaurantListVisible] = useState(false);
 
     useEffect(() => {
       LoadRestaurants();
@@ -32,13 +32,13 @@ export default function Admin(props) {
     );
   };
 
-  const handleDeleteBusiness = (id) => {
+  const handleDeleteRestaurant = (id) => {
     // Handle delete action for the user with the specified id
-    console.log(`Delete business with ID: ${id}`);
+    console.log(`Delete restaurant with ID: ${id}`);
     // show a confirmation alert before deleting the user
     Alert.alert(
-      'Delete Business',
-      'Are you sure you want to delete this business?',
+      'Delete Restaurant',
+      'Are you sure you want to delete this restaurant?',
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Delete', style: 'destructive', onPress: () => deleteRestaurant(id) },
@@ -48,13 +48,13 @@ export default function Admin(props) {
   };
 
   const handleShowUsers = () => {
-    setBusinessListVisible(false);
+    setRestaurantListVisible(false);
     setUsersListVisible(true);
   }
 
-  const handleShowBusinesses = () => {
+  const handleShowRestaurants = () => {
     setUsersListVisible(false);
-    setBusinessListVisible(true);
+    setRestaurantListVisible(true);
   }
 
 
@@ -82,7 +82,7 @@ export default function Admin(props) {
     </View>
   )};
 
-  const renderBusinessItem = ({ item }) => {
+  const renderRestaurantItem = ({ item }) => {
     
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
@@ -101,7 +101,7 @@ export default function Admin(props) {
       <TouchableOpacity onPress={() => handleEditUser(item._id)}>
         <Text style={{ color: 'blue', marginRight: 10 }}>Edit</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleDeleteBusiness(item._id)}>
+      <TouchableOpacity onPress={() => handleDeleteRestaurant(item._id)}>
         <Text style={{ color: 'red' }}>Delete</Text>
       </TouchableOpacity>
     </View>
@@ -118,8 +118,8 @@ export default function Admin(props) {
             <TouchableOpacity onPress={handleShowUsers}>
                 <Text style={styles.head}>Users</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleShowBusinesses}>
-                <Text style={styles.head}>Businesses</Text>
+            <TouchableOpacity onPress={handleShowRestaurants}>
+                <Text style={styles.head}>Restaurants</Text>
             </TouchableOpacity>
         </View>
         </ScrollView>
@@ -134,13 +134,13 @@ export default function Admin(props) {
           ListEmptyComponent={() => <Text>No users found</Text>}
         />
       )}
-      {businessListVisible && (
+      {restaurantListVisible && (
         <FlatList
           data={restaurants}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item) => item._id}
-          renderItem={renderBusinessItem}
-          ListEmptyComponent={() => <Text>No businesses found</Text>}
+          renderItem={renderRestaurantItem}
+          ListEmptyComponent={() => <Text>No restaurants found</Text>}
         />
       )}
     </View>

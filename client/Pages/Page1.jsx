@@ -1,7 +1,8 @@
-import { View, Text, Button, ScrollView, Image, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, Button, Modal, ScrollView, Image, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import React, { useContext, useState } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 import { useEffect } from 'react';
+import Charts from './Charts';
 
 
 export default function Page1(props) {
@@ -13,7 +14,6 @@ export default function Page1(props) {
     LoadFoodTypes();
   }, []);
   
-
   const renderRestaurants = (foodType) => {
     LoadRestaurants();
     const filteredRestaurants = restaurants.filter((restaurant) => restaurant.foodType === foodType);
@@ -69,7 +69,7 @@ export default function Page1(props) {
 
   return (
     <View style={styles.container}>
-    <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
+    <ScrollView keyboardShouldPersistTaps="handled" overScrollMode='never' style={{flex: 1}}>
         <View style={styles.iconCon}>
           <Image source={require("../assets/icon.png")} style={styles.icon}/>
           <Text style={styles.text}>DineInTime</Text>
@@ -87,20 +87,13 @@ export default function Page1(props) {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingVertical: 10, flexDirection: "row" }}
             keyExtractor={(item) => item._id.toString()}
-            renderItem={renderItem}
-            // renderItem={({ item }) => (
-            //   <View style={styles.foodList}>
-            //     <TouchableOpacity onPress={() => setSelectedFoodType(item.name)}>
-            //       <Image source={getImageSource(item.image)} style={{ width: 60, height: 60 }}/>
-            //       <Text style={styles.foodName}>{item.name}</Text>
-            //     </TouchableOpacity>
-            //   </View>{)}
-            />
+            renderItem={renderItem}/>
           {selectedFoodType && (
             <View>
               {renderRestaurants(selectedFoodType)}
             </View>
           )}
+          <Charts />
         </View>
     </ScrollView>
     </View>

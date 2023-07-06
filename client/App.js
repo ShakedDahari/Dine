@@ -8,6 +8,7 @@ import Register from './Pages/Register';
 import Home from './Pages/Home';
 import Order from './Pages/Order';
 import Admin from './Pages/Admin';
+import Charts from './Pages/Charts';
 import ContextProvider from './Context/ContextProvider';
 
 
@@ -55,6 +56,11 @@ function MyDrawer() {
         component={Admin}
         options={{ drawerLabel: 'Admin' }}
       />
+        <Drawer.Screen
+        name="Chart"
+        component={Charts}
+        options={{ drawerLabel: 'Chart' }}
+      />
     </Drawer.Navigator>
   );
 }
@@ -87,6 +93,7 @@ export default function App() {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Order" component={Order} />
         <Stack.Screen name="Admin" component={Admin} />
+        <Stack.Screen name="Chart" component={Charts} />
       </Stack.Navigator>
       </MyDrawer>
   </NavigationContainer>

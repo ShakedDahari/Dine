@@ -4,10 +4,13 @@ import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
 
+// const windowWidth = Dimensions.get('window').width;
+// const windowHeight = Dimensions.get('window').height;
+
 export default function BusinessRegistration(props) {
 
     let { emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, city, setCity, foodTypeB, setFoodTypeB,
-        imgB, setImgB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmail, addRestaurant } = useContext(ContextPage);
+        imgB, setImgB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant } = useContext(ContextPage);
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -30,15 +33,15 @@ export default function BusinessRegistration(props) {
             address: address,
             foodType: foodTypeB, 
             image: imgB,
-            availableSeats: availableSeats, 
+            availableSeats: parseInt(availableSeats), 
             locationSeats : {
-                inside: inside,
-                outside: outside,
-                bar: bar 
+                inside: parseInt(inside),
+                outside: parseInt(outside),
+                bar: parseInt(bar) 
             }         
         }
 
-        let isEmailOccupied = await checkEmail(emailB);
+        let isEmailOccupied = await checkEmailBusiness(emailB);
 
         if (emailB && phoneB && nameB && city && address && foodTypeB && imgB && availableSeats && inside && outside && bar) {
             if (isEmailOccupied) {
@@ -108,7 +111,7 @@ export default function BusinessRegistration(props) {
               onChangeText={setAvailableSeats}
               value={availableSeats}
             />
-            <View style={{flexDirection:'row', justifyContent:'center'}}>
+     
             <TextInput
               style={styles.input}
               placeholder="Inside Seats"
@@ -127,7 +130,7 @@ export default function BusinessRegistration(props) {
               onChangeText={setBar}
               value={bar}
             />
-            </View>
+        
 
             {/* <View style={{flexDirection:'row', justifyContent:'center'}}> 
              <View style={styles.pass}>
@@ -217,24 +220,6 @@ const styles = StyleSheet.create({
       margin: 10,
       padding: 5,
     },
-    camera: {
-        width: windowWidth-50, 
-        height: windowHeight-50, 
-        alignSelf: 'center',
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        justifyContent: 'space-between',
-    },
-    btnCam: {
-        fontSize: 50,
-        height: 60,
-        justifyContent: 'center',
-        borderRadius: 30,
-        padding: 5,
-        margin: 10,
-        backgroundColor: 'white',
-    },
     text: {
       alignSelf: "center",
       color: "#D9D9D9",
@@ -255,16 +240,5 @@ const styles = StyleSheet.create({
     title: {
       alignSelf: "center",
       fontSize: 20,
-    },
-    bottomCon: {
-      flex: 1,
-      width: "100%",
-      height: "100%",
-    },
-    reg: {
-      alignSelf: "center",
-      fontSize: 18,
-      color: "#D9D9D9",
-      margin: 10,
     },
   });

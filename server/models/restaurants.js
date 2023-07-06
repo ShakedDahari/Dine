@@ -43,6 +43,11 @@ class Restaurant {
         return await new DB().Insert(Restaurant.collection, this);
     }
 
+    
+    static async FindByEmail(email) {
+        return await new DB().FindEmail(Restaurant.collection, email);
+    }
+
     static async FindRestaurantsForUser(location, foodType, diners) {
         return await new DB().FindRestaurantsByInputs(Restaurant.collection, location, foodType, diners);
     }

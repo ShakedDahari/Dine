@@ -91,6 +91,16 @@ export default function ContextProvider(props) {
     }
   };
 
+  const checkEmailBusiness = async (email) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/email/${email}`);
+      let data = await res.json();
+      return !!data;
+    } catch (error) {
+      return error;
+    }
+  };
+
   const checkUsername = async (userName) => {
     try {
       let res = await fetch(`${apiUrl}/api/users/username/${userName}`);
@@ -298,6 +308,7 @@ export default function ContextProvider(props) {
     outside, setOutside,
     bar, setBar,
     addRestaurant,
+    checkEmailBusiness,
   };
 
   return (

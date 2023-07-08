@@ -51,6 +51,8 @@ export default function BusinessRegistration(props) {
             else {
                 addRestaurant(business);
             }
+        } else {
+            alert('Invalid Error');
         }
 
     };

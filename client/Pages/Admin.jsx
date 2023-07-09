@@ -81,7 +81,7 @@ export default function Admin(props) {
   const renderUserItem = ({ item }) => {
     return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-      <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25 }} />
+      <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
 
       <View style={{ flex: 1 }}>
         <Text>{item.email}</Text>
@@ -107,7 +107,7 @@ export default function Admin(props) {
     if (selectedOption === 'all' && item.approved === true) { 
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-      <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25 }} />
+      <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
 
       <View style={{ flex: 1 }}>
         <Text>{item.name}</Text>
@@ -130,7 +130,7 @@ export default function Admin(props) {
       if (selectedOption === 'pending' && item.approved === false) {
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-          <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25 }} />
+          <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
     
           <View style={{ flex: 1 }}>
             <Text>{item.name}</Text>

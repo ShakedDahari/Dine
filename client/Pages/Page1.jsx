@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 import { useEffect } from 'react';
 import Charts from './Charts';
+import { Troubleshoot } from '@mui/icons-material';
 
 
 export default function Page1(props) {
@@ -16,12 +17,16 @@ export default function Page1(props) {
   
   const renderRestaurants = (foodType) => {
     LoadRestaurants();
-    const filteredRestaurants = restaurants.filter((restaurant) => restaurant.foodType === foodType);
+    const filteredRestaurants = restaurants.filter((restaurant) => restaurant.foodType === foodType && restaurant.approved === true);
     return filteredRestaurants.map((restaurant) => (
       <View key={restaurant._id} style={styles.restaurantContainer}>
+        <View style={{flex: 1, width: '100%', height: 100}}>
+        <Image source={{ uri: restaurant.image }} style={styles.restImg} />
+        </View>
+        <View style={{flex: 1, height: 70, alignItems: 'center'}}>
         <Text style={styles.name}>{restaurant.name}</Text>
-        <Image source={{ uri: restaurant.image }} style={styles.image} />
-        <Text style={styles.address}>{restaurant.location}</Text>             
+        <Text style={styles.address}>{restaurant.location}</Text>  
+        </View>
       </View>
     ));
   }
@@ -150,6 +155,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   restaurantContainer: {
+    flex: 2,
+    width: '85%',
+    alignSelf: 'center',   
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: '#838383',
@@ -172,5 +180,12 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     marginBottom: 5,
 },
+  restImg: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderRadius: 5,
+  },
 });
 

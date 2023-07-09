@@ -9,6 +9,7 @@ export default function Order(props) {
     const [searchInput, setSearchInput] = useState('');
 
     const filtered = filteredRestaurants.filter((restaurant) =>
+    restaurant.approved === true && 
     restaurant.name.toLowerCase().includes(searchInput.toLowerCase()));
 
     const handleReset = () => {
@@ -87,8 +88,10 @@ export default function Order(props) {
             keyExtractor={(item) => item._id.toString()}
             renderItem={({ item }) => (
               <View style={styles.restaurantContainer}>
+                <View style={{flex: 1, width: '100%', height: 100}}>
+                  <Image source={{ uri: item.image }} style={styles.restImg} />
+                </View>
                 <Text style={styles.name}>{item.name}</Text>
-                {/* <Image source={{ uri: item.image }} style={styles.image} /> */}
                 <Text style={styles.address}>{item.location}</Text>
                 <Text style={styles.seatContainer}>
                   {item.locationSeats.inside > 0 && (
@@ -162,6 +165,9 @@ const styles = StyleSheet.create({
       fontWeight: 700,
     },
       restaurantContainer: {
+        flex: 2,
+        width: '85%',
+        alignSelf: 'center',   
         flexDirection: 'column',
         alignItems: 'center',
         backgroundColor: '#838383',
@@ -221,5 +227,11 @@ const styles = StyleSheet.create({
       title: {
         alignSelf: "center",
         fontSize: 20,
+      },
+      restImg: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
       },
 });

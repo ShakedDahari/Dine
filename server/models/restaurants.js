@@ -14,6 +14,7 @@ class Restaurant {
     locationSeats;
     password;
     verify;
+    approved;
 
     constructor(email, phone, name, location, address, foodType, image, availableSeats, { inside, outside, bar }, password, verify) {
         this.email = email;
@@ -27,6 +28,7 @@ class Restaurant {
         this.locationSeats = { inside, outside, bar };
         this.password = password;
         this.verify = verify;
+        this.approved = false;
     }
 
     static async FindAllRestaurants() {
@@ -59,6 +61,10 @@ class Restaurant {
 
     static async AddOrder(id, userId, seatType, diners) {
         return await new DB().UpdateOrder(Restaurant.collection, id, userId, seatType, diners);
+    }
+
+    static async ChangeApproved(id) {
+        return await new DB().ApprovedRestaurant(Restaurant.collection, id);
     }
 }
 

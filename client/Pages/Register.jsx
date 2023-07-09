@@ -138,12 +138,14 @@ export default function Register(props) {
           <TextInput
               style={styles.input}
               placeholder="Email"
+              inputMode='email'
               onChangeText={setEmail}
               value={email}
             />
             <TextInput
               style={styles.input}
               placeholder="Phone"
+              inputMode='tel'
               onChangeText={setPhone}
               value={phone}
             />
@@ -282,7 +284,7 @@ const styles = StyleSheet.create({
       height: 50,
       alignSelf: "center",
       justifyContent: "center",
-      width: "75%",
+      width: "85%",
       backgroundColor: "#B0B0B0",
       borderColor: "#838383",
       borderWidth: 3,

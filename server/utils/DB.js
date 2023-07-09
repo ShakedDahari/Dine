@@ -97,7 +97,6 @@ class DB {
     async UpdateSeatsByReservation(collection, id, seatType, numDiners) {
         try {
             await this.client.connect();   
-            // console.log("server" + id, seatType, numDiners);     
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
             {
@@ -136,6 +135,20 @@ class DB {
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
                 { $push: { orders: order } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
+    async ApprovedRestaurant(collection, id) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) }, 
+                { $set: {approved : true}}
             );
         } catch (error) {
             return error;

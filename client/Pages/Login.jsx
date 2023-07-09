@@ -2,10 +2,13 @@ import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ScrollView 
 import React, { useContext, useEffect, useState } from "react";
 import { ContextPage } from "../Context/ContextProvider";
 import { sendNotification } from "./PushNotification";
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Login(props) {
 
   const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser } = useContext(ContextPage);
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   useEffect(() => {
     LoadUsers();
@@ -58,13 +61,24 @@ export default function Login(props) {
               onChangeText={setUserName}
               value={userName}
             />
-            <TextInput
+            {/* <TextInput
               style={styles.input}
               placeholder="Password"
               secureTextEntry
               onChangeText={setPassword}
               value={password}
+            /> */}
+            <View style={styles.pass}>
+            <TextInput  style={{top:5}}           
+              placeholder="Password"
+              secureTextEntry={!isPasswordVisible}
+              onChangeText={setPassword}
+              value={password}
             />
+            <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+              <MaterialIcons name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
+            </TouchableOpacity>
+            </View>
             <TouchableOpacity style={styles.btn} onPress={handleLogin}>
               <Text style={styles.title}>Login</Text>
             </TouchableOpacity>
@@ -149,4 +163,13 @@ const styles = StyleSheet.create({
     color: "#D9D9D9",
     margin: 10,
   },
+  pass: {
+    height: 50,
+    width: "75%",
+    alignSelf: "center",
+    borderColor: "#B0B0B0",
+    borderWidth: 1,
+    margin: 10,
+    padding: 5,
+},
 });

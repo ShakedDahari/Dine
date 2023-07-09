@@ -28,14 +28,14 @@ function MyDrawer() {
   return (            //startup page 
     <Drawer.Navigator initialRouteName="Login">  
       <Drawer.Screen
+          name="Login"
+          component={Login}
+          options={{ drawerLabel: 'Login' }}
+      />
+      <Drawer.Screen
         name="Main"                       //page title
         component={Page1}                  //component = page element
         options={{ drawerLabel: 'Main' }} //sets menu label of page
-      />
-      <Drawer.Screen
-        name="Login"
-        component={Login}
-        options={{ drawerLabel: 'Login' }}
       />
       <Drawer.Screen
         name="Register"
@@ -93,8 +93,8 @@ export default function App() {
     <NavigationContainer>
       <MyDrawer>
       <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Main" component={Page1} />
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Main" component={Page1} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Order" component={Order} />

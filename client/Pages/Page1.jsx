@@ -20,7 +20,7 @@ export default function Page1(props) {
     return filteredRestaurants.map((restaurant) => (
       <View key={restaurant._id} style={styles.restaurantContainer}>
         <Text style={styles.name}>{restaurant.name}</Text>
-        {/* <Image source={{ uri: restaurant.image }} style={styles.image} /> */}
+        <Image source={{ uri: restaurant.image }} style={styles.image} />
         <Text style={styles.address}>{restaurant.location}</Text>             
       </View>
     ));

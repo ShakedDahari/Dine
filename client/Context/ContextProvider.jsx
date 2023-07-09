@@ -177,6 +177,20 @@ export default function ContextProvider(props) {
     }
   };
 
+  const changeApprovedRestaurant = async (id) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
+        method: "PUT",
+      });
+      let data = await res.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadRestaurants();
+    }
+  };
+
 
   const findRestaurants = async (location, foodType, diners) => {
     try {
@@ -313,6 +327,7 @@ export default function ContextProvider(props) {
     confirmB, setConfirmB,
     addRestaurant,
     checkEmailBusiness,
+    changeApprovedRestaurant,
   };
 
   return (

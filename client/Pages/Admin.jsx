@@ -1,12 +1,15 @@
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, FlatList, Alert } from 'react-native';
 import React, { useContext, useState, useEffect } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Admin(props) {
 
-    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant } = useContext(ContextPage);
+    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant } = useContext(ContextPage);
     const [usersListVisible, setUsersListVisible] = useState(false);
     const [restaurantListVisible, setRestaurantListVisible] = useState(false);
+    const [selectedOption, setSelectedOption] = useState('all');
+    const [isApproved, setIsApproved] = useState(false);
 
     useEffect(() => {
       LoadRestaurants();
@@ -47,6 +50,10 @@ export default function Admin(props) {
     );
   };
 
+  const handleSelectOption = (option) => {
+    setSelectedOption(option);
+  };
+
   const handleShowUsers = () => {
     setRestaurantListVisible(false);
     setUsersListVisible(true);
@@ -57,6 +64,19 @@ export default function Admin(props) {
     setRestaurantListVisible(true);
   }
 
+  const handleApprovedRestaurant = (id) => {
+    console.log(`Add restaurant with ID: ${id}`);
+    // show a confirmation alert before deleting the user
+    Alert.alert(
+      'Add Restaurant',
+      'Are you sure you want to add this restaurant?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Add', style: 'destructive', onPress: () => changeApprovedRestaurant(id) },
+      ],
+      { cancelable: true }
+    );
+  }
 
   const renderUserItem = ({ item }) => {
     return (
@@ -77,16 +97,17 @@ export default function Admin(props) {
         <Text style={{ color: 'blue', marginRight: 10 }}>Edit</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => handleDeleteUser(item._id)}>
-        <Text style={{ color: 'red' }}>Delete</Text>
+        <MaterialIcons name="delete" size={40} color="red" />
       </TouchableOpacity>
     </View>
   )};
 
+
   const renderRestaurantItem = ({ item }) => {
-    
+    if (selectedOption === 'all' && item.approved === true) { 
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-      {/* <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25 }} /> */}
+      <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25 }} />
 
       <View style={{ flex: 1 }}>
         <Text>{item.name}</Text>
@@ -98,14 +119,40 @@ export default function Admin(props) {
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => handleEditUser(item._id)}>
-        <Text style={{ color: 'blue', marginRight: 10 }}>Edit</Text>
-      </TouchableOpacity>
+      {/* <TouchableOpacity onPress={() => handleApprovedRestaurant(item._id)}>
+      <Text></Text>
+      </TouchableOpacity> */}
       <TouchableOpacity onPress={() => handleDeleteRestaurant(item._id)}>
-        <Text style={{ color: 'red' }}>Delete</Text>
+        <MaterialIcons name="delete" size={40} color="red" />
       </TouchableOpacity>
     </View>
-    )};
+    )} else {
+      if (selectedOption === 'pending' && item.approved === false) {
+        return (
+          <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
+          <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25 }} />
+    
+          <View style={{ flex: 1 }}>
+            <Text>{item.name}</Text>
+            <View style={styles.column}>
+              <Text>{item.location}</Text>
+            </View>
+            <View style={styles.column}>
+              <Text>{item.foodType}</Text>
+            </View>
+          </View>
+    
+          <TouchableOpacity onPress={() => handleApprovedRestaurant(item._id)}>
+          <MaterialIcons name="add" size={40} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleDeleteRestaurant(item._id)}>
+            <MaterialIcons name="delete" size={40} color="red" />
+          </TouchableOpacity>
+        </View>
+        )
+      }
+    };
+  }
 
   return (
     <View style={styles.container}>
@@ -135,6 +182,13 @@ export default function Admin(props) {
         />
       )}
       {restaurantListVisible && (
+        <View>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <TouchableOpacity style={[styles.optionButton, selectedOption === 'all' && styles.selectedOption]}
+          onPress={() => handleSelectOption('all')}><Text>All</Text></TouchableOpacity>
+          <TouchableOpacity style={[styles.optionButton, selectedOption === 'pending' && styles.selectedOption]}
+          onPress={() => handleSelectOption('pending')}><Text>Requests</Text></TouchableOpacity>
+        </View>
         <FlatList
           data={restaurants}
           showsVerticalScrollIndicator={false}
@@ -142,6 +196,7 @@ export default function Admin(props) {
           renderItem={renderRestaurantItem}
           ListEmptyComponent={() => <Text>No restaurants found</Text>}
         />
+        </View>
       )}
     </View>
     </View>
@@ -191,5 +246,18 @@ const styles = StyleSheet.create({
     columnHeader: {
         fontWeight: 'bold',
         marginRight: 0,
+    },
+    optionButton: {
+      flex: 0.5,
+      maxWidth: 100,
+      alignItems: 'center',
+      padding: 10,
+      marginHorizontal: 5,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+    },
+    selectedOption: {
+      backgroundColor: '#B0B0B0',
     },
 });

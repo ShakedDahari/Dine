@@ -32,8 +32,8 @@ restaurantsRoute.get('/email/:email', async (req, res) => {
 
 restaurantsRoute.post('/add', async (req, res) => {
     try {
-        let { email, phone, name, location, address, foodType, image, availableSeats, locationSeats, inside, outside, bar } = req.body;
-        let data = await new Restaurant(email, phone, name, location, address,foodType, image, availableSeats, locationSeats, inside, outside, bar).InsertOne();
+        let { email, phone, name, location, address, foodType, image, availableSeats, locationSeats: { inside, outside, bar }, password, verify } = req.body;
+        let data = await new Restaurant(email, phone, name, location, address, foodType, image, availableSeats, { inside, outside, bar }, password, verify).InsertOne();
         res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -64,7 +64,6 @@ restaurantsRoute.post('/orders/:id', async (req, res) => {
 restaurantsRoute.put('/seats', async (req, res) => {
     try {
       let { id, seatType, numDiners } = req.body;
-    //   console.log(req.body);
       let data = await Restaurant.UpdateSeats(id, seatType, numDiners);
       res.status(200).json(data);
     } catch (error) {

@@ -1,16 +1,17 @@
 import { View, Text, StyleSheet, Image, ScrollView, TextInput, TouchableOpacity } from 'react-native';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
 
-// const windowWidth = Dimensions.get('window').width;
-// const windowHeight = Dimensions.get('window').height;
 
 export default function BusinessRegistration(props) {
 
-    let { emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, city, setCity, foodTypeB, setFoodTypeB,
-        imgB, setImgB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant } = useContext(ContextPage);
+    let { emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, city, setCity, foodTypeB, setFoodTypeB, imgB, setImgB, 
+        passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant } = useContext(ContextPage);
+
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isVerifyVisible, setIsVerifyVisible] = useState(false);
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -38,23 +39,29 @@ export default function BusinessRegistration(props) {
                 inside: parseInt(inside),
                 outside: parseInt(outside),
                 bar: parseInt(bar) 
-            }         
+            },
+            password: passwordB,
+            verify: confirmB        
         }
 
         let isEmailOccupied = await checkEmailBusiness(emailB);
 
-        if (emailB && phoneB && nameB && city && address && foodTypeB && imgB && availableSeats && inside && outside && bar) {
+        if (emailB && phoneB && nameB && city && address && foodTypeB && imgB && availableSeats && inside && outside && bar && passwordB && confirmB) {
             if (isEmailOccupied) {
                 alert(`Email is already in use. \nPlease choose a different email.`);
                 isEmailOccupied = false;
             }
             else {
+              if (passwordB === confirmB) {  
                 addRestaurant(business);
+                props.navigation.navigate("Login");
+              } else { 
+                alert(`Password and verify do not match. \nPlease re-enter your password.`);
+              }
             }
         } else {
             alert('Invalid Error');
         }
-
     };
   
 
@@ -134,13 +141,13 @@ export default function BusinessRegistration(props) {
             />
         
 
-            {/* <View style={{flexDirection:'row', justifyContent:'center'}}> 
+            <View style={{flexDirection:'row', justifyContent:'center'}}> 
              <View style={styles.pass}>
             <TextInput  style={{top:5}}           
               placeholder="Password"
               secureTextEntry={!isPasswordVisible}
-              onChangeText={setPassword}
-              value={password}
+              onChangeText={setPasswordB}
+              value={passwordB}
             />
             <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
               <MaterialIcons name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
@@ -150,14 +157,14 @@ export default function BusinessRegistration(props) {
             <TextInput style={{top:5}} 
               placeholder="Verify"
               secureTextEntry={!isVerifyVisible}
-              onChangeText={setConfirm}
-              value={confirm}
+              onChangeText={setConfirmB}
+              value={confirmB}
             />
             <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsVerifyVisible(!isVerifyVisible)}>
               <MaterialIcons name={isVerifyVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
             </TouchableOpacity>
             </View>
-            {/* </View>  */}
+             </View> 
             <TouchableOpacity style={styles.btn} onPress={handleSend}>
               <Text style={styles.title}>Send</Text>
             </TouchableOpacity>

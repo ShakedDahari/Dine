@@ -12,11 +12,10 @@ class Restaurant {
     image;
     availableSeats; 
     locationSeats;
-    // inside;
-    // outside;
-    // bar;
+    password;
+    verify;
 
-    constructor(email, phone, name, location, address, foodType, image, availableSeats, locationSeats) {
+    constructor(email, phone, name, location, address, foodType, image, availableSeats, { inside, outside, bar }, password, verify) {
         this.email = email;
         this.phone = phone;
         this.name = name;
@@ -25,10 +24,9 @@ class Restaurant {
         this.foodType = foodType;
         this.image = image;
         this.availableSeats = availableSeats;
-        this.locationSeats = locationSeats;
-        // this.inside = inside;
-        // this.outside = outside;
-        // this.bar = bar;
+        this.locationSeats = { inside, outside, bar };
+        this.password = password;
+        this.verify = verify;
     }
 
     static async FindAllRestaurants() {
@@ -42,7 +40,6 @@ class Restaurant {
     async InsertOne() {
         return await new DB().Insert(Restaurant.collection, this);
     }
-
     
     static async FindByEmail(email) {
         return await new DB().FindEmail(Restaurant.collection, email);

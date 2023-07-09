@@ -23,6 +23,8 @@ export default function ContextProvider(props) {
   const [inside, setInside] = useState();
   const [outside, setOutside] = useState();
   const [bar, setBar] = useState();
+  const [passwordB, setPasswordB] = useState();
+  const [confirmB, setConfirmB] = useState();
 
   const [users, setUsers] = useState([]);
   const [foodTypes, setFoodTypes] = useState([]);
@@ -307,6 +309,8 @@ export default function ContextProvider(props) {
     inside, setInside,
     outside, setOutside,
     bar, setBar,
+    passwordB, setPasswordB, 
+    confirmB, setConfirmB,
     addRestaurant,
     checkEmailBusiness,
   };

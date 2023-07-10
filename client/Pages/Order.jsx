@@ -56,9 +56,17 @@ export default function Order(props) {
       <>
         {filtered.length === 0 ? (
         <View style={styles.container}>
-        <View style={styles.iconCon}>
+        <View>
           <Image source={require("../assets/icon.png")} style={styles.icon} />
           <Text style={styles.textLogo}>DineInTime</Text>
+        </View>
+        <View style={styles.inputCon}>
+          <TextInput
+            style={styles.input}
+            placeholder="Search restaurants"
+            onChangeText={setSearchInput}
+            value={searchInput}
+          />
         </View>
         <View style={{flex: 1.5}}>
             <Text style={styles.text}>
@@ -71,7 +79,7 @@ export default function Order(props) {
           </View>
         ) : (
         <View style={styles.container}>
-        <View style={styles.iconCon}>
+        <View>
           <Image source={require("../assets/icon.png")} style={styles.icon} />
           <Text style={styles.textLogo}>DineInTime</Text>
         </View>
@@ -133,11 +141,6 @@ const styles = StyleSheet.create({
       width: 100,
       height: 100,
       alignSelf: "center",
-    },
-    iconCon: {
-        flex: 1,
-        width: "100%",
-        height: "100%",
     },
     inputCon: {
       backgroundColor: "#D9D9D9",
@@ -233,5 +236,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         resizeMode: 'cover',
+        borderRadius: 5,
       },
 });

@@ -9,7 +9,6 @@ export default function Admin(props) {
     const [usersListVisible, setUsersListVisible] = useState(false);
     const [restaurantListVisible, setRestaurantListVisible] = useState(false);
     const [selectedOption, setSelectedOption] = useState('all');
-    const [isApproved, setIsApproved] = useState(false);
 
     useEffect(() => {
       LoadRestaurants();

@@ -6,10 +6,11 @@ import { ContextPage } from '../Context/ContextProvider';
 
 export default function BusinessRegistration(props) {
 
-    let { foodTypes, LoadFoodTypes, foodListVisible, setFoodListVisible, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, city, setCity, foodTypeB, setFoodTypeB, imgB, setImgB, 
+    let { foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, city, setCity, foodTypeB, setFoodTypeB, imgB, setImgB, 
         passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant } = useContext(ContextPage);
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [foodListVisible, setFoodListVisible] = useState(false);
     const [isVerifyVisible, setIsVerifyVisible] = useState(false);
 
     const cities = require('../utils/cities.json');
@@ -99,12 +100,6 @@ export default function BusinessRegistration(props) {
               onChangeText={setNameB}
               value={nameB}
             />
-            {/* <TextInput
-              style={styles.input2}
-              placeholder="Food Type"
-              onChangeText={setFoodTypeB}
-              value={foodTypeB}
-            /> */}
           <TouchableOpacity style={styles.input2} onPress={() => setFoodListVisible(true)}>
             <Text style={{marginTop: 8}}>{foodTypeB || "Food Type"}</Text>
           </TouchableOpacity>

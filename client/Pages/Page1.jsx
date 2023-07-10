@@ -3,7 +3,6 @@ import React, { useContext, useState } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 import { useEffect } from 'react';
 import Charts from './Charts';
-import { Troubleshoot } from '@mui/icons-material';
 
 
 export default function Page1(props) {

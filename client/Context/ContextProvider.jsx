@@ -189,7 +189,7 @@ export default function ContextProvider(props) {
       });
       if (res.ok) {
         console.log("Restaurant approved successfully");
-        sendApprovalEmail(id, email, name);
+        sendApprovalEmail(email, name);
       } else {
         console.error("Failed to approve restaurant");
       }
@@ -200,9 +200,9 @@ export default function ContextProvider(props) {
     }
   };
 
-  const sendApprovalEmail = async (id, email, name) => {
+  const sendApprovalEmail = async (email, name) => {
     try {
-      const response = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
+      const response = await fetch(`${apiUrl}/api/restaurants/approval`, {
         method: "POST",
         body: JSON.stringify({ email, name }),
         headers: {

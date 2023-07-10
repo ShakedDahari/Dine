@@ -63,8 +63,12 @@ class Restaurant {
         return await new DB().UpdateOrder(Restaurant.collection, id, userId, seatType, diners);
     }
 
-    static async ChangeApproved(id, email, name) {
-        return await new DB().ApprovedRestaurant(Restaurant.collection, id, email, name);
+    static async ChangeApproved(id) {
+        return await new DB().ApprovedRestaurant(Restaurant.collection, id);
+    }
+
+    static async SendEmail(email, name) {
+        return await new DB().SendEmailApproval(Restaurant.collection, email, name);
     }
 }
 

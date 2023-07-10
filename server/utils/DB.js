@@ -150,13 +150,44 @@ class DB {
         }
     }
 
-    async ApprovedRestaurant(collection, id, email, name) {
+    async ApprovedRestaurant(collection, id) {
         try {
             await this.client.connect();
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) }, 
                 { $set: {approved : true}}
             );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
+    async SendEmailApproval(collection, email, name) {
+        try {
+            await this.client.connect();
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 587,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_USERNAME,
+                    pass: process.env.EMAIL_PASSWORD,
+                },
+            });
+        
+          const mailOptions = {
+            from: process.env.EMAIL_USERNAME,
+            to: email,
+            subject: 'Restaurant Approval',
+            text: `Congratulations! Your restaurant ${name} has been approved.`,
+            html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
+          };
+        
+          const info = await transporter.sendMail(mailOptions);
+          console.log('Approval email sent successfully', info);
+
         } catch (error) {
             return error;
         }  finally {

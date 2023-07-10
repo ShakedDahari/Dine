@@ -181,7 +181,7 @@ export default function ContextProvider(props) {
     try {
       console.log("context " + id, email, name);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify({email, name}),
         headers: {
           "Content-Type": "application/json",

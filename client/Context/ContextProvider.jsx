@@ -187,17 +187,36 @@ export default function ContextProvider(props) {
           "Content-Type": "application/json",
         },
       });
-      console.log(res.status);
-      let data;
-      if (res.status === 200) {
-        const responseText = await res.text();
-        data = responseText ? JSON.parse(responseText) : null;
+      if (res.ok) {
+        console.log("Restaurant approved successfully");
+        sendApprovalEmail(id, email, name);
+      } else {
+        console.error("Failed to approve restaurant");
       }
-      console.log(data);
     } catch (error) {
       console.error({error: error.message});
     } finally {
       LoadRestaurants();
+    }
+  };
+
+  const sendApprovalEmail = async (id, email, name) => {
+    try {
+      const response = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
+        method: "POST",
+        body: JSON.stringify({ email, name }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        console.log("Approval email sent successfully");
+      } else {
+        console.error("Failed to send approval email");
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 

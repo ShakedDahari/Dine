@@ -179,15 +179,22 @@ export default function ContextProvider(props) {
 
   const changeApprovedRestaurant = async (id, email, name) => {
     try {
+      console.log("context" + id, email, name);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
         method: "PUT",
-        body: JSON.stringify({email, name}),
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({email, name}),
       });
-      let data = await res.json();
-      console.log(data);
+      console.log(res.json());
+      console.log(res.text());
+      if (res.status === 200) {
+        // Successful response
+        const data = await res.json();
+        console.log(data);
+      }
+
     } catch (error) {
       console.error(error);
     } finally {

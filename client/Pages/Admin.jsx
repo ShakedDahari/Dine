@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Admin(props) {
 
-    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant } = useContext(ContextPage);
+    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant, LoadUsers } = useContext(ContextPage);
     const [usersListVisible, setUsersListVisible] = useState(false);
     const [restaurantListVisible, setRestaurantListVisible] = useState(false);
     const [selectedOption, setSelectedOption] = useState('all');
@@ -66,6 +66,7 @@ export default function Admin(props) {
   const handleApprovedRestaurant = (id, email, name) => {
     console.log(`Add restaurant with ID: ${id}`);
     // show a confirmation alert before approving the restaurant
+    console.log(id, email, name);
     Alert.alert(
       'Add Restaurant',
       'Are you sure you want to add this restaurant?',
@@ -78,6 +79,7 @@ export default function Admin(props) {
   }
 
   const renderUserItem = ({ item }) => {
+    LoadUsers();
     return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
       <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
@@ -103,6 +105,7 @@ export default function Admin(props) {
 
 
   const renderRestaurantItem = ({ item }) => {
+    LoadRestaurants();
     if (selectedOption === 'all' && item.approved === true) { 
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>

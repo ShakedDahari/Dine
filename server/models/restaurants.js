@@ -64,6 +64,8 @@ class Restaurant {
     }
 
     static async ChangeApproved(id, email, name) {
+        console.log("models");
+        console.log(id, email,name);
         return await new DB().ApprovedRestaurant(Restaurant.collection, id, email, name);
     }
 }

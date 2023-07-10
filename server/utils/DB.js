@@ -153,7 +153,8 @@ class DB {
     async ApprovedRestaurant(collection, id, email, name) {
         try {
             await this.client.connect();
-
+            console.log("db");
+            console.log(id, email, name);
             const transporter = nodemailer.createTransport({
                 service: process.env.EMAIL_SERVICE,
                 auth: {
@@ -171,7 +172,7 @@ class DB {
                 html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
               };
             
-              transporter.sendMail(mailOptions, (error, info) => {
+               transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                   console.error('Error sending approval email:', error);
                   //res.sendStatus(500); // Sending email failed

@@ -209,21 +209,18 @@ export default function ContextProvider(props) {
       message: `Congratulations! Your restaurant ${name} has been approved.`,
     };
 
-    const res = await fetch(`${apiUrl}/api/restaurants/sendEmail`, {
+    let res = await fetch(`${apiUrl}/api/restaurants/sendEmail`, {
       method: "POST",
       body: JSON.stringify(dataSend),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    })
-      // HANDLING ERRORS
-      .then((res) => {
-        console.log(res.json());
-        if (res.status == 200) {
-          alert("Send Successfully !");
-        }
-      });
+    });
+    
+    if(res.ok) {
+      console.log(res.status);
+    };
   };
 
   // const sendApprovalEmail = async (email, name) => {

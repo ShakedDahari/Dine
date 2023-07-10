@@ -154,6 +154,9 @@ class DB {
         try {
             await this.client.connect();
             let transporter = await nodemailer.createTransport({
+                host: 'smtp.gmail.com', // replace with the correct hostname
+                port: 587, // replace with the correct port number
+                secure: false,
                 service: process.env.EMAIL_SERVICE,
                 auth: {
                   user: process.env.EMAIL_USERNAME,

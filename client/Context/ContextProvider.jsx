@@ -181,7 +181,7 @@ export default function ContextProvider(props) {
     try {
       console.log("context " + id, email, name);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
-        method: "PUT",
+        method: "POST",
         body: JSON.stringify({email, name}),
         headers: {
           "Content-Type": "application/json",
@@ -189,7 +189,6 @@ export default function ContextProvider(props) {
       });
       if (res.ok) {
         console.log("Restaurant approved successfully");
-        sendApprovalEmail(email, name);
       } else {
         console.error("Failed to approve restaurant");
       }
@@ -200,25 +199,25 @@ export default function ContextProvider(props) {
     }
   };
 
-  const sendApprovalEmail = async (email, name) => {
-    try {
-      const response = await fetch(`${apiUrl}/api/restaurants/approval`, {
-        method: "POST",
-        body: JSON.stringify({ email, name }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+  // const sendApprovalEmail = async (email, name) => {
+  //   try {
+  //     const response = await fetch(`${apiUrl}/api/restaurants/approval`, {
+  //       method: "POST",
+  //       body: JSON.stringify({ email, name }),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
   
-      if (response.ok) {
-        console.log("Approval email sent successfully");
-      } else {
-        console.error("Failed to send approval email");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //     if (response.ok) {
+  //       console.log("Approval email sent successfully");
+  //     } else {
+  //       console.error("Failed to send approval email");
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
 
   const findRestaurants = async (location, foodType, diners) => {

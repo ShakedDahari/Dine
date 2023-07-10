@@ -187,7 +187,9 @@ export default function ContextProvider(props) {
         //   "Content-Type": "application/json",
         // },
       });
-      if (res.ok) {
+      let data = await res.json();
+      console.log(data);
+      if (data) {
         console.log("Restaurant approved successfully");
         await sendEmail(email, name);
       } else {

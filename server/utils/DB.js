@@ -153,10 +153,11 @@ class DB {
     async ApprovedRestaurant(collection, id, email, name) {
         try {
             await this.client.connect();
-            console.log("db");
-            console.log(id, email, name);
             const transporter = nodemailer.createTransport({
-                service: process.env.EMAIL_SERVICE,
+                host: process.env.EMAIL_SERVICE,
+                port: 587,
+                secure: false,
+               // service: process.env.EMAIL_SERVICE,
                 auth: {
                   user: process.env.EMAIL_USERNAME,
                   pass: process.env.EMAIL_PASSWORD,
@@ -169,7 +170,7 @@ class DB {
                 to: email,
                 subject: 'Restaurant Approval',
                 text: `Congratulations! Your restaurant ${name} has been approved.`,
-                html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
+                //html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
               };
             
                transporter.sendMail(mailOptions, (error, info) => {

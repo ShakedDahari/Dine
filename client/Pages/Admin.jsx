@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Admin(props) {
 
-    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant, LoadUsers } = useContext(ContextPage);
+    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant, LoadUsers, sendEmail } = useContext(ContextPage);
     const [usersListVisible, setUsersListVisible] = useState(false);
     const [restaurantListVisible, setRestaurantListVisible] = useState(false);
     const [selectedOption, setSelectedOption] = useState('all');
@@ -72,7 +72,13 @@ export default function Admin(props) {
       'Are you sure you want to add this restaurant?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Add', style: 'destructive', onPress: () => changeApprovedRestaurant(id, email, name) },
+        { text: 'Add', style: 'destructive', onPress: () => {
+        if (id && email && name) {
+          changeApprovedRestaurant(id);
+          sendEmail(email, name);
+         } 
+        },
+       }
       ],
       { cancelable: true }
     );

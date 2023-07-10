@@ -205,13 +205,12 @@ export default function ContextProvider(props) {
 
   const sendEmail = async (email, name) => {
     console.log("function new send email start");
-    let dataSend = {
-      email: email,
-      subject: 'Restaurant Approval',
-      message: `Congratulations! Your restaurant ${name} has been approved.`,
-    };
-
     try {
+      let dataSend = {
+        email: email,
+        subject: 'Restaurant Approval',
+        message: `Congratulations! Your restaurant ${name} has been approved.`,
+      };
       let res = await fetch(`${apiUrl}/api/restaurants/sendemail`, {
         method: "POST",
         body: JSON.stringify(dataSend),
@@ -388,7 +387,7 @@ export default function ContextProvider(props) {
     confirmB, setConfirmB,
     addRestaurant,
     checkEmailBusiness,
-    changeApprovedRestaurant,
+    changeApprovedRestaurant, sendEmail,
   };
 
   return (

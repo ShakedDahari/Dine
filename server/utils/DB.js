@@ -154,7 +154,6 @@ class DB {
     async ApprovedRestaurant(collection, id) {
         try {
             await this.client.connect();
-            //await this.SendEmail(email, name);
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) }, 
                 { $set: {approved : true}}
@@ -166,70 +165,38 @@ class DB {
         }
     }
 
-    // async SendEmailApproval(collection, email, name) {
-    //     try {
-    //         await this.client.connect();
-    //         const transporter = nodemailer.createTransport({
-    //             host: 'smtp.gmail.com',
-    //             port: 587,
-    //             secure: false,
-    //             auth: {
-    //                 user: process.env.EMAIL_USERNAME,
-    //                 pass: process.env.EMAIL_PASSWORD,
-    //             },
-    //         });
+    async SendEmailApproval(collection, email, subject, message) {
+        try {
+            await this.client.connect();
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 587,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_USERNAME,
+                    pass: process.env.EMAIL_PASSWORD,
+                },
+            });
         
-    //       const mailOptions = {
-    //         from: process.env.EMAIL_USERNAME,
-    //         to: email,
-    //         subject: 'Restaurant Approval',
-    //         text: `Congratulations! Your restaurant ${name} has been approved.`,
-    //         html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
-    //       };
+          const mailOptions = {
+            from: process.env.EMAIL_USERNAME,
+            to: email,
+            subject: subject,
+            text: message,
+            html: `<p>${message}`,
+          };
         
-    //       const info = await transporter.sendMail(mailOptions);
-    //       console.log('Approval email sent successfully', info);
+          const info = await transporter.sendMail(mailOptions);
+          console.log('Approval email sent successfully', info);
 
-    //     } catch (error) {
-    //         return error;
-    //     }  finally {
-    //         await this.client.close();
-    //     }
-    // }
+          return info;
 
-    // SendEmail = expressAsyncHandler(async (req, res) =>  {
-
-    //     console.log("send email");
-
-    //     let transporter = await nodemailer.createTransport({
-    //         host: 'smtp.gmail.com', // replace with the correct hostname
-    //         port: 587, // replace with the correct port number
-    //         secure: false,
-    //         service: process.env.EMAIL_SERVICE,
-    //         auth: {
-    //           user: process.env.EMAIL_USERNAME,
-    //           pass: process.env.EMAIL_PASSWORD,
-    //         },
-    //       });
-        
-    //       // Prepare and send the email
-    //       let mailOptions = await {
-    //         from: process.env.EMAIL_USERNAME,
-    //         to: email,
-    //         subject: 'Restaurant Approval',
-    //         text: `Congratulations! Your restaurant ${name} has been approved.`,
-    //         html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
-    //       };
-        
-    //       try {
-    //         const info = await transporter.sendMail(mailOptions);
-    //         console.log('Approval email sent successfully', info);
-    //       } catch (error) {
-    //         console.error('Error sending approval email:', error);
-    //         // throw the error to be caught and handled further
-    //         throw error;
-    //       }
-    // })
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
 }
 
 module.exports = DB;

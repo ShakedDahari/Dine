@@ -3,18 +3,20 @@ const dotenv = require("dotenv");
 const nodemailer = require("nodemailer");
 dotenv.config();
 
-let transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  service: process.env.EMAIL_SERVICE,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL_USERNAME, // generated ethereal user
-    pass: process.env.EMAIL_PASSWORD, // generated ethereal password
-  },
-});
 
 const sendEmail = expressAsyncHandler(async (req, res) => {
+    
+    let transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      service: process.env.EMAIL_SERVICE,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: process.env.EMAIL_USERNAME, // generated ethereal user
+        pass: process.env.EMAIL_PASSWORD, // generated ethereal password
+      },
+    });
+
   const { email, subject, message } = req.body;
   console.log(email, subject, message);
 

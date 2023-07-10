@@ -1,5 +1,6 @@
 const Restaurant = require('../models/restaurants');
 const restaurantsRoute = require('express').Router();
+require('dotenv').config();
 const nodemailer = require('nodemailer');
 
 restaurantsRoute.get('/', async (req, res) => {

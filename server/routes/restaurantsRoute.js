@@ -77,8 +77,20 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
     try {
       let { id } = req.params;
       let { email, name } = req.body;
+      let data = await Restaurant.ChangeApproved(id, email, name);
+      sendEmail(email, name);
+      //console.log(data);
+      res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
 
-      let transporter = await nodemailer.createTransport({
+
+const sendEmail = async (email, name) => {
+      
+    console.log("send email");
+    let transporter = await nodemailer.createTransport({
         host: 'smtp.gmail.com', // replace with the correct hostname
         port: 587, // replace with the correct port number
         secure: false,
@@ -106,15 +118,7 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
         // throw the error to be caught and handled further
       }
 
-      let data = await Restaurant.ChangeApproved(id, email, name);
-      console.log(data);
-      res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ error });
-    }
-});
-
-//sendApprovalEmail(email, name);
+}
 
 //   let transporter = await nodemailer.createTransport({
 //     host: 'smtp.gmail.com', // replace with the correct hostname

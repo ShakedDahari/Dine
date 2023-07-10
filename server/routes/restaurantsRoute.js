@@ -87,7 +87,7 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
     }
 });
 
-restaurantsRoute.post("/sendEmail", sendEmail);
+restaurantsRoute.post('/sendEmail', sendEmail);
 
 // const sendEmail = async (email, name) => {
       

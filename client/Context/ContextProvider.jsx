@@ -189,7 +189,7 @@ export default function ContextProvider(props) {
       });
       if (res.ok) {
         console.log("Restaurant approved successfully");
-        sendEmail(email, name);
+        await sendEmail(email, name);
       } else {
         console.error("Failed to approve restaurant");
       }
@@ -209,7 +209,7 @@ export default function ContextProvider(props) {
       message: `Congratulations! Your restaurant ${name} has been approved.`,
     };
 
-    const res = await fetch(`${apiUrl}/email/sendEmail`, {
+    const res = await fetch(`${apiUrl}/api/restaurants/sendEmail`, {
       method: "POST",
       body: JSON.stringify(dataSend),
       headers: {
@@ -219,7 +219,7 @@ export default function ContextProvider(props) {
     })
       // HANDLING ERRORS
       .then((res) => {
-        console.log(res);
+        console.log(res.json());
         if (res.status == 200) {
           alert("Send Successfully !");
         }

@@ -220,8 +220,9 @@ export default function ContextProvider(props) {
           "Content-Type": "application/json",
         },
       });
-  
-      if (res.ok) {
+      let data = await res.json();
+      console.log(data);
+      if (data) {
         console.log('Email sent successfully');
       } else {
         console.error('Failed to send email');

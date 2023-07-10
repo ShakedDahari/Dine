@@ -151,7 +151,7 @@ class DB {
         }
     }
 
-    async ApprovedRestaurant(collection, id, email, name) {
+    async ApprovedRestaurant(collection, id) {
         try {
             await this.client.connect();
             //await this.SendEmail(email, name);

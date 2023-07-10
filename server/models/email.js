@@ -6,6 +6,7 @@ dotenv.config();
 let transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
+  service: process.env.EMAIL_SERVICE,
   secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USERNAME, // generated ethereal user
@@ -17,14 +18,14 @@ const sendEmail = expressAsyncHandler(async (req, res) => {
   const { email, subject, message } = req.body;
   console.log(email, subject, message);
 
-  var mailOptions = {
+  const mailOptions = {
     from: process.env.EMAIL_USERNAME,
     to: email,
     subject: subject,
     text: message,
   };
 
-  transporter.sendMail(mailOptions, function (error, info) {
+  await transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
     } else {

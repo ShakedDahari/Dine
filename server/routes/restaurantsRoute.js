@@ -78,7 +78,7 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
     try {
       let { id } = req.params;
       let { email, name } = req.body;
-      let data = await Restaurant.ChangeApproved(id, email, name);
+      let data = await Restaurant.ChangeApproved(id);
       //await sendEmail(email, name);
       //console.log(data);
       res.status(200).json(data);
@@ -87,7 +87,7 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
     }
 });
 
-restaurantsRoute.post('/sendEmail', sendEmail);
+restaurantsRoute.post('/sendemail', sendEmail);
 
 // const sendEmail = async (email, name) => {
       

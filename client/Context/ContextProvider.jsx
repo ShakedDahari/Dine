@@ -182,10 +182,10 @@ export default function ContextProvider(props) {
       console.log("context " + id, email, name);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
         method: "PUT",
-        body: JSON.stringify({email, name}),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        // body: JSON.stringify({email, name}),
+        // headers: {
+        //   "Content-Type": "application/json",
+        // },
       });
       if (res.ok) {
         console.log("Restaurant approved successfully");
@@ -209,18 +209,24 @@ export default function ContextProvider(props) {
       message: `Congratulations! Your restaurant ${name} has been approved.`,
     };
 
-    let res = await fetch(`${apiUrl}/api/restaurants/sendEmail`, {
-      method: "POST",
-      body: JSON.stringify(dataSend),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    
-    if(res.ok) {
-      console.log(res.status);
-    };
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/sendemail`, {
+        method: "POST",
+        body: JSON.stringify(dataSend),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (res.ok) {
+        console.log('Email sent successfully');
+      } else {
+        console.error('Failed to send email');
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // const sendApprovalEmail = async (email, name) => {

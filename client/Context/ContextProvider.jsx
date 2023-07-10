@@ -189,6 +189,7 @@ export default function ContextProvider(props) {
       });
       if (res.ok) {
         console.log("Restaurant approved successfully");
+        sendEmail(email, name);
       } else {
         console.error("Failed to approve restaurant");
       }
@@ -197,6 +198,32 @@ export default function ContextProvider(props) {
     } finally {
       LoadRestaurants();
     }
+  };
+
+
+  const sendEmail = async (email, name) => {
+    console.log("function new send email start");
+    let dataSend = {
+      email: email,
+      subject: 'Restaurant Approval',
+      message: `Congratulations! Your restaurant ${name} has been approved.`,
+    };
+
+    const res = await fetch(`${apiUrl}/email/sendEmail`, {
+      method: "POST",
+      body: JSON.stringify(dataSend),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      // HANDLING ERRORS
+      .then((res) => {
+        console.log(res);
+        if (res.status == 200) {
+          alert("Send Successfully !");
+        }
+      });
   };
 
   // const sendApprovalEmail = async (email, name) => {

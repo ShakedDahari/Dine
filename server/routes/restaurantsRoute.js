@@ -1,7 +1,8 @@
 const Restaurant = require('../models/restaurants');
 const restaurantsRoute = require('express').Router();
-require('dotenv').config();
-const nodemailer = require('nodemailer');
+const { sendEmail } = require('../models/email');
+// require('dotenv').config();
+// const nodemailer = require('nodemailer');
 
 restaurantsRoute.get('/', async (req, res) => {
     try {
@@ -78,7 +79,7 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
       let { id } = req.params;
       let { email, name } = req.body;
       let data = await Restaurant.ChangeApproved(id, email, name);
-      sendEmail(email, name);
+      //await sendEmail(email, name);
       //console.log(data);
       res.status(200).json(data);
     } catch (error) {
@@ -86,39 +87,40 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
     }
 });
 
+restaurantsRoute.post("/sendEmail", sendEmail);
 
-const sendEmail = async (email, name) => {
+// const sendEmail = async (email, name) => {
       
-    console.log("send email");
-    let transporter = await nodemailer.createTransport({
-        host: 'smtp.gmail.com', // replace with the correct hostname
-        port: 587, // replace with the correct port number
-        secure: false,
-        service: process.env.EMAIL_SERVICE,
-        auth: {
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      });
+//     console.log("send email");
+//     let transporter = await nodemailer.createTransport({
+//         host: 'smtp.gmail.com', // replace with the correct hostname
+//         port: 587, // replace with the correct port number
+//         secure: false,
+//         service: process.env.EMAIL_SERVICE,
+//         auth: {
+//           user: process.env.EMAIL_USERNAME,
+//           pass: process.env.EMAIL_PASSWORD,
+//         },
+//       });
     
-      // Prepare and send the email
-      let mailOptions = await {
-        from: process.env.EMAIL_USERNAME,
-        to: email,
-        subject: 'Restaurant Approval',
-        text: `Congratulations! Your restaurant ${name} has been approved.`,
-        html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
-      };
+//       // Prepare and send the email
+//       let mailOptions = await {
+//         from: process.env.EMAIL_USERNAME,
+//         to: email,
+//         subject: 'Restaurant Approval',
+//         text: `Congratulations! Your restaurant ${name} has been approved.`,
+//         html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
+//       };
     
-      try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Approval email sent successfully', info);
-      } catch (error) {
-        console.error('Error sending approval email:', error);
-        // throw the error to be caught and handled further
-      }
+//       try {
+//         const info = await transporter.sendMail(mailOptions);
+//         console.log('Approval email sent successfully', info);
+//       } catch (error) {
+//         console.error('Error sending approval email:', error);
+//         // throw the error to be caught and handled further
+//       }
 
-}
+// }
 
 //   let transporter = await nodemailer.createTransport({
 //     host: 'smtp.gmail.com', // replace with the correct hostname

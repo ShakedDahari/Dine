@@ -179,7 +179,7 @@ export default function ContextProvider(props) {
 
   const changeApprovedRestaurant = async (id, email, name) => {
     try {
-      console.log("context" + id, email, name);
+      console.log("context " + id, email, name);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
         method: "PUT",
         body: JSON.stringify({email, name}),
@@ -187,10 +187,16 @@ export default function ContextProvider(props) {
           "Content-Type": "application/json",
         },
       });
-      let data = await res.json();
+      console.log(res.status);
+      let data;
+      console.log(res);
+      if (res.status === 200) {
+        const responseText = await res.text();
+        data = responseText ? JSON.parse(responseText) : null;
+      }
       console.log(data);
     } catch (error) {
-      console.error(error);
+      console.error({error: error.message});
     } finally {
       LoadRestaurants();
     }

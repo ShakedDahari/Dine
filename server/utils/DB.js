@@ -153,11 +153,10 @@ class DB {
     async ApprovedRestaurant(collection, id, email, name) {
         try {
             await this.client.connect();
-            const transporter = nodemailer.createTransport({
-                host: process.env.EMAIL_SERVICE,
-                port: 587,
-                secure: false,
-               // service: process.env.EMAIL_SERVICE,
+            console.log("db");
+            console.log(id, email, name);
+            let transporter = await nodemailer.createTransport({
+                service: process.env.EMAIL_SERVICE,
                 auth: {
                   user: process.env.EMAIL_USERNAME,
                   pass: process.env.EMAIL_PASSWORD,
@@ -165,23 +164,22 @@ class DB {
               });
             
               // Prepare and send the email
-              const mailOptions = {
+              let mailOptions = await {
                 from: process.env.EMAIL_USERNAME,
                 to: email,
                 subject: 'Restaurant Approval',
                 text: `Congratulations! Your restaurant ${name} has been approved.`,
-                //html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
+                html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
               };
             
-               transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                  console.error('Error sending approval email:', error);
-                  //res.sendStatus(500); // Sending email failed
-                } else {
-                  console.log('Approval email sent successfully');
-                  //res.sendStatus(200); // Email sent successfully
-                }
-              });
+              try {
+                const info = await transporter.sendMail(mailOptions);
+                console.log('Approval email sent successfully', info);
+              } catch (error) {
+                console.error('Error sending approval email:', error);
+                // throw the error to be caught and handled further
+                throw error;
+              }
 
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) }, 

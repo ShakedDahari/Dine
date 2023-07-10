@@ -189,7 +189,6 @@ export default function ContextProvider(props) {
       });
       console.log(res.status);
       let data;
-      console.log(res);
       if (res.status === 200) {
         const responseText = await res.text();
         data = responseText ? JSON.parse(responseText) : null;

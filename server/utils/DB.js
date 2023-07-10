@@ -153,8 +153,6 @@ class DB {
     async ApprovedRestaurant(collection, id, email, name) {
         try {
             await this.client.connect();
-            console.log("db");
-            console.log(id, email, name);
             let transporter = await nodemailer.createTransport({
                 service: process.env.EMAIL_SERVICE,
                 auth: {

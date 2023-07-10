@@ -1,14 +1,21 @@
 const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
+const nodemailer = require('nodemailer');
 
 class DB {
 
     client;
     dbName;
+    emailService;
+    emailUsername;
+    emailPassword;
 
     constructor() {
         this.client = new MongoClient(process.env.DB_URI);
         this.dbName = process.env.DB_NAME;
+        this.emailService = process.env.EMAIL_SERVICE;
+        this.emailUsername = process.env.EMAIL_USERNAME;
+        this.emailPassword = process.env.EMAIL_PASSWORD;
     }
     
     async FindAll(collection, query = {}, projection = {}) {
@@ -143,9 +150,37 @@ class DB {
         }
     }
 
-    async ApprovedRestaurant(collection, id) {
+    async ApprovedRestaurant(collection, id, email, name) {
         try {
             await this.client.connect();
+
+            const transporter = nodemailer.createTransport({
+                service: process.env.EMAIL_SERVICE,
+                auth: {
+                  user: process.env.EMAIL_USERNAME,
+                  pass: process.env.EMAIL_PASSWORD,
+                },
+              });
+            
+              // Prepare and send the email
+              const mailOptions = {
+                from: process.env.EMAIL_USERNAME,
+                to: email,
+                subject: 'Restaurant Approval',
+                text: `Congratulations! Your restaurant ${name} has been approved.`,
+                html: `<p>Congratulations! Your restaurant ${name} has been approved.</p>`,
+              };
+            
+              transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  console.error('Error sending approval email:', error);
+                  //res.sendStatus(500); // Sending email failed
+                } else {
+                  console.log('Approval email sent successfully');
+                  //res.sendStatus(200); // Email sent successfully
+                }
+              });
+
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) }, 
                 { $set: {approved : true}}

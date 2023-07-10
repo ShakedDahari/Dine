@@ -74,7 +74,8 @@ restaurantsRoute.put('/seats', async (req, res) => {
 restaurantsRoute.put('/approved/:id', async (req, res) => {
     try {
       let { id } = req.params;
-      let data = await Restaurant.ChangeApproved(id);
+      let { email, name } = req.body;
+      let data = await Restaurant.ChangeApproved(id, email, name);
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ error });

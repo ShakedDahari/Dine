@@ -183,7 +183,7 @@ class DB {
             to: email,
             subject: subject,
             text: message,
-            html: `<p>${message}`,
+            html: `<p>${message}</p>`,
           };
         
           const info = await transporter.sendMail(mailOptions);
@@ -193,7 +193,8 @@ class DB {
 
         } catch (error) {
             return error;
-        }  finally {
+        } 
+         finally {
             await this.client.close();
         }
     }

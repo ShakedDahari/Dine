@@ -63,7 +63,7 @@ export default function Admin(props) {
     setRestaurantListVisible(true);
   }
 
-  const handleApprovedRestaurant = (id, email, name) => {
+  const handleApprovedRestaurant = async (id, email, name) => {
     console.log(`Add restaurant with ID: ${id}`);
     // show a confirmation alert before approving the restaurant
     console.log(id, email, name);
@@ -72,12 +72,7 @@ export default function Admin(props) {
       'Are you sure you want to add this restaurant?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Add', style: 'destructive', onPress: () => {
-        if (id && email && name) {
-          changeApprovedRestaurant(id);
-          sendEmail(email, name);
-         } 
-        },
+        { text: 'Add', style: 'destructive', onPress: () => { changeApprovedRestaurant(id, email, name); },
        }
       ],
       { cancelable: true }

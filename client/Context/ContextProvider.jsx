@@ -183,52 +183,48 @@ export default function ContextProvider(props) {
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
         method: "PUT",
       });
-      console.log("res: " + res);
-      if (res.ok) {
-        let data = await res.json();
-        console.log(data);
-        console.log("Restaurant approved successfully");
-        //sendEmail(email, name);
-        return data;
-      } else {
-        console.error("Failed to approve restaurant. Response status:", res.status);
-      }
-      
+      let data = await res.json();
+      console.log(data);
     } catch (error) {
       console.error({error: error.message});
     } finally {
       LoadRestaurants();
     }
   };
+  
+  //sendEmail(email, name);
+//   return data;
+// } else {
+//   console.error("Failed to approve restaurant. Response status:", res.status);
+// }
 
-
-  const sendEmail = async (email, name) => {
-    console.log("function new send email start");
-    try {
-      let subject = 'Restaurant Approval';
-      let message = `Congratulations! Your restaurant ${name} has been approved.`;
-      console.log(subject, message);
-      let res = await fetch(`${apiUrl}/api/restaurants/sendemail`, {
-        method: "POST",
-        body: JSON.stringify({ email, subject, message }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.status === 200) {
-        let data = await res.json();
-        console.log(data);
-        if (data) {
-          console.log('Email sent successfully');
-        } else {
-          console.error('Failed to send email');
-        }
-        return data;
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const sendEmail = async (email, name) => {
+  //   console.log("function new send email start");
+  //   try {
+  //     let subject = 'Restaurant Approval';
+  //     let message = `Congratulations! Your restaurant ${name} has been approved.`;
+  //     console.log(subject, message);
+  //     let res = await fetch(`${apiUrl}/api/restaurants/sendemail`, {
+  //       method: "POST",
+  //       body: JSON.stringify({ email, subject, message }),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     if (res.status === 200) {
+  //       let data = await res.json();
+  //       console.log(data);
+  //       if (data) {
+  //         console.log('Email sent successfully');
+  //       } else {
+  //         console.error('Failed to send email');
+  //       }
+  //       return data;
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
 
   const findRestaurants = async (location, foodType, diners) => {
@@ -366,7 +362,7 @@ export default function ContextProvider(props) {
     confirmB, setConfirmB,
     addRestaurant,
     checkEmailBusiness,
-    changeApprovedRestaurant, sendEmail,
+    changeApprovedRestaurant,
   };
 
   return (

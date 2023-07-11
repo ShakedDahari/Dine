@@ -1,7 +1,7 @@
 const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
-const nodemailer = require('nodemailer');
-const expressAsyncHandler = require("express-async-handler");
+// const nodemailer = require('nodemailer');
+// const expressAsyncHandler = require("express-async-handler");
 
 class DB {
 
@@ -165,39 +165,39 @@ class DB {
         }
     }
 
-    async SendEmailApproval(collection, email, subject, message) {
-        try {
-            await this.client.connect();
-            const transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 587,
-                secure: false,
-                auth: {
-                    user: process.env.EMAIL_USERNAME,
-                    pass: process.env.EMAIL_PASSWORD,
-                },
-            });
+    // async SendEmailApproval(collection, email, subject, message) {
+    //     try {
+    //         await this.client.connect();
+    //         const transporter = nodemailer.createTransport({
+    //             host: 'smtp.gmail.com',
+    //             port: 587,
+    //             secure: false,
+    //             auth: {
+    //                 user: process.env.EMAIL_USERNAME,
+    //                 pass: process.env.EMAIL_PASSWORD,
+    //             },
+    //         });
         
-          const mailOptions = {
-            from: process.env.EMAIL_USERNAME,
-            to: email,
-            subject: subject,
-            text: message,
-            html: `<p>${message}</p>`,
-          };
+    //       const mailOptions = {
+    //         from: process.env.EMAIL_USERNAME,
+    //         to: email,
+    //         subject: subject,
+    //         text: message,
+    //         html: `<p>${message}</p>`,
+    //       };
         
-          const info = await transporter.sendMail(mailOptions);
-          console.log('Approval email sent successfully', info);
+    //       const info = await transporter.sendMail(mailOptions);
+    //       console.log('Approval email sent successfully', info);
 
-          return info;
+    //       return info;
 
-        } catch (error) {
-            return error;
-        } 
-         finally {
-            await this.client.close();
-        }
-    }
+    //     } catch (error) {
+    //         return error;
+    //     } 
+    //      finally {
+    //         await this.client.close();
+    //     }
+    // }
 }
 
 module.exports = DB;

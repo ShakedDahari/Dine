@@ -7,16 +7,16 @@ class DB {
 
     client;
     dbName;
-    emailService;
-    emailUsername;
-    emailPassword;
+    // emailService;
+    // emailUsername;
+    // emailPassword;
 
     constructor() {
         this.client = new MongoClient(process.env.DB_URI);
         this.dbName = process.env.DB_NAME;
-        this.emailService = process.env.EMAIL_SERVICE;
-        this.emailUsername = process.env.EMAIL_USERNAME;
-        this.emailPassword = process.env.EMAIL_PASSWORD;
+        // this.emailService = process.env.EMAIL_SERVICE;
+        // this.emailUsername = process.env.EMAIL_USERNAME;
+        // this.emailPassword = process.env.EMAIL_PASSWORD;
     }
     
     async FindAll(collection, query = {}, projection = {}) {

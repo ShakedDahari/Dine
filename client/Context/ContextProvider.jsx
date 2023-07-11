@@ -182,22 +182,17 @@ export default function ContextProvider(props) {
       console.log("context " + id);
       let res = await fetch(`${apiUrl}/api/restaurants/approved/${id}`, {
         method: "PUT",
-        // body: JSON.stringify({email, name}),
-        // headers: {
-        //   "Content-Type": "application/json",
-        // },
       });
-      if (res.status === 200) { 
-        let data = await res.json();
-        console.log(data);
-        if (data) {
-          console.log("Restaurant approved successfully");
-          await sendEmail(email, name);
-        } else {
-          console.error("Failed to approve restaurant");
-        }
-        return data; 
+      let data = await res.json();
+      console.log(data);
+      if (data) {
+        console.log("Restaurant approved successfully");
+        sendEmail(email, name);
+      } else {
+        console.error("Failed to approve restaurant");
       }
+      return data; 
+      
     } catch (error) {
       console.error({error: error.message});
     } finally {

@@ -10,9 +10,9 @@ export default function Admin(props) {
     const [restaurantListVisible, setRestaurantListVisible] = useState(false);
     const [selectedOption, setSelectedOption] = useState('all');
 
-    useEffect(() => {
-      LoadRestaurants();
-    }, []);
+    // useEffect(() => {
+    //   LoadRestaurants();
+    // }, []);
     
   const handleEditUser = (id) => {
     // Handle edit action for the user with the specified id

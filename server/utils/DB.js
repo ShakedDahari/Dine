@@ -1,20 +1,19 @@
 const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
-// const nodemailer = require('nodemailer');
-// const expressAsyncHandler = require("express-async-handler");
+const nodemailer = require('nodemailer');
 
 class DB {
 
     client;
     dbName;
-    // emailService;
+    emailService;
     emailUsername;
     emailPassword;
 
     constructor() {
         this.client = new MongoClient(process.env.DB_URI);
         this.dbName = process.env.DB_NAME;
-        // this.emailService = process.env.EMAIL_SERVICE;
+        this.emailService = process.env.EMAIL_SERVICE;
         this.emailUsername = process.env.EMAIL_USERNAME;
         this.emailPassword = process.env.EMAIL_PASSWORD;
     }
@@ -170,7 +169,8 @@ class DB {
             const transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
                 port: 587,
-                secure: false,
+                secure: false, 
+                service: this.emailService,
                 auth: {
                     user:  this.emailUsername,
                     pass: this.emailPassword,

@@ -8,15 +8,15 @@ class DB {
     client;
     dbName;
     // emailService;
-    // emailUsername;
-    // emailPassword;
+    emailUsername;
+    emailPassword;
 
     constructor() {
         this.client = new MongoClient(process.env.DB_URI);
         this.dbName = process.env.DB_NAME;
         // this.emailService = process.env.EMAIL_SERVICE;
-        // this.emailUsername = process.env.EMAIL_USERNAME;
-        // this.emailPassword = process.env.EMAIL_PASSWORD;
+        this.emailUsername = process.env.EMAIL_USERNAME;
+        this.emailPassword = process.env.EMAIL_PASSWORD;
     }
     
     async FindAll(collection, query = {}, projection = {}) {
@@ -172,13 +172,13 @@ class DB {
                 port: 587,
                 secure: false,
                 auth: {
-                    user: process.env.EMAIL_USERNAME,
-                    pass: process.env.EMAIL_PASSWORD,
+                    user:  this.emailUsername,
+                    pass: this.emailPassword,
                 },
             });
         
           const mailOptions = {
-            from: process.env.EMAIL_USERNAME,
+            from: this.emailUsername,
             to: email,
             subject: subject,
             text: message,
@@ -193,6 +193,7 @@ class DB {
             return error;
         } 
     }
+
 }
 
 module.exports = DB;

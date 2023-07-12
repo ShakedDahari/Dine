@@ -67,9 +67,9 @@ class Restaurant {
         return await new DB().ApprovedRestaurant(Restaurant.collection, id);
     }
 
-    // static async SendEmail(email, subject, message) {
-    //     return await new DB().SendEmailApproval(Restaurant.collection, email, subject, message);
-    // }
+    static async SendEmail(email, subject, message) {
+        return await new DB().SendEmailApproval(email, subject, message);
+    }
 }
 
 

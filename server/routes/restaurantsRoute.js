@@ -1,7 +1,7 @@
 const Restaurant = require('../models/restaurants');
 const restaurantsRoute = require('express').Router();
-// require('dotenv').config();
-// const nodemailer = require('nodemailer');
+require('dotenv').config();
+const nodemailer = require('nodemailer');
 
 restaurantsRoute.get('/', async (req, res) => {
     try {
@@ -84,15 +84,15 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
 });
 
 
-// restaurantsRoute.post('/sendemail', async (req, res) => {
-//     try {
-//         let { email, subject, message } = req.body;
-//         let data = await Restaurant.SendEmail(email, subject, message);
-//         res.status(200).json(data);
-//     } catch (error) {
-//         res.status(500).json({ error });
-//     }
-// });
+restaurantsRoute.post('/sendemail', async (req, res) => {
+    try {
+        let { email, subject, message } = req.body;
+        let data = await Restaurant.SendEmail(email, subject, message);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
 
 
 restaurantsRoute.delete('/delete/:id', async (req, res) =>{

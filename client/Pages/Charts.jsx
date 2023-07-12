@@ -37,9 +37,9 @@ export default function Charts(props) {
 
   const getFilteredRestaurantData = () => {
     if (selectedCity === 'All') {
-      return restaurants;
+      return restaurants.filter(restaurant => restaurant.approved === true);
     }
-    return restaurants.filter(restaurant => restaurant.location === selectedCity);
+    return restaurants.filter(restaurant => restaurant.location === selectedCity && restaurant.approved === true);
   };
 
   const filteredRestaurantData = getFilteredRestaurantData();

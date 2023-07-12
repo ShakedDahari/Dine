@@ -56,6 +56,7 @@ export default function BusinessRegistration(props) {
             if (isEmailOccupied) {
                 alert(`Email is already in use. \nPlease choose a different email.`);
                 isEmailOccupied = false;
+                return;
             }
             else {
               if (passwordB === confirmB) {  

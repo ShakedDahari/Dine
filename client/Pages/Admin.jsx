@@ -5,15 +5,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Admin(props) {
 
-    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant, LoadUsers, sendEmail } = useContext(ContextPage);
+    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant, LoadUsers } = useContext(ContextPage);
     const [usersListVisible, setUsersListVisible] = useState(false);
     const [restaurantListVisible, setRestaurantListVisible] = useState(false);
     const [selectedOption, setSelectedOption] = useState('all');
 
-    // useEffect(() => {
-    //   LoadRestaurants();
-    // }, []);
-    
   const handleEditUser = (id) => {
     // Handle edit action for the user with the specified id
     console.log(`Edit user with ID: ${id}`);
@@ -63,16 +59,16 @@ export default function Admin(props) {
     setRestaurantListVisible(true);
   }
 
-  const handleApprovedRestaurant = async (id, email, name) => {
+  const handleApprovedRestaurant = async (id) => {
     console.log(`Add restaurant with ID: ${id}`);
     // show a confirmation alert before approving the restaurant
-    console.log(id, email, name);
+    // console.log(id, email, name);
     Alert.alert(
       'Add Restaurant',
       'Are you sure you want to add this restaurant?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Add', style: 'destructive', onPress: () => { changeApprovedRestaurant(id); },
+        { text: 'Add', style: 'destructive', onPress: () => { changeApprovedRestaurant(id, email, name); },
        }
       ],
       { cancelable: true }
@@ -80,7 +76,7 @@ export default function Admin(props) {
   }
 
   const renderUserItem = ({ item }) => {
-    LoadUsers();
+    //LoadUsers();
     return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
       <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
@@ -106,7 +102,6 @@ export default function Admin(props) {
 
 
   const renderRestaurantItem = ({ item }) => {
-    LoadRestaurants();
     if (selectedOption === 'all' && item.approved === true) { 
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
@@ -174,7 +169,7 @@ export default function Admin(props) {
         </View>
         </ScrollView>
         <View style={{ flex: 2.5, paddingHorizontal: 16, paddingTop: 16 }}>
-          <View>
+        <View>
       {usersListVisible && ( 
         <FlatList
           data={users}
@@ -195,6 +190,7 @@ export default function Admin(props) {
         <FlatList
           data={restaurants}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 80 }}
           keyExtractor={(item) => item._id}
           renderItem={renderRestaurantItem}
           ListEmptyComponent={() => <Text>No restaurants found</Text>}

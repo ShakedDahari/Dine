@@ -6,12 +6,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Login(props) {
 
-  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser } = useContext(ContextPage);
+  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, LoadRestaurants } = useContext(ContextPage);
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   useEffect(() => {
     LoadUsers();
+    LoadRestaurants();
   }, []);
 
   const handleLogin = async() => {
@@ -61,13 +62,6 @@ export default function Login(props) {
               onChangeText={setUserName}
               value={userName}
             />
-            {/* <TextInput
-              style={styles.input}
-              placeholder="Password"
-              secureTextEntry
-              onChangeText={setPassword}
-              value={password}
-            /> */}
             <View style={styles.pass}>
             <TextInput  style={{top:5}}           
               placeholder="Password"

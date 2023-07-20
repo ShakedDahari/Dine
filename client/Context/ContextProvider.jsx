@@ -40,8 +40,6 @@ export default function ContextProvider(props) {
   const [dinersListVisible, setDinersListVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [isApproved, setIsApproved] = useState([]);
-  const [notApproved, setNotApproved] = useState([]);
 
   const dinersList = [
     { key: 1, value: "1" },

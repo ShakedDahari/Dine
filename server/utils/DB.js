@@ -69,6 +69,7 @@ class DB {
     async Insert(collection, doc) {
         try {
             await this.client.connect();
+            doc.createdAt = new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' });
             return await this.client.db(this.dbName).collection(collection).insertOne(doc);
         } catch (error) {
             return error;

@@ -1,7 +1,6 @@
 import { View, Text, Button, Modal, ScrollView, Image, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
-import { useEffect } from 'react';
 import Charts from './Charts';
 
 
@@ -17,16 +16,21 @@ export default function Page1(props) {
   const renderRestaurants = (foodType) => {
     LoadRestaurants();
     const filteredRestaurants = restaurants.filter((restaurant) => restaurant.foodType === foodType && restaurant.approved === true);
+
+    const handleRestaurantPress = (restaurant) => {
+      props.navigation.navigate('RestaurantDetails', { restaurant });
+    };  
+
     return filteredRestaurants.map((restaurant) => (
-      <View key={restaurant._id} style={styles.restaurantContainer}>
+      <TouchableOpacity key={restaurant._id} style={styles.restaurantContainer} onPress={() => handleRestaurantPress(restaurant)}>
         <View style={{flex: 1, width: '100%', height: 100}}>
         <Image source={{ uri: restaurant.image }} style={styles.restImg} />
         </View>
         <View style={{flex: 1, height: 70, alignItems: 'center'}}>
         <Text style={styles.name}>{restaurant.name}</Text>
-        <Text style={styles.address}>{restaurant.location}</Text>  
+        <Text style={styles.address}>{restaurant.address}, {restaurant.location}</Text>  
         </View>
-      </View>
+      </TouchableOpacity>
     ));
   }
 
@@ -86,7 +90,7 @@ export default function Page1(props) {
         </View>
         <View>
           <FlatList style={{flexDirection: "row"}}
-            data = {foodTypes}
+            data = {foodTypes.sort((a, b) => a.name.localeCompare(b.name))}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingVertical: 10, flexDirection: "row" }}
@@ -107,7 +111,7 @@ export default function Page1(props) {
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
-    backgroundColor: "#94B285",
+    //backgroundColor: "#94B285",
     width: "100%",
     height: "100%",
   },
@@ -123,10 +127,9 @@ const styles = StyleSheet.create({
   },
   text: {
     alignSelf: "center",
-    color: "#D9D9D9",
-    fontSize: 30,
-    fontFamily: "sans-serif-condensed",
-    fontWeight: 700,
+    fontSize: 18,
+    fontFamily: 'eb-garamond',
+    fontWeight: 500,
   },
   headline: {
     margin: 10,
@@ -140,7 +143,8 @@ const styles = StyleSheet.create({
     fontSize: 40,
     alignSelf: "center",
     padding: 5,
-    fontWeight: "800",
+    fontWeight: "600",
+    fontFamily: 'eb-garamond',
   },
   foodList: {
     margin: 10,
@@ -152,6 +156,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     paddingTop: 10,
     fontSize: 15,
+    fontFamily: 'eb-garamond',
   },
   restaurantContainer: {
     flex: 2,
@@ -171,12 +176,13 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 25,
     color: '#D9D9D9',
-    fontWeight: 'bold',
+    fontFamily: 'eb-garamond',
+    fontWeight: '600',
     marginBottom: 5,
 },
   address: {
     color: '#D9D9D9',
-    fontStyle: 'italic',
+    fontFamily: 'eb-garamond-italic',
     marginBottom: 5,
 },
   restImg: {

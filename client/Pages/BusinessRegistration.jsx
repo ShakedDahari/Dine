@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, Image, ScrollView, TextInput, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal, FlatList, TouchableWithoutFeedback } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
+import { Button, TextInput, HelperText } from 'react-native-paper';
 
 export default function BusinessRegistration(props) {
 
@@ -12,12 +13,48 @@ export default function BusinessRegistration(props) {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [foodListVisible, setFoodListVisible] = useState(false);
     const [isVerifyVisible, setIsVerifyVisible] = useState(false);
+    const [isCityListVisible, setIsCityListVisible] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredCities, setFilteredCities] = useState([]);
+    const [pressed, setPressed] = useState(false);
+
+    const handlePressIn = () => {
+      setPressed(true);
+    };
+  
+    const handlePressOut = () => {
+      setPressed(false);
+    };  
 
     const cities = require('../utils/cities.json');
 
-    useEffect(() => {
-      LoadFoodTypes();
-    }, []);
+    const handleSearch = (query) => {
+      setSearchQuery(query);
+  
+      // Filter the cities based on the search query
+      const filtered = cities.filter((city) =>
+        city.english_name.toLowerCase().startsWith(query.toLowerCase())  ||
+        city.english_name.toLowerCase().includes(query.toLowerCase()) // In case that startsWith not found --> use includes
+      );
+
+      // Display the top 5 relevant matches
+      const topMatches = filtered.slice(0, 5);
+      setFilteredCities(topMatches);
+    };
+
+
+    const handleSelectCity = (selectedCity) => {
+      setCity(selectedCity);
+      setSearchQuery(selectedCity);
+      setIsCityListVisible(false);
+    };
+  
+    const renderItem = ({ item, index }) => (
+      <TouchableOpacity style={styles.cityItem} onPress={() => handleSelectCity(item.english_name)}>
+        <Text style={styles.cityName}>{item.english_name}</Text>
+      </TouchableOpacity>
+    );  
+
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -60,8 +97,12 @@ export default function BusinessRegistration(props) {
             }
             else {
               if (passwordB === confirmB) {  
-                addRestaurant(business);
-                props.navigation.navigate("Login");
+                if (isCityListVisible) {
+                  alert(`Please choose a city.`);
+                } else {
+                  addRestaurant(business);
+                  props.navigation.navigate("Login");
+                }
               } else { 
                 alert(`Password and verify do not match. \nPlease re-enter your password.`);
               }
@@ -74,35 +115,38 @@ export default function BusinessRegistration(props) {
 
   return (
     <View style={styles.container}>
-       <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
+       <ScrollView keyboardShouldPersistTaps="handled" overScrollMode='never' style={{ flex: 1 }}>
        <View style={styles.iconCon}>
             <Image source={require("../assets/icon.png")} style={styles.icon}/>
             <Text style={styles.text}>DineInTime</Text>
           </View>
           <View style={styles.inputCon}>
           <TextInput
-              style={styles.input}
-              placeholder="Email"
+              style={styles.outlinedInput1}
+              mode="outlined"  
+              label="Email"
               inputMode='email'
               onChangeText={setEmailB}
               value={emailB}
             />
             <TextInput
-              style={styles.input}
-              placeholder="Phone"
+              style={styles.outlinedInput1}
+              mode="outlined"
+              label="Phone"
               inputMode='tel'
               onChangeText={setPhoneB}
               value={phoneB}
             />
              <View style={{flexDirection:'row', justifyContent:'center'}}> 
             <TextInput
-              style={styles.input2}
-              placeholder="Name"
+              style={styles.outlinedInput2}
+              mode="outlined"
+              label="Name"
               onChangeText={setNameB}
               value={nameB}
             />
-          <TouchableOpacity style={styles.input2} onPress={() => setFoodListVisible(true)}>
-            <Text style={{marginTop: 8}}>{foodTypeB || "Food Type"}</Text>
+          <TouchableOpacity style={styles.outlinedInput} onPress={() => setFoodListVisible(true)}>
+            <Text style={{ fontSize: 12, color: '#1C1B1F', margin: 15}}>{foodTypeB || "Food Type"}</Text>
           </TouchableOpacity>
           <Modal
             animationType="slide"
@@ -125,50 +169,71 @@ export default function BusinessRegistration(props) {
             </View>
           </Modal>
             </View>
-            <View style={{flexDirection:'row', justifyContent:'center'}}> 
             <TextInput
-              style={styles.input2}
-              placeholder="Address"
+              style={styles.outlinedInput1}
+              mode="outlined"
+              label="Address"
               onChangeText={setAddress}
               value={address}
             />
             <TextInput
-              style={styles.input2}
-              placeholder="City"
-              onChangeText={setCity}
-              value={city}
+              value={searchQuery}
+              onChangeText={handleSearch}
+              mode="outlined"
+              label="City"
+              style={styles.outlinedInput1}
+              onFocus={() => setIsCityListVisible(true)}
+              onMagicTap={() => setIsCityListVisible(false)}
             />
+            <View>
+              {isCityListVisible && (
+                <FlatList
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ flexDirection: "column" }}
+                  data={filteredCities}
+                  renderItem={renderItem}
+                  keyExtractor={(_, index) => index.toString()}
+                  style={styles.cityList}
+                />
+              )}
             </View>
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
             </View>
             {imgB && <Image source={{ uri: imgB }} style={{ width: 100, height: 100, alignSelf:'center' }} />}
 
+            <View style={{flexDirection:'row', justifyContent:'center'}}>     
               <TextInput
-              style={styles.input}
-              placeholder="Available Seats"
+              style={styles.outlinedInput2}
+              mode="outlined"
+              label="Available Seats"
               keyboardType='numeric'
               onChangeText={setAvailableSeats}
               value={availableSeats}
             />
-            <View style={{flexDirection:'row', justifyContent:'center'}}>     
             <TextInput
-              style={styles.input3}
-              placeholder="Inside"
+              style={styles.outlinedInput2}
+              mode="outlined"
+              label="Inside"
               keyboardType='numeric'
               onChangeText={setInside}
               value={inside}
             />
+            </View>
+            <View style={{flexDirection:'row', justifyContent:'center'}}> 
             <TextInput
-              style={styles.input3}
-              placeholder="Outside"
+              style={styles.outlinedInput2}
+              mode="outlined"
+              label="Outside"
               keyboardType='numeric'
               onChangeText={setOutside}
               value={outside}
             />
             <TextInput
-              style={styles.input3}
-              placeholder="Bar"
+              style={styles.outlinedInput2}
+              mode="outlined"
+              label="Bar"
               keyboardType='numeric'
               onChangeText={setBar}
               value={bar}
@@ -176,33 +241,33 @@ export default function BusinessRegistration(props) {
           </View>
 
             <View style={{flexDirection:'row', justifyContent:'center'}}> 
-             <View style={styles.input2}>
-            <TextInput  style={{top:5}}           
-              placeholder="Password"
+            <TextInput    
+              style={styles.outlinedInput2}
+              mode="outlined"       
+              label="Password"
               secureTextEntry={!isPasswordVisible}
               onChangeText={setPasswordB}
               value={passwordB}
+              right={<TextInput.Icon icon={isPasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPasswordVisible)}/>}
             />
-            <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-              <MaterialIcons name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
-            </TouchableOpacity>
-            </View>
-            <View style={styles.input2}>
-            <TextInput style={{top:5}} 
-              placeholder="Verify"
+            <TextInput style={styles.outlinedInput2}
+              mode="outlined"
+              label="Verify"
               secureTextEntry={!isVerifyVisible}
               onChangeText={setConfirmB}
               value={confirmB}
+              right={<TextInput.Icon icon={isVerifyVisible ? 'eye-off' : 'eye'} onPress={() => setIsVerifyVisible(!isVerifyVisible)}/>}
             />
-            <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsVerifyVisible(!isVerifyVisible)}>
-              <MaterialIcons name={isVerifyVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
-            </TouchableOpacity>
             </View>
-             </View> 
-            <TouchableOpacity style={styles.btn} onPress={handleSend}>
-              <Text style={styles.title}>Send</Text>
-            </TouchableOpacity>
+            <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleSend}>
+              <Button style={styles.btn} mode={pressed ? 'outlined' : 'contained'}><Text style={{fontFamily: 'eb-garamond', fontSize: 18}}>Send</Text></Button>
+            </TouchableWithoutFeedback>
           </View>
+            <TouchableOpacity>
+              <Text style={styles.check} onPress={() => props.navigation.navigate("Login")}>
+                Already Have An Account? Sign In
+              </Text>
+            </TouchableOpacity>
         </ScrollView>
     </View>
   )
@@ -212,7 +277,7 @@ export default function BusinessRegistration(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      backgroundColor: "#94B285",
+      //backgroundColor: "#94B285",
       width: "100%",
       height: "100%",
     },
@@ -234,6 +299,17 @@ const styles = StyleSheet.create({
       padding: 20,
       height: '100%',
       justifyContent: "center",
+    },
+    outlinedInput: {
+      margin: 5,
+      width: "42%",
+      backgroundColor: 'white',
+      height: 50,
+      borderRadius: 5,
+      justifyContent: 'center',
+      borderColor: 'gray',
+      borderWidth: 1,
+      marginTop: 10,
     },
     input: {
       height: 50,
@@ -262,6 +338,29 @@ const styles = StyleSheet.create({
       margin: 10,
       padding: 5,
   },
+  outlinedInput1: {
+    margin: 5,
+    width: "90%",
+    alignSelf: 'center',
+    fontSize: 12,
+  },
+  outlinedInput2: {
+    margin: 5,
+    width: "45%",
+    alignSelf: 'center',
+    fontSize: 12,
+  },
+  outlinedInput3: {
+    margin: 5,
+    width: "26%",
+    alignSelf: 'center',
+  },
+  text: {
+    alignSelf: "center",
+    fontSize: 18,
+    fontFamily: 'eb-garamond',
+    fontWeight: 500,
+  },
   modal: {
     flex: 0.7,
     width: "40%",
@@ -288,25 +387,37 @@ const styles = StyleSheet.create({
       margin: 10,
       padding: 5,
     },
-    text: {
-      alignSelf: "center",
-      color: "#D9D9D9",
-      fontSize: 30,
-      fontFamily: "sans-serif-condensed",
-      fontWeight: 700,
-    },
     btn: {
       height: 50,
       alignSelf: "center",
-      justifyContent: "center",
-      width: "85%",
-      backgroundColor: "#B0B0B0",
-      borderColor: "#838383",
-      borderWidth: 3,
+      width: "75%",
+      borderWidth: 2,
       margin: 10,
     },
     title: {
       alignSelf: "center",
       fontSize: 20,
+    },
+    cityList: {
+      width: '50%',
+      alignSelf: 'flex-end',
+      borderRadius: 5,
+      backgroundColor: '#fff',
+      overflow: 'hidden',
+    },
+    cityItem: {
+      maxWidth: '100%',
+      paddingVertical: 10,
+      paddingHorizontal: 10,
+    },
+    cityName: {
+      fontSize: 15,
+    },
+    check: {
+      alignSelf: "center",
+      fontSize: 20,
+      fontFamily: 'eb-garamond',
+      //margin: 10,
+      marginBottom: 20,
     },
   });

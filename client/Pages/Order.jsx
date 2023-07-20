@@ -1,12 +1,24 @@
-import { View, Text, StyleSheet, ScrollView, Image, TextInput, Modal, TouchableOpacity, FlatList, Button, ActivityIndicator, Alert } from 'react-native';
-import React, { useContext, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, FlatList, ActivityIndicator, Alert, TouchableWithoutFeedback } from 'react-native';
+import React, { useContext } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 import { useState } from 'react';
+import { Button, TextInput, HelperText } from 'react-native-paper';
 
 export default function Order(props) {
 
     const { setFoodType, diners, setDiners, isLoading, updateSeats, filteredRestaurants } = useContext(ContextPage);
     const [searchInput, setSearchInput] = useState('');
+    const [pressed, setPressed] = useState(false);
+
+
+    const handlePressIn = () => {
+      setPressed(true);
+    };
+  
+    const handlePressOut = () => {
+      setPressed(false);
+    };
+    
 
     const filtered = filteredRestaurants.filter((restaurant) =>
     restaurant.approved === true && 
@@ -62,8 +74,9 @@ export default function Order(props) {
         </View>
         <View style={styles.inputCon}>
           <TextInput
-            style={styles.input}
-            placeholder="Search restaurants"
+            style={styles.outlinedInput}
+            mode='outlined'
+            label="Search restaurants"
             onChangeText={setSearchInput}
             value={searchInput}
           />
@@ -72,9 +85,12 @@ export default function Order(props) {
             <Text style={styles.text}>
               Sorry, no restaurants match your search.
             </Text>
-            <TouchableOpacity style={styles.btn} onPress={handleReset}>
+            {/* <TouchableOpacity style={styles.btn} onPress={handleReset}>
               <Text style={styles.title}>Back</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleReset}>
+              <Button icon="backspace-outline" style={styles.btn} mode={pressed ? 'outlined' : 'contained'}><Text style={{fontFamily: 'eb-garamond', fontSize: 18}}>Back</Text></Button>
+            </TouchableWithoutFeedback>
         </View>
           </View>
         ) : (
@@ -85,8 +101,9 @@ export default function Order(props) {
         </View>
         <View style={styles.inputCon}>
           <TextInput
-            style={styles.input}
-            placeholder="Search restaurants"
+            style={styles.outlinedInput}
+            mode="outlined"        
+            label="Search restaurants"
             onChangeText={setSearchInput}
             value={searchInput}
           />
@@ -133,7 +150,7 @@ export default function Order(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      backgroundColor: "#94B285",
+      //backgroundColor: "#94B285",
       width: "100%",
       height: "100%",
     },
@@ -147,7 +164,7 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       margin: 20,
       padding: 20,
-      height: 60,
+      height: 70,
       justifyContent: "center",
     },
     input: {
@@ -160,12 +177,16 @@ const styles = StyleSheet.create({
         margin: 10,
         padding: 5,
     },
+    outlinedInput: {
+      margin: 5,
+      width: "75%",
+      alignSelf: 'center',
+    },
     textLogo: {
       alignSelf: "center",
-      color: "#D9D9D9",
-      fontSize: 30,
-      fontFamily: "sans-serif-condensed",
-      fontWeight: 700,
+      fontSize: 18,
+      fontFamily: 'eb-garamond',
+      fontWeight: 500,
     },
       restaurantContainer: {
         flex: 2,
@@ -214,18 +235,15 @@ const styles = StyleSheet.create({
     },
     text: {
         alignSelf: "center",
-        color: '#D9D9D9',
+        fontFamily: 'eb-garamond',
         fontSize: 18,
     },
     btn: {
-        height: 50,
-        alignSelf: "center",
-        justifyContent: "center",
-        width: "55%",
-        backgroundColor: "#B0B0B0",
-        borderColor: "#838383",
-        borderWidth: 3,
-        margin: 10,
+      height: 50,
+      alignSelf: "center",
+      width: "75%",
+      borderWidth: 2,
+      margin: 10,
       },
       title: {
         alignSelf: "center",

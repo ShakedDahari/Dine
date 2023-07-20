@@ -1,24 +1,48 @@
-import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TouchableWithoutFeedback } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { ContextPage } from "../Context/ContextProvider";
 import { sendNotification } from "./PushNotification";
 import { MaterialIcons } from '@expo/vector-icons';
+import { Button, TextInput, HelperText } from 'react-native-paper';
+import { useFonts } from "expo-font";
+
 
 export default function Login(props) {
-
-  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, LoadRestaurants } = useContext(ContextPage);
-
+  
+  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, LoadRestaurants, LoadFoodTypes } = useContext(ContextPage);
+  
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
+  const [pressed, setPressed] = useState(false);
+  const [submit, setSubmit] = useState(false);
+  
   useEffect(() => {
     LoadUsers();
     LoadRestaurants();
+    LoadFoodTypes();
   }, []);
+
+const [loaded] = useFonts({
+  'eb-garamond': require('../assets/EBGaramond-VariableFont_wght.ttf'),
+  'eb-garamond-italic': require('../assets/EBGaramond-Italic-VariableFont_wght.ttf'),
+});
+
+if (!loaded) {
+  return;
+}
+
+  
+  const handlePressIn = () => {
+    setPressed(true);
+  };
+
+  const handlePressOut = () => {
+    setPressed(false);
+  };
 
   const handleLogin = async() => {
     try {
     console.log(userName, password);
-
+    // setSubmit(true);
     let foundUser = false;
     if (userName && password) {
        users.forEach(user => {
@@ -56,31 +80,34 @@ export default function Login(props) {
             <Text style={styles.text}>DineInTime</Text>
           </View>
           <View style={styles.inputCon}>
+            <View>
             <TextInput
-              style={styles.input}
-              placeholder="Username or Email"
+              style={styles.outlinedInput}
+              mode="outlined"        
+              label="Email / Username"
               onChangeText={setUserName}
               value={userName}
             />
-            <View style={styles.pass}>
-            <TextInput  style={{top:5}}           
-              placeholder="Password"
+          {/* <HelperText style={styles.error} type="error" visible={!userName}>
+            Email / Username is invalid
+          </HelperText> */}
+          </View>
+            <TextInput style={styles.outlinedInput}   
+              mode="outlined"        
+              label="Password"
               secureTextEntry={!isPasswordVisible}
               onChangeText={setPassword}
               value={password}
+              right={<TextInput.Icon icon={isPasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPasswordVisible)}/>}
             />
-            <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-              <MaterialIcons name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
-            </TouchableOpacity>
-            </View>
-            <TouchableOpacity style={styles.btn} onPress={handleLogin}>
-              <Text style={styles.title}>Login</Text>
-            </TouchableOpacity>
-          </View>
+            <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleLogin}>
+              <Button icon="login" style={styles.btn} mode={pressed ? 'outlined' : 'contained'}><Text style={{fontFamily: 'eb-garamond', fontSize: 18}}>Login</Text></Button>
+            </TouchableWithoutFeedback>
+          </View> 
           <View style={styles.bottomCon}>
             <TouchableOpacity>
               <Text style={styles.join} onPress={() => props.navigation.navigate("Register")}>
-                Join Us
+                No Account? Sign Up
               </Text>
             </TouchableOpacity>
           </View>
@@ -92,7 +119,7 @@ export default function Login(props) {
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
-    backgroundColor: "#94B285",
+    //backgroundColor: "#94B285",
     width: "100%",
     height: "100%",
   },
@@ -125,26 +152,27 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 5,
   },
+  outlinedInput: {
+    margin: 5,
+    width: "75%",
+    alignSelf: 'center',
+  },
   text: {
     alignSelf: "center",
-    color: "#D9D9D9",
-    fontSize: 30,
-    fontFamily: "sans-serif-condensed",
-    fontWeight: 700,
+    fontSize: 18,
+    fontFamily: 'eb-garamond',
+    fontWeight: 500,
+  },
+  error: {
+    width: "75%",
+    left: 30,
   },
   btn: {
     height: 50,
     alignSelf: "center",
-    justifyContent: "center",
     width: "75%",
-    backgroundColor: "#B0B0B0",
-    borderColor: "#838383",
-    borderWidth: 3,
+    borderWidth: 2,
     margin: 10,
-  },
-  title: {
-    alignSelf: "center",
-    fontSize: 20,
   },
   bottomCon: {
     flex: 1,
@@ -153,8 +181,8 @@ const styles = StyleSheet.create({
   },
   join: {
     alignSelf: "center",
-    fontSize: 18,
-    color: "#D9D9D9",
+    fontSize: 20,
+    fontFamily: 'eb-garamond',
     margin: 10,
   },
   pass: {

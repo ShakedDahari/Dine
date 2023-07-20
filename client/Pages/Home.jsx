@@ -1,18 +1,20 @@
-import { View, Text, StyleSheet, ScrollView, Image, TextInput, Modal, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import * as Location from "expo-location";
 import { ContextPage } from "../Context/ContextProvider";
+import { Button, TextInput, HelperText } from 'react-native-paper';
 
 export default function Home(props) {
 
   const { location, setLocation, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible,
-    setFoodListVisible, dinersListVisible, setDinersListVisible, foodTypes, dinersList, findRestaurants, LoadFoodTypes, setIsLoading } = useContext(ContextPage);
-
+    setFoodListVisible, dinersListVisible, setDinersListVisible, foodTypes, dinersList, findRestaurants, setIsLoading } = useContext(ContextPage);
+    const [pressed, setPressed] = useState(false);
+    
     const cities = require('../utils/cities.json');
-
-  useEffect(() => {
-    (async () => {
-      try {
+    
+    useEffect(() => {
+      (async () => {
+        try {
 
       //LoadFoodTypes();
 
@@ -21,13 +23,13 @@ export default function Home(props) {
         setErrorMsg("Permission to access location was denied");
         return;
       }
-
+      
       let location = await Location.getCurrentPositionAsync({});
-
+      
       let heading = await Location.getHeadingAsync({});
       let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
       console.log(reverse, 'reverse');
-
+      
       let l;
       
       if (reverse && reverse[0].city) {
@@ -47,10 +49,10 @@ export default function Home(props) {
         // Handle the case when the city is not available
         let userLatitude = location.coords.latitude; // User's latitude
         let userLongitude = location.coords.longitude; // User's longitude
-
+        
         let closestCity = null;
         let shortestDistance = Infinity;
-
+        
         await cities.forEach((city) => {
           const distance = calculateDistance(
             userLatitude,
@@ -69,11 +71,19 @@ export default function Home(props) {
           setLocation(closestCity);
         }
       } catch (error) {
-          console.log(error.message);
+        console.log(error.message);
       }
     })();
   }, []);
+  
+  
+  const handlePressIn = () => {
+    setPressed(true);
+  };
 
+  const handlePressOut = () => {
+    setPressed(false);
+  };
 
   // Function to calculate the distance between two points using the Haversine formula
   function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -137,14 +147,16 @@ export default function Home(props) {
         </View>
         <View style={styles.inputCon}>
           <TextInput
-            style={styles.input}
+            style={styles.outlinedInput2}
+            mode="outlined"
+            disabled="true"
             placeholder="Search By Location"
             onChangeText={setLocation}
             editable={false}
             value={text}
           />
-          <TouchableOpacity onPress={() => setFoodListVisible(true)}>
-            <Text style={styles.input}>{foodType || "Type of Food"}</Text>
+          <TouchableOpacity style={styles.outlinedInput1} onPress={() => setFoodListVisible(true)}>
+            <Text style={{ fontSize: 14, color: '#1C1B1F', margin: 10 }}>{foodType || "Type of Food"}</Text>
           </TouchableOpacity>
           <Modal
             animationType="slide"
@@ -166,8 +178,8 @@ export default function Home(props) {
               ))}
             </View>
           </Modal>
-          <TouchableOpacity onPress={() => setDinersListVisible(true)}>
-            <Text style={styles.input}>{diners || "Diners Amount"}</Text>
+          <TouchableOpacity style={styles.outlinedInput1} onPress={() => setDinersListVisible(true)}>
+            <Text style={{ fontSize: 14, color: '#1C1B1F', margin: 10 }}>{diners || "Diners Amount"}</Text>
           </TouchableOpacity>
           <Modal
             animationType="slide"
@@ -190,9 +202,9 @@ export default function Home(props) {
               ))}
             </View>
           </Modal>
-          <TouchableOpacity style={styles.btn} onPress={handleFind}>
-              <Text style={styles.title}>Find</Text>
-            </TouchableOpacity>
+            <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleFind}>
+              <Button icon="store-search-outline" style={styles.btn} mode={pressed ? 'outlined' : 'contained'}><Text style={{fontFamily: 'eb-garamond', fontSize: 18}}>Find</Text></Button>
+            </TouchableWithoutFeedback>
         </View>
       </ScrollView>
     </View>
@@ -202,7 +214,7 @@ export default function Home(props) {
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
-    backgroundColor: "#94B285",
+    //backgroundColor: "#94B285",
     width: "100%",
     height: "100%",
   },
@@ -218,10 +230,9 @@ const styles = StyleSheet.create({
   },
   text: {
     alignSelf: "center",
-    color: "#D9D9D9",
-    fontSize: 30,
-    fontFamily: "sans-serif-condensed",
-    fontWeight: 700,
+    fontSize: 18,
+    fontFamily: 'eb-garamond',
+    fontWeight: 500,
   },
   inputCon: {
     flex: 1,
@@ -242,6 +253,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: 10,
     padding: 5,
+  },
+  outlinedInput1: {
+    margin: 5,
+    width: "75%",
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    height: 50,
+    borderRadius: 5,
+    justifyContent: 'center',
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginTop: 10,
+  },
+  outlinedInput2: {
+    margin: 5,
+    width: "75%",
+    alignSelf: 'center',
   },
   modal: {
     flex: 0.7,
@@ -264,11 +292,8 @@ const styles = StyleSheet.create({
   btn: {
     height: 50,
     alignSelf: "center",
-    justifyContent: "center",
     width: "75%",
-    backgroundColor: "#B0B0B0",
-    borderColor: "#838383",
-    borderWidth: 3,
+    borderWidth: 2,
     margin: 10,
   },
   title: {

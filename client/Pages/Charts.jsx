@@ -25,10 +25,9 @@ export default function Charts(props) {
     const [selectedCity, setSelectedCity] = useState('All'); 
     const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    LoadRestaurants();
-    LoadFoodTypes();
-  }, []);
+    useEffect(() => {
+      LoadRestaurants();
+    }, []);
 
   // Generate background colors for food types
   const backgroundColors = generateBackgroundColors(foodTypes.length);
@@ -69,7 +68,7 @@ export default function Charts(props) {
                   setModalVisible(false);
                 }}
               >
-                <Text style={{ fontSize: 18, marginBottom: 10 }}>{city}</Text>
+                <Text style={{ fontSize: 18, marginBottom: 10, fontFamily: 'eb-garamond' }}>{city}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -242,9 +241,9 @@ export default function Charts(props) {
       ) : (
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{fontSize: 20, fontWeight: 'bold', margin: 15}}>Filter by City:</Text>
+            <Text style={{fontSize: 20, fontWeight: 'bold', margin: 15, fontFamily: 'eb-garamond'}}>Filter by City:</Text>
             <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Text style={{ fontSize: 16 }}>{selectedCity}</Text>
+              <Text style={{ fontSize: 16, fontFamily: 'eb-garamond-italic' }}>{selectedCity}</Text>
             </TouchableOpacity>
           </View>
           {renderCityDropdown()}
@@ -256,7 +255,7 @@ export default function Charts(props) {
             />
           </View>
           <View>
-            <Text style={{alignSelf: 'center', margin: 15, fontSize: 20, fontWeight: 'bold'}}>Food Types Percentage</Text>
+            <Text style={{alignSelf: 'center', margin: 15, fontSize: 20, fontWeight: 'bold', fontFamily: 'eb-garamond'}}>Food Types Percentage</Text>
           </View>
           <View style={{ height: 400 }}>
             <WebView

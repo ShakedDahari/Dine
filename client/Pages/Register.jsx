@@ -1,9 +1,10 @@
-import { View, Text, ScrollView, Image, TextInput, TouchableOpacity, StyleSheet, Dimensions, Button } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import React, { useContext, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
+import { Button, TextInput, HelperText } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -19,6 +20,15 @@ export default function Register(props) {
       const [showCamera, setShowCamera] = useState(false);
       const [isPasswordVisible, setIsPasswordVisible] = useState(false);
       const [isVerifyVisible, setIsVerifyVisible] = useState(false);
+      const [pressed, setPressed] = useState(false);
+
+      const handlePressIn = () => {
+        setPressed(true);
+      };
+    
+      const handlePressOut = () => {
+        setPressed(false);
+      };
 
     const handleAddImage = () => {
       setShowCamera(true);
@@ -82,9 +92,6 @@ export default function Register(props) {
       let isEmailOccupied = await checkEmail(email);
       let isUsernameOccupied = await checkUsername(userName);
 
-      // console.log(isEmailOccupied);
-      // console.log(isUsernameOccupied);
-
       if (email && phone && userName && imgSrc && password && confirm) {
         
         if (isEmailOccupied) {
@@ -109,8 +116,6 @@ export default function Register(props) {
 
        isEmailOccupied = await checkEmail(email);
        isUsernameOccupied = await checkUsername(userName);  
-      // console.log(isEmailOccupied);
-      // console.log(isUsernameOccupied);
     };
 
   return (
@@ -136,22 +141,25 @@ export default function Register(props) {
           </TouchableOpacity>
           <View style={styles.inputCon}>
           <TextInput
-              style={styles.input}
-              placeholder="Email"
+              style={styles.outlinedInput}
+              mode="outlined"  
+              label="Email"
               inputMode='email'
               onChangeText={setEmail}
               value={email}
             />
             <TextInput
-              style={styles.input}
-              placeholder="Phone"
+              style={styles.outlinedInput}
+              mode="outlined"  
+              label="Phone"
               inputMode='tel'
               onChangeText={setPhone}
               value={phone}
             />
             <TextInput
-              style={styles.input}
-              placeholder="Username"
+              style={styles.outlinedInput}
+              mode="outlined"  
+              label="Username"
               onChangeText={setUserName}
               value={userName}
             />
@@ -160,38 +168,31 @@ export default function Register(props) {
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
             </View>
             {imgSrc && <Image source={{ uri: imgSrc }} style={{ width: 100, height: 100, alignSelf:'center' }} />}
-            <View style={{flexDirection:'row', justifyContent:'center'}}>
-            <View style={styles.pass}>
-            <TextInput  style={{top:5}}           
-              placeholder="Password"
+            <TextInput style={styles.outlinedInput}   
+              mode="outlined"        
+              label="Password"
               secureTextEntry={!isPasswordVisible}
               onChangeText={setPassword}
               value={password}
+              right={<TextInput.Icon icon={isPasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPasswordVisible)}/>}
             />
-            <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-              <MaterialIcons name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
-            </TouchableOpacity>
-            </View>
-            <View style={styles.pass}>
-            <TextInput style={{top:5}} 
-              placeholder="Verify"
+            <TextInput style={styles.outlinedInput} 
+              mode="outlined"
+              label="Verify"
               secureTextEntry={!isVerifyVisible}
               onChangeText={setConfirm}
-              value={confirm}
+              value={confirm} 
+              right={<TextInput.Icon icon={isVerifyVisible ? 'eye-off' : 'eye'} onPress={() => setIsVerifyVisible(!isVerifyVisible)}/>}
+
             />
-            <TouchableOpacity style={{ position: 'absolute', top: '25%', right: 10 }} onPress={() => setIsVerifyVisible(!isVerifyVisible)}>
-              <MaterialIcons name={isVerifyVisible ? 'visibility-off' : 'visibility'} size={25} color="#A0A0A0" />
-            </TouchableOpacity>
-            </View>
-            </View>
-            <TouchableOpacity style={styles.btn} onPress={handleRegister}>
-              <Text style={styles.title}>Sign Up</Text>
-            </TouchableOpacity>
+            <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleRegister}>
+              <Button style={styles.btn} mode={pressed ? 'outlined' : 'contained'}><Text style={{fontFamily: 'eb-garamond', fontSize: 18}}>Sign Up</Text></Button>
+            </TouchableWithoutFeedback>
           </View>
           <View style={styles.bottomCon}>
             <TouchableOpacity>
               <Text style={styles.reg} onPress={() => props.navigation.navigate("Login")}>
-                Already signed up?
+                Already Have An Account? Sign In
               </Text>
             </TouchableOpacity>
           </View> 
@@ -204,7 +205,7 @@ export default function Register(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      backgroundColor: "#94B285",
+      // backgroundColor: "#94B285",
       width: "100%",
       height: "100%",
     },
@@ -228,6 +229,11 @@ const styles = StyleSheet.create({
       marginBottom: 0,
       height: '100%',
       justifyContent: "center",
+    },
+    outlinedInput: {
+      margin: 5,
+      width: "75%",
+      alignSelf: 'center',
     },
     input: {
       height: 50,
@@ -275,19 +281,15 @@ const styles = StyleSheet.create({
     },
     text: {
       alignSelf: "center",
-      color: "#D9D9D9",
-      fontSize: 30,
-      fontFamily: "sans-serif-condensed",
-      fontWeight: 700,
+      fontSize: 18,
+      fontFamily: 'eb-garamond',
+      fontWeight: 500,
     },
     btn: {
       height: 50,
       alignSelf: "center",
-      justifyContent: "center",
-      width: "85%",
-      backgroundColor: "#B0B0B0",
-      borderColor: "#838383",
-      borderWidth: 3,
+      width: "75%",
+      borderWidth: 2,
       margin: 10,
     },
     title: {
@@ -301,8 +303,8 @@ const styles = StyleSheet.create({
     },
     reg: {
       alignSelf: "center",
-      fontSize: 18,
-      color: "#D9D9D9",
+      fontSize: 20,
+      fontFamily: 'eb-garamond',
       margin: 10,
     },
   });

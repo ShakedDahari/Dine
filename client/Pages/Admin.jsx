@@ -59,7 +59,7 @@ export default function Admin(props) {
     setRestaurantListVisible(true);
   }
 
-  const handleApprovedRestaurant = async (id) => {
+  const handleApprovedRestaurant = async (id, email, name) => {
     console.log(`Add restaurant with ID: ${id}`);
     // show a confirmation alert before approving the restaurant
     // console.log(id, email, name);
@@ -82,12 +82,12 @@ export default function Admin(props) {
       <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
 
       <View style={{ flex: 1 }}>
-        <Text>{item.email}</Text>
+        <Text style={styles.itemName}>{item.email}</Text>
         <View style={styles.column}>
-          <Text>{item.username}</Text>
+          <Text style={styles.itemMore}>{item.username}</Text>
         </View>
         <View style={styles.column}>
-          <Text>{item.phone}</Text>
+          <Text style={styles.itemMore}>{item.phone}</Text>
         </View>
       </View>
 
@@ -108,18 +108,15 @@ export default function Admin(props) {
       <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
 
       <View style={{ flex: 1 }}>
-        <Text>{item.name}</Text>
+        <Text style={styles.itemName}>{item.name}</Text>
         <View style={styles.column}>
-          <Text>{item.location}</Text>
+          <Text style={styles.itemMore}>{item.location}</Text>
         </View>
         <View style={styles.column}>
-          <Text>{item.foodType}</Text>
+          <Text style={styles.itemMore}>{item.foodType}</Text>
         </View>
       </View>
 
-      {/* <TouchableOpacity onPress={() => handleApprovedRestaurant(item._id)}>
-      <Text></Text>
-      </TouchableOpacity> */}
       <TouchableOpacity onPress={() => handleDeleteRestaurant(item._id)}>
         <MaterialIcons name="delete" size={40} color="red" />
       </TouchableOpacity>
@@ -131,17 +128,17 @@ export default function Admin(props) {
           <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
     
           <View style={{ flex: 1 }}>
-            <Text>{item.name}</Text>
+            <Text style={styles.itemName}>{item.name}</Text>
             <View style={styles.column}>
-              <Text>{item.location}</Text>
+              <Text style={styles.itemMore}>{item.location}</Text>
             </View>
             <View style={styles.column}>
-              <Text>{item.foodType}</Text>
+              <Text style={styles.itemMore}>{item.foodType}</Text>
             </View>
           </View>
     
           <TouchableOpacity onPress={() => handleApprovedRestaurant(item._id, item.email, item.name)}>
-          <MaterialIcons name="add" size={40} color="white" />
+          <MaterialIcons name="add" size={40} color="#90b2ac" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleDeleteRestaurant(item._id)}>
             <MaterialIcons name="delete" size={40} color="red" />
@@ -206,7 +203,7 @@ export default function Admin(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      backgroundColor: "#94B285",
+      //backgroundColor: "#94B285",
       width: "100%",
       height: "100%",
     },
@@ -222,10 +219,9 @@ const styles = StyleSheet.create({
     },
     text: {
       alignSelf: "center",
-      color: "#D9D9D9",
-      fontSize: 30,
-      fontFamily: "sans-serif-condensed",
-      fontWeight: 700,
+      fontSize: 18,
+      fontFamily: 'eb-garamond',
+      fontWeight: 500,
     },
     page: {
         alignSelf: 'center',
@@ -233,7 +229,7 @@ const styles = StyleSheet.create({
     },
     head: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontFamily: 'eb-garamond',
         margin: 15,
         textAlign: 'center',
     },
@@ -258,5 +254,14 @@ const styles = StyleSheet.create({
     },
     selectedOption: {
       backgroundColor: '#B0B0B0',
+    },
+    itemName: {
+      fontFamily: 'eb-garamond', 
+      margin: 3, 
+      fontSize: 18,
+    },
+    itemMore: {
+      fontFamily: 'eb-garamond-italic',
+      paddingLeft: 3,
     },
 });

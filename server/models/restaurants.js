@@ -70,6 +70,14 @@ class Restaurant {
     static async SendEmail(email, subject, message) {
         return await new DB().SendEmailApproval(email, subject, message);
     }
+
+    static async AddItem(id, name, price, image) {
+        return await new DB().AddMenuItem(Restaurant.collection, id, name, price, image);
+    }
+
+    static async DeleteItem(id, itemId) {
+        return await new DB().DeleteMenuItem(Restaurant.collection, id, itemId);
+    }
 }
 
 

@@ -85,9 +85,6 @@ export default function Order(props) {
             <Text style={styles.text}>
               Sorry, no restaurants match your search.
             </Text>
-            {/* <TouchableOpacity style={styles.btn} onPress={handleReset}>
-              <Text style={styles.title}>Back</Text>
-            </TouchableOpacity> */}
             <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleReset}>
               <Button icon="backspace-outline" style={styles.btn} mode={pressed ? 'outlined' : 'contained'}><Text style={{fontFamily: 'eb-garamond', fontSize: 18}}>Back</Text></Button>
             </TouchableWithoutFeedback>

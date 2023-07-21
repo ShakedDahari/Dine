@@ -135,6 +135,7 @@ class DB {
         try {
             await this.client.connect();
             let order = {
+                _id : new ObjectId(),
                 userId: new ObjectId(userId),
                 diners: diners,
                 seatType: seatType,
@@ -193,6 +194,40 @@ class DB {
         } catch (error) {
             return error;
         } 
+    }
+
+    async AddMenuItem(collection, id, name, price, image) {
+        try {
+            await this.client.connect();
+            let item = {
+                _id: new ObjectId(),
+                name: name,
+                price: price,
+                image: image
+            };
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $push: { menu: item } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
+    async DeleteMenuItem(collection, id, itemId) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $pull: { menu: { _id: new ObjectId(itemId) } } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
     }
 
 }

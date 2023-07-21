@@ -12,7 +12,7 @@ const windowHeight = Dimensions.get('window').height;
 export default function Register(props) {
 
     const { email, setEmail, phone, setPhone, userName, setUserName, password, setPassword, confirm, setConfirm, addUser, checkEmail, checkUsername } = useContext(ContextPage);
-
+    
       const [camera, setCamera] = useState();
       const [type, setType] = useState(CameraType.back);
       const [imgSrc, setImgSrc] = useState('');
@@ -46,7 +46,7 @@ export default function Register(props) {
       return (
         <View style={styles.container}>
           <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-          <Button onPress={requestPermission} title="grant permission" />
+          <Button mode="contained" style={styles.btn} onPress={requestPermission}>grant permission</Button>
         </View>
       );
     }

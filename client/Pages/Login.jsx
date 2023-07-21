@@ -9,7 +9,7 @@ import { useFonts } from "expo-font";
 
 export default function Login(props) {
   
-  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, LoadRestaurants, LoadFoodTypes } = useContext(ContextPage);
+  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, restaurants, LoadRestaurants, LoadFoodTypes } = useContext(ContextPage);
   
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
@@ -61,8 +61,18 @@ if (!loaded) {
         props.navigation.navigate("Main");
       }
     } else {
-      alert('Invalid username or password');
-      return;
+      // Find the restaurant based on the email provided by the user
+      let userRestaurant = restaurants.find(rest => rest.email === userName);
+      if (userRestaurant) {
+        if (userRestaurant.approved) {
+          props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', userRestaurant });
+        } else {
+          alert("Your restaurant hasn't been approved yet. Please wait for approval.");
+        }
+      } else {
+        alert('Invalid username or password');
+        return;
+      }
     }
         
     

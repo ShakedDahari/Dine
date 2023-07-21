@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { MD3LightTheme as DefaultTheme, MD3LightTheme, PaperProvider, configureFonts } from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { createTheme } from '@mui/material/styles';
 
 import Page1 from './Pages/Page1';
@@ -14,10 +14,10 @@ import Charts from './Pages/Charts';
 import BusinessRegistration from './Pages/BusinessRegistration';
 import RestaurantDetails from './Pages/RestaurantDetails';
 import ContextProvider from './Context/ContextProvider';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { apiUrl } from './utils/api_url';
-import { I18nManager } from 'react-native';
+import { BackHandler, I18nManager } from 'react-native';
 
 
 const theme =  createTheme({
@@ -28,8 +28,6 @@ const theme =  createTheme({
     secondary: '#aaccc6',
     tertiary: '#577287',
   },
-  //colors: colors.colors, // The color codes scheme
-  //fonts: configureFonts({config: fontConfig.fontConfig, isV3: false}),
 });
 
 const font = {
@@ -95,6 +93,35 @@ function MyDrawer() {
   );
 }
 
+const handleBackPress = (screenName, navigation) => {
+  switch (screenName) {
+    case 'Login':
+      BackHandler.exitApp();
+      return true;
+    case 'Main':
+      navigation.navigate('Login');
+      return true;
+    case 'Register':
+      navigation.navigate('Login');
+      return true;
+    case 'BusinessRegistration':
+      navigation.navigate('Register');
+      return true;
+    case 'Home':
+      navigation.navigate('Main');
+      return true;
+    case 'RestaurantDetails':
+      navigation.navigate('Main');
+      return true;
+    case 'Order':
+      navigation.navigate('Home');
+      return true;
+    default:
+      // For all other screens, use the default back behavior (navigate back)
+      return false;
+  }
+};
+
 const fetchApi = async() => {
   try {
     const res  = await fetch(`${apiUrl}/api/users`);
@@ -108,15 +135,30 @@ const fetchApi = async() => {
 
 export default function App() {
 
+  const navigationRef = React.useRef();
+
   useEffect(() => {
     fetchApi();
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      // Get the current active screen from the navigation state
+      const currentRoute = navigationRef.current.getCurrentRoute();
+      if (currentRoute) {
+        const { name } = currentRoute;
+        return handleBackPress(name, navigationRef.current);
+      }
+      return false;
+    });
+
+    return () => backHandler.remove();
+
   }, [])
 
 
   return (
     <PaperProvider theme={theme}>
     <ContextProvider>
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <MyDrawer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={Login} />

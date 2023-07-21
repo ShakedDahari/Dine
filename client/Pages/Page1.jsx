@@ -18,7 +18,7 @@ export default function Page1(props) {
     const filteredRestaurants = restaurants.filter((restaurant) => restaurant.foodType === foodType && restaurant.approved === true);
 
     const handleRestaurantPress = (restaurant) => {
-      props.navigation.navigate('RestaurantDetails', { restaurant });
+      props.navigation.navigate('RestaurantDetails', { userType: 'regularUser', restaurant });
     };  
 
     return filteredRestaurants.map((restaurant) => (

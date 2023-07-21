@@ -63,6 +63,17 @@ restaurantsRoute.post('/orders/:id', async (req, res) => {
     }
 });
 
+restaurantsRoute.post('/:id/menu', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { name, price, image } = req.body;
+        let data = await Restaurant.AddItem(id, name, price, image);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
 restaurantsRoute.put('/seats', async (req, res) => {
     try {
       let { id, seatType, numDiners } = req.body;
@@ -104,6 +115,19 @@ restaurantsRoute.delete('/delete/:id', async (req, res) =>{
         res.status(500).json({ error : error.message });
     }
 });
+
+restaurantsRoute.delete('/menu/:id/delete', async (req, res) =>{
+    try {
+        let { id } = req.params;
+        let { itemId } = req.body;
+        let data = await Restaurant.DeleteItem(id, itemId);
+        res.status(201).json(data);
+    } catch (error) {
+        res.status(500).json({ error : error.message });
+    }
+});
+
+
 
 
 module.exports = restaurantsRoute;

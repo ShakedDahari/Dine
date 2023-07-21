@@ -221,7 +221,8 @@ class DB {
             await this.client.connect();
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
-                { $pull: { menu: { _id: new ObjectId(itemId) } } }
+                { $pull: { menu: { _id: new ObjectId(itemId) } } }, 
+                { new: true }
             );
         } catch (error) {
             return error;

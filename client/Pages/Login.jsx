@@ -65,7 +65,7 @@ if (!loaded) {
       let userRestaurant = restaurants.find(rest => rest.email === userName);
       if (userRestaurant) {
         if (userRestaurant.approved) {
-          props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', userRestaurant });
+          props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: userRestaurant  });
         } else {
           alert("Your restaurant hasn't been approved yet. Please wait for approval.");
         }

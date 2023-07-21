@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert } from 'react-native';
 import React, { useContext, useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
@@ -75,7 +75,7 @@ const handleAddItem = () => {
   const renderMenuItem = ({ item }) => {
     return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-      <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
+      <Image source={{ uri: item?.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
 
       <View style={{ flex: 1 }}>
         <Text style={styles.itemName}>{item.name}</Text>
@@ -99,7 +99,7 @@ const handleAddItem = () => {
     <View>
         {userType === 'regularUser' ? (
     <View style={styles.container}>
-        <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
+        <ScrollView keyboardShouldPersistTaps="handled" overScrollMode='never' style={{ flex: 1 }}>
             <Image source={require("../assets/icon.png")} style={styles.icon}/>
             <Text style={styles.text}>DineInTime</Text>
             <Image source={{ uri: restaurant.image }} style={styles.image} />
@@ -122,6 +122,9 @@ const handleAddItem = () => {
             <Text style={styles.head}>Menu</Text>
             <FlatList
                 data={restaurant.menu}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ flexDirection: "column" }}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item) => item._id}
                 renderItem={renderMenuItem}
@@ -132,7 +135,7 @@ const handleAddItem = () => {
   </View>
   ) : (
     <View style={styles.container}>
-    <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
+    <ScrollView keyboardShouldPersistTaps="handled" overScrollMode='never' style={{ flex: 1 }}>
         <Image source={require("../assets/icon.png")} style={styles.icon}/>
         <Text style={styles.text}>DineInTime</Text>
         <Image source={{ uri: restaurant.image }} style={styles.image} />
@@ -155,6 +158,9 @@ const handleAddItem = () => {
         <Text style={styles.head}>Menu</Text>
         <FlatList
           data={restaurant.menu}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ flexDirection: "column" }}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item) => item._id}
           renderItem={renderMenuItem}

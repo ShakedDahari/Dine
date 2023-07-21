@@ -42,7 +42,7 @@ const handleAddItem = () => {
     };
 
     if (newItem) {
-        addItem(restaurant._id, newItemName, newItemPrice, newItemImage);
+        addItem(restaurant._id, newItem.name, newItem.price, newItem.image);
     }
 
     // Close the modal and reset the captured details

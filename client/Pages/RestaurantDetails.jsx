@@ -15,6 +15,7 @@ export default function RestaurantDetails({ route }) {
     const [newItemPrice, setNewItemPrice] = useState('');
     const [newItemImage, setNewItemImage] = useState('');
     const [isAddingItem, setIsAddingItem] = useState(false);
+    // const [menuItems, setMenuItems] = useState(restaurant.menu);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -42,7 +43,7 @@ const handleAddItem = () => {
     };
 
     if (newItem) {
-        addItem(restaurant._id, newItem.name, newItem.price, newItem.image);
+      addItem(restaurant._id, newItem.name, newItem.price, newItem.image);
     }
 
     // Close the modal and reset the captured details
@@ -66,7 +67,7 @@ const handleAddItem = () => {
       'Are you sure you want to delete this item?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => deleteItem(id, itemId) },
+        { text: 'Delete', style: 'destructive', onPress: () => deleteItem(id, itemId)}
       ],
       { cancelable: true }
     );
@@ -77,17 +78,17 @@ const handleAddItem = () => {
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
       <Image source={{ uri: item?.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
 
-      <View style={{ flex: 1 }}>
+      <View style={{ flexDirection: 'row', marginHorizontal: 20}}>
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemMore}>{item.price}</Text>
+        <Text style={[styles.itemName, {paddingLeft: 30}]}>{item.price}</Text>
       </View>
     { userType === 'restaurantOwner' && (
-      <View>
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end'}}>
       <TouchableOpacity onPress={() => handleEditItem(item._id)}>
         {/* <Text style={{ color: '#90b2ac', marginRight: 10 }}>Edit</Text> */}
         <MaterialIcons name="edit" size={40} color="#90b2ac" />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleDeleteItem(restaurant.id, item._id)}>
+      <TouchableOpacity onPress={() => handleDeleteItem(restaurant._id, item._id)}>
         <MaterialIcons name="delete" size={40} color="red" />
       </TouchableOpacity>
       </View>
@@ -119,7 +120,11 @@ const handleAddItem = () => {
             </View>
         </View>
         <View>
-            <Text style={styles.head}>Menu</Text>
+            <Text style={styles.menu}>Menu</Text>
+      <View style={{ start: 80, flexDirection: 'row' }}>
+        <Text style={styles.head}>Name</Text>
+        <Text style={styles.head}>Price</Text>
+      </View>
             <FlatList
                 data={restaurant.menu}
                 horizontal
@@ -155,7 +160,11 @@ const handleAddItem = () => {
         </View>
     </View>
     <View>
-        <Text style={styles.head}>Menu</Text>
+        <Text style={styles.menu}>Menu</Text>
+        <View style={{ start: 80, flexDirection: 'row' }}>
+          <Text style={styles.head}>Name</Text>
+          <Text style={styles.head}>Price</Text>
+        </View>
         <FlatList
           data={restaurant.menu}
           horizontal
@@ -166,17 +175,19 @@ const handleAddItem = () => {
           renderItem={renderMenuItem}
           ListEmptyComponent={() => <Text>No items found</Text>}
         />
-        <Button style={styles.btn} onPress={handleAddItem} >Add Item</Button>
+        <Button mode='outlined' style={styles.btn} onPress={handleAddItem}>Add Item</Button>
     </View>
-    <Modal visible={isAddingItem} animationType="slide">
-        <View>
+    <Modal visible={isAddingItem} transparent={true} animationType="slide">
+        <View style={{backgroundColor: '#aaccc6', width: '50%', alignSelf: 'center', padding: 10, margin: 5}}>
           <TextInput
-            placeholder="Item Name"
+            mode="outlined" 
+            label="Item Name"
             value={newItemName}
             onChangeText={setNewItemName}
           />
           <TextInput
-            placeholder="Item Price"
+            mode="outlined" 
+            label="Item Price"
             value={newItemPrice}
             onChangeText={setNewItemPrice}
             keyboardType="numeric"
@@ -185,8 +196,10 @@ const handleAddItem = () => {
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
             </View>
             {newItemImage && <Image source={{ uri: newItemImage }} style={{ width: 100, height: 100, alignSelf:'center' }} />}
-          <Button style={styles.btn} onPress={handleSaveItem}>Save</Button>
-          <Button style={styles.btn} onPress={() => setIsAddingItem(false)}>Cancel</Button>
+          <View style={{flexDirection:'row', justifyContent:'center'}}>
+            <Button mode='outlined' style={{backgroundColor: '#f0f0f0', margin: 5}}  onPress={handleSaveItem}>Save</Button>
+            <Button mode='outlined' style={{backgroundColor: '#f0f0f0',  margin: 5}} onPress={() => setIsAddingItem(false)}>Cancel</Button>
+          </View>
         </View>
       </Modal>
     </ScrollView>
@@ -228,6 +241,13 @@ const styles = StyleSheet.create({
         padding: 15,
         color: '#90b2ac',
     },
+    menu: {
+      fontSize: 25,
+      fontFamily: 'eb-garamond',
+      padding: 15,
+      alignSelf: 'center',
+      color: '#90b2ac',
+  },
     font: {
         fontSize: 20,
         fontFamily: 'eb-garamond-italic',
@@ -246,11 +266,13 @@ const styles = StyleSheet.create({
     itemName: {
         fontFamily: 'eb-garamond', 
         margin: 3, 
-        fontSize: 18,
+        fontSize: 24,
     },
     itemMore: {
         fontFamily: 'eb-garamond-italic',
         paddingLeft: 3,
+        alignSelf: 'center',
+        fontSize: 20,
     },
     btn: {
         height: 50,

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
 import { Button, Modal, TextInput } from 'react-native-paper';

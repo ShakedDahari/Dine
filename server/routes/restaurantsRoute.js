@@ -94,10 +94,11 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
     }
 });
 
-restaurantsRoute.put('/menu/:id/edit', async (req, res) => {
+restaurantsRoute.put('/edit/:id/menu', async (req, res) => {
     try {
-      let { id } = req.params;
-      let { itemId, name, price, image } = req.body;
+        let { id } = req.params;
+        let { itemId, name, price, image } = req.body;
+        console.log(id, itemId, name, price, image);
       let data = await Restaurant.EditMenu(id, itemId, name, price, image);
       res.status(200).json(data);
     } catch (error) {

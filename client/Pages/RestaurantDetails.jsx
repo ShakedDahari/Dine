@@ -110,7 +110,9 @@ const handleAddItem = () => {
       image: editedItemImage,
     };
 
-    if (editedItemName && editedItemPrice && editedItemImage) {
+    console.log(updateItem);
+
+    if (editedItemId && editedItemName && editedItemPrice && editedItemImage) {
       editItem(restaurant._id, updateItem.itemId, updateItem.name, updateItem.price, updateItem.image);
       // Update the state by replacing the old item with the edited item
       const updatedMenuItems = menuItems.map(item => {

@@ -346,30 +346,14 @@ export default function ContextProvider(props) {
       LoadRestaurants();
     }
   }
-
-  const deleteItem = async (id, itemId) => {
-    try {
-      let res = await fetch(`${apiUrl}/api/restaurants/menu/${id}/delete`, {
-        method: "DELETE",
-        body: JSON.stringify({itemId}),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      let data = await res.json();
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      LoadRestaurants();
-    }
-  };
-
+  
   const editItem = async (id, itemId, name, price, image) => {
+    console.log("rest " + id);
+    console.log( "edit : " + itemId, name, price, image);
     try {
-      let res = await fetch(`${apiUrl}/api/restaurants/menu/${id}/edit`, {
+      let res = await fetch(`${apiUrl}/api/restaurants/edit/${id}/menu`, {
         method: "PUT",
-        body: JSON.stringify({itemId, name, price, image}),
+        body: JSON.stringify({ itemId, name, price, image }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -394,6 +378,26 @@ export default function ContextProvider(props) {
       LoadRestaurants();
     }
   }
+
+
+  const deleteItem = async (id, itemId) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/menu/${id}/delete`, {
+        method: "DELETE",
+        body: JSON.stringify({itemId}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadRestaurants();
+    }
+  };
+
 
 
   const value = {

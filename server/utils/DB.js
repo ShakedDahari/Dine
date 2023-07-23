@@ -231,6 +231,19 @@ class DB {
         }
     }
 
+    async EditMenuItem(collection, id, itemId, name, price, image) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id), 'menu._id': new ObjectId(itemId) },
+                { $set: { 'menu.$.name': name, 'menu.$.price': price, 'menu.$.image': image } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
 }
 
 module.exports = DB;

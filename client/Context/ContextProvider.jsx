@@ -365,6 +365,36 @@ export default function ContextProvider(props) {
     }
   };
 
+  const editItem = async (id, itemId, name, price, image) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/menu/${id}/edit`, {
+        method: "PUT",
+        body: JSON.stringify({itemId, name, price, image}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const text = await res.text();
+        let data;
+        
+        try {
+          data = await JSON.parse(text);
+        } catch (error) {
+          throw new Error('Invalid JSON response');
+        }
+        console.log(data);  
+        return data;
+      } else {
+        throw new Error(`Request failed ${res.status}`);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadRestaurants();
+    }
+  }
+
 
   const value = {
     email, setEmail,
@@ -411,7 +441,7 @@ export default function ContextProvider(props) {
     addRestaurant,
     checkEmailBusiness,
     changeApprovedRestaurant,
-    addItem, deleteItem,
+    addItem, deleteItem, editItem,
   };
 
   return (

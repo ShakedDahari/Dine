@@ -78,6 +78,10 @@ class Restaurant {
     static async DeleteItem(id, itemId) {
         return await new DB().DeleteMenuItem(Restaurant.collection, id, itemId);
     }
+
+    static async EditMenu(id, itemId, name, price, image) {
+        return await new DB().EditMenuItem(Restaurant.collection, id, itemId, name, price, image);
+    }
 }
 
 

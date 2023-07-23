@@ -94,6 +94,17 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
     }
 });
 
+restaurantsRoute.put('/menu/:id/edit', async (req, res) => {
+    try {
+      let { id } = req.params;
+      let { itemId, name, price, image } = req.body;
+      let data = await Restaurant.EditMenu(id, itemId, name, price, image);
+      res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
 
 restaurantsRoute.post('/sendemail', async (req, res) => {
     try {

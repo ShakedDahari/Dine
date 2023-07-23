@@ -110,9 +110,9 @@ const handleBackPress = (screenName, navigation) => {
     case 'Home':
       navigation.navigate('Main');
       return true;
-    case 'RestaurantDetails':
-      navigation.navigate('Main');
-      return true;
+    // case 'RestaurantDetails':
+    //   navigation.navigate('Main');
+    //   return true;
     case 'Order':
       navigation.navigate('Home');
       return true;

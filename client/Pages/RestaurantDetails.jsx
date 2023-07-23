@@ -1,21 +1,52 @@
-import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert } from 'react-native';
-import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert, BackHandler } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
 import { Button, Modal, TextInput } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function RestaurantDetails({ route }) {
+export default function RestaurantDetails({ route, navigation }) {
 
   const { userType, restaurant } = route.params;
-  const { addItem, deleteItem } = useContext(ContextPage);
+  const { addItem, deleteItem, editItem } = useContext(ContextPage);
 
     // State variables for the new menu item details
-    const [newItemName, setNewItemName] = useState('');
-    const [newItemPrice, setNewItemPrice] = useState('');
-    const [newItemImage, setNewItemImage] = useState('');
-    const [isAddingItem, setIsAddingItem] = useState(false);
-    // const [menuItems, setMenuItems] = useState(restaurant.menu);
+  const [newItemName, setNewItemName] = useState('');
+  const [newItemPrice, setNewItemPrice] = useState('');
+  const [newItemImage, setNewItemImage] = useState('');
+  const [isAddingItem, setIsAddingItem] = useState(false);
+  const [menuItems, setMenuItems] = useState(restaurant.menu);
+
+    // State variables for editing an existing item
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editedItemId, setEditedItemId] = useState('');
+  const [editedItemName, setEditedItemName] = useState('');
+  const [editedItemPrice, setEditedItemPrice] = useState('');
+  const [editedItemImage, setEditedItemImage] = useState('');
+
+    useFocusEffect(
+      React.useCallback(() => {
+        const handleBackPress = () => {
+          switch (userType) {
+            case 'regularUser':
+              navigation.navigate('Main'); 
+              return true; // Prevent the default back press behavior
+            case 'restaurantOwner':
+              navigation.navigate('Login'); 
+              return true;
+            default:
+              return false;
+          }
+        };
+  
+        BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+  
+        return () => {
+          BackHandler.removeEventListener('hardwareBackPress', handleBackPress); // Cleanup: remove the event listener
+        };
+      }, [navigation, userType]) 
+    );
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -38,12 +69,15 @@ const handleAddItem = () => {
     // Create a new item object with the captured details
     const newItem = {
       name: newItemName,
-      price: newItemPrice,
+      price: parseFloat(newItemPrice),
       image: newItemImage,
     };
 
-    if (newItem) {
+    if (newItemName && newItemPrice && newItemImage) {
       addItem(restaurant._id, newItem.name, newItem.price, newItem.image);
+      setMenuItems([...menuItems, newItem]); // Update the state with the new item
+    } else {
+      alert('Invalid Error');
     }
 
     // Close the modal and reset the captured details
@@ -56,6 +90,53 @@ const handleAddItem = () => {
   const handleEditItem = (id) => {
     // Handle edit action for the user with the specified id
     console.log(`Edit item with ID: ${id}`);
+    const selectedItem = menuItems.find((item) => item._id === id);
+    if (selectedItem) {
+      setEditedItemId(id);
+      setEditedItemName(selectedItem.name);
+      setEditedItemPrice(selectedItem.price.toString());
+      setEditedItemImage(selectedItem.image);
+      setEditModalVisible(true);
+    }
+  };
+
+   // Function to handle saving the edited item
+   const handleSaveEdit = () => {
+    // Create a new item object with the captured details
+    const updateItem = {
+      itemId: editedItemId,
+      name: editedItemName,
+      price: parseFloat(editedItemPrice),
+      image: editedItemImage,
+    };
+
+    if (editedItemName && editedItemPrice && editedItemImage) {
+      editItem(restaurant._id, updateItem.itemId, updateItem.name, updateItem.price, updateItem.image);
+      // Update the state by replacing the old item with the edited item
+      const updatedMenuItems = menuItems.map(item => {
+        if (item._id === updateItem.itemId) {
+          return updateItem;
+        } else {
+          return item;
+        }
+      });
+      setMenuItems(updatedMenuItems);
+    } else {
+      alert('Invalid Error');
+    }
+
+    // Close the edit modal
+    setEditModalVisible(false);
+    setEditedItemId('');
+    setEditedItemName('');
+    setEditedItemPrice('');
+    setEditedItemImage('');
+  };
+
+  // Function to handle canceling the edit modal
+  const handleCancelEdit = () => {
+    // Close the edit modal
+    setEditModalVisible(false);
   };
 
   const handleDeleteItem = (id, itemId) => {
@@ -67,7 +148,10 @@ const handleAddItem = () => {
       'Are you sure you want to delete this item?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => deleteItem(id, itemId)}
+        { text: 'Delete', style: 'destructive', onPress: () => {
+          deleteItem(id, itemId);
+          setMenuItems(menuItems.filter((item) => item._id !== itemId)); // Update the state by removing the deleted item
+        }}
       ],
       { cancelable: true }
     );
@@ -76,23 +160,22 @@ const handleAddItem = () => {
   const renderMenuItem = ({ item }) => {
     return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-      <Image source={{ uri: item?.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
+      <Image source={{ uri: item?.image }} style={{ width: 70, height: 70, borderRadius: 15, margin: 15 }} />
 
-      <View style={{ flexDirection: 'row', marginHorizontal: 20}}>
+      <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'center', marginHorizontal: 10 }}>
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={[styles.itemName, {paddingLeft: 30}]}>{item.price}</Text>
-      </View>
+        <Text style={[styles.itemName, {paddingLeft: 30}]}>{item.price.toFixed(2)} ₪</Text>
     { userType === 'restaurantOwner' && (
-      <View style={{ flexDirection: 'row', justifyContent: 'flex-end'}}>
+      <View style={{ flexDirection: 'row', marginLeft: 15 }}>
       <TouchableOpacity onPress={() => handleEditItem(item._id)}>
-        {/* <Text style={{ color: '#90b2ac', marginRight: 10 }}>Edit</Text> */}
         <MaterialIcons name="edit" size={40} color="#90b2ac" />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => handleDeleteItem(restaurant._id, item._id)}>
         <MaterialIcons name="delete" size={40} color="red" />
       </TouchableOpacity>
       </View>
-    )}
+      )}
+      </View>
     </View>
   )};
 
@@ -121,17 +204,13 @@ const handleAddItem = () => {
         </View>
         <View>
             <Text style={styles.menu}>Menu</Text>
-      <View style={{ start: 80, flexDirection: 'row' }}>
-        <Text style={styles.head}>Name</Text>
-        <Text style={styles.head}>Price</Text>
-      </View>
             <FlatList
-                data={restaurant.menu}
+                data={menuItems}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ flexDirection: "column" }}
                 showsVerticalScrollIndicator={false}
-                keyExtractor={(item) => item._id}
+                keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
                 renderItem={renderMenuItem}
                 ListEmptyComponent={() => <Text>No items found</Text>}
             />
@@ -161,23 +240,19 @@ const handleAddItem = () => {
     </View>
     <View>
         <Text style={styles.menu}>Menu</Text>
-        <View style={{ start: 80, flexDirection: 'row' }}>
-          <Text style={styles.head}>Name</Text>
-          <Text style={styles.head}>Price</Text>
-        </View>
         <FlatList
-          data={restaurant.menu}
+          data={menuItems}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ flexDirection: "column" }}
           showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
           renderItem={renderMenuItem}
           ListEmptyComponent={() => <Text>No items found</Text>}
         />
         <Button mode='outlined' style={styles.btn} onPress={handleAddItem}>Add Item</Button>
     </View>
-    <Modal visible={isAddingItem} transparent={true} animationType="slide">
+    {/* <Modal visible={isAddingItem} transparent={true} animationType="slide">
         <View style={{backgroundColor: '#aaccc6', width: '50%', alignSelf: 'center', padding: 10, margin: 5}}>
           <TextInput
             mode="outlined" 
@@ -201,7 +276,50 @@ const handleAddItem = () => {
             <Button mode='outlined' style={{backgroundColor: '#f0f0f0',  margin: 5}} onPress={() => setIsAddingItem(false)}>Cancel</Button>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
+      <Modal visible={isAddingItem || editModalVisible} transparent={true} animationType="slide">
+      <View style={{ backgroundColor: '#aaccc6', width: '50%', alignSelf: 'center', padding: 10, margin: 5 }}>
+        <TextInput
+          mode="outlined"
+          label="Item Name"
+          value={isAddingItem ? newItemName : editedItemName}
+          onChangeText={isAddingItem ? setNewItemName : setEditedItemName}
+        />
+        <TextInput
+          mode="outlined"
+          label="Item Price"
+          value={isAddingItem ? newItemPrice : editedItemPrice}
+          onChangeText={isAddingItem ? setNewItemPrice : setEditedItemPrice}
+          keyboardType="numeric"
+        />
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <TouchableOpacity onPress={pickImage}>
+            <MaterialIcons style={styles.imgBtn} name="add-photo-alternate" />
+          </TouchableOpacity>
+        </View>
+        {isAddingItem ? (
+          newItemImage && <Image source={{ uri: newItemImage }} style={{ width: 100, height: 100, alignSelf: 'center' }} />
+        ) : (
+          editedItemImage && <Image source={{ uri: editedItemImage }} style={{ width: 100, height: 100, alignSelf: 'center' }} />
+        )}
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <Button
+            mode="outlined"
+            style={{ backgroundColor: '#f0f0f0', margin: 5 }}
+            onPress={isAddingItem ? handleSaveItem : handleSaveEdit}
+          >
+            Save
+          </Button>
+          <Button
+            mode="outlined"
+            style={{ backgroundColor: '#f0f0f0', margin: 5 }}
+            onPress={isAddingItem ? () => setIsAddingItem(false) : handleCancelEdit}
+          >
+            Cancel
+          </Button>
+        </View>
+      </View>
+    </Modal>
     </ScrollView>
     </View>
   )}
@@ -242,9 +360,9 @@ const styles = StyleSheet.create({
         color: '#90b2ac',
     },
     menu: {
-      fontSize: 25,
+      fontSize: 30,
+      marginTop: 20,
       fontFamily: 'eb-garamond',
-      padding: 15,
       alignSelf: 'center',
       color: '#90b2ac',
   },
@@ -264,15 +382,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     itemName: {
-        fontFamily: 'eb-garamond', 
+        fontFamily: 'eb-garamond-italic', 
         margin: 3, 
         fontSize: 24,
-    },
-    itemMore: {
-        fontFamily: 'eb-garamond-italic',
-        paddingLeft: 3,
-        alignSelf: 'center',
-        fontSize: 20,
     },
     btn: {
         height: 50,

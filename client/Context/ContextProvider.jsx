@@ -317,11 +317,11 @@ export default function ContextProvider(props) {
     }
   }
 
-  const addItem = async (id, name, price, image) => {
+  const addItem = async (id, name, price, image, category) => {
     try {
       let res = await fetch(`${apiUrl}/api/restaurants/${id}/menu`, {
         method: "POST",
-        body: JSON.stringify({name, price, image}),
+        body: JSON.stringify({name, price, image, category}),
         headers: {
           "Content-Type": "application/json",
         },
@@ -347,13 +347,11 @@ export default function ContextProvider(props) {
     }
   }
   
-  const editItem = async (id, itemId, name, price, image) => {
-    console.log("rest " + id);
-    console.log( "edit : " + itemId, name, price, image);
+  const editItem = async (id, itemId, name, price, image, category) => {
     try {
       let res = await fetch(`${apiUrl}/api/restaurants/edit/${id}/menu`, {
         method: "PUT",
-        body: JSON.stringify({ itemId, name, price, image }),
+        body: JSON.stringify({ itemId, name, price, image, category }),
         headers: {
           "Content-Type": "application/json",
         },

@@ -71,16 +71,16 @@ class Restaurant {
         return await new DB().SendEmailApproval(email, subject, message);
     }
 
-    static async AddItem(id, name, price, image) {
-        return await new DB().AddMenuItem(Restaurant.collection, id, name, price, image);
+    static async AddItem(id, name, price, image, category) {
+        return await new DB().AddMenuItem(Restaurant.collection, id, name, price, image, category);
     }
 
     static async DeleteItem(id, itemId) {
         return await new DB().DeleteMenuItem(Restaurant.collection, id, itemId);
     }
 
-    static async EditMenu(id, itemId, name, price, image) {
-        return await new DB().EditMenuItem(Restaurant.collection, id, itemId, name, price, image);
+    static async EditMenu(id, itemId, name, price, image, category) {
+        return await new DB().EditMenuItem(Restaurant.collection, id, itemId, name, price, image, category);
     }
 }
 

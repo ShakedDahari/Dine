@@ -196,14 +196,15 @@ class DB {
         } 
     }
 
-    async AddMenuItem(collection, id, name, price, image) {
+    async AddMenuItem(collection, id, name, price, image, category) {
         try {
             await this.client.connect();
             let item = {
                 _id: new ObjectId(),
                 name: name,
                 price: price,
-                image: image
+                image: image,
+                category: category
             };
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
@@ -231,12 +232,12 @@ class DB {
         }
     }
 
-    async EditMenuItem(collection, id, itemId, name, price, image) {
+    async EditMenuItem(collection, id, itemId, name, price, image, category) {
         try {
             await this.client.connect();
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id), 'menu._id': new ObjectId(itemId) },
-                { $set: { 'menu.$.name': name, 'menu.$.price': price, 'menu.$.image': image } }
+                { $set: { 'menu.$.name': name, 'menu.$.price': price, 'menu.$.image': image, 'menu.$.category': category } }
             );
         } catch (error) {
             return error;

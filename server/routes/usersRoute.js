@@ -38,7 +38,7 @@ usersRoute.get('/username/:username', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error });
     }
-})
+});
 
 usersRoute.post('/add', async (req, res) => {
     try {

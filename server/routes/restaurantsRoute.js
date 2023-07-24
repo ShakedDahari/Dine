@@ -66,8 +66,8 @@ restaurantsRoute.post('/orders/:id', async (req, res) => {
 restaurantsRoute.post('/:id/menu', async (req, res) => {
     try {
         let { id } = req.params;
-        let { name, price, image } = req.body;
-        let data = await Restaurant.AddItem(id, name, price, image);
+        let { name, price, image, category } = req.body;
+        let data = await Restaurant.AddItem(id, name, price, image, category);
         res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ error });
@@ -97,9 +97,9 @@ restaurantsRoute.put('/approved/:id', async (req, res) => {
 restaurantsRoute.put('/edit/:id/menu', async (req, res) => {
     try {
         let { id } = req.params;
-        let { itemId, name, price, image } = req.body;
+        let { itemId, name, price, image, category } = req.body;
         console.log(id, itemId, name, price, image);
-      let data = await Restaurant.EditMenu(id, itemId, name, price, image);
+      let data = await Restaurant.EditMenu(id, itemId, name, price, image, category);
       res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ error });

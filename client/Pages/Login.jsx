@@ -62,7 +62,7 @@ if (!loaded) {
       }
     } else {
       // Find the restaurant based on the email provided by the user
-      let userRestaurant = restaurants.find(rest => rest.email === userName);
+      let userRestaurant = restaurants.find(rest => rest.email === userName && rest.password === password);
       if (userRestaurant) {
         if (userRestaurant.approved) {
           props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: userRestaurant  });

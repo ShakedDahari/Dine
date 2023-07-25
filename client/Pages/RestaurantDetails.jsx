@@ -11,12 +11,13 @@ export default function RestaurantDetails({ route, navigation }) {
   const { userType, restaurant } = route.params;
   const { addItem, deleteItem, editItem } = useContext(ContextPage);
 
-  const [selectedCategory, setSelectedCategory] = useState('');
-
-    // State variables for the new menu item details
+  
+  // State variables for the new menu item details
   const [newItemName, setNewItemName] = useState('');
   const [newItemPrice, setNewItemPrice] = useState('');
   const [newItemImage, setNewItemImage] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
 
@@ -73,6 +74,11 @@ export default function RestaurantDetails({ route, navigation }) {
       }, [navigation, userType]) 
     );
 
+
+  // const generateTempId = () => {
+  //   return 'temp' + Math.random().toString(36).substring(7); // Generate a unique temporary ID
+  // };
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -81,8 +87,12 @@ export default function RestaurantDetails({ route, navigation }) {
       quality: 1,
   });
     if (!result.canceled) {
+      if (!isAddingItem) {
+        setEditedItemImage(result.assets[0].uri);
+      } else {
         setNewItemImage(result.assets[0].uri);
-  }
+      }
+    }
 };
 
 const handleAddItem = () => {
@@ -90,7 +100,7 @@ const handleAddItem = () => {
   };
 
   // Function to handle adding the new menu item
-  const handleSaveItem = () => {
+  const handleSaveItem = async () => {
     // Create a new item object with the captured details
     const newItem = {
       name: newItemName,
@@ -99,9 +109,16 @@ const handleAddItem = () => {
       category: selectedCategory,
     };
 
+    console.log(newItem);
     if (newItemName && newItemPrice && newItemImage && selectedCategory) {
-      addItem(restaurant._id, newItem.name, newItem.price, newItem.image, newItem.category);
-      setMenuItems([...menuItems, newItem]); // Update the state with the new item
+      const itemAdded = await addItem(restaurant._id, newItem.name, newItem.price, newItem.image, newItem.category);
+      if (menuItems === undefined) {
+        // If menuItems is empty, create a new array with the newItem
+        setMenuItems([itemAdded]);
+      } else {
+        // If menuItems already has items, spread the existing items and add the newItem
+        setMenuItems([...menuItems, itemAdded]);
+      }  
     } else {
       alert('Invalid Error');
     }
@@ -141,17 +158,24 @@ const handleAddItem = () => {
 
     console.log(updateItem);
 
-    if (editedItemId && editedItemName && editedItemPrice && editedItemImage, editedItemCategory) {
+    if (editedItemId && editedItemName && editedItemPrice && editedItemImage && editedItemCategory) {
       editItem(restaurant._id, updateItem.itemId, updateItem.name, updateItem.price, updateItem.image, updateItem.category);
       // Update the state by replacing the old item with the edited item
-      const updatedMenuItems = menuItems.map(item => {
-        if (item._id === updateItem.itemId) {
-          return updateItem;
-        } else {
-          return item;
-        }
+      setMenuItems((prevItems) => {
+        return prevItems.map((item) => {
+          if (item._id === updateItem.itemId) {
+            return {
+              ...item, // Keep the original properties
+              name: updateItem.name,
+              price: updateItem.price,
+              image: updateItem.image,
+              category: updateItem.category,
+            };
+          } else {
+            return item;
+          }
+        });
       });
-      setMenuItems(updatedMenuItems);
     } else {
       alert('Invalid Error');
     }
@@ -205,7 +229,7 @@ const handleAddItem = () => {
 
   const renderMenuItem = ({ item }) => {
     return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
+    <View key={item._id} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
       <Image source={{ uri: item?.image }} style={{ width: 70, height: 70, borderRadius: 15, margin: 15 }} />
 
       <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'center', marginHorizontal: 10 }}>
@@ -226,9 +250,9 @@ const handleAddItem = () => {
   )};
 
 
-  const renderCategoryLink = ({ item }) => {
+  const renderCategoryLink = ({ item, index }) => {
     return (
-      <TouchableOpacity onPress={() => setFilterCategory(item)}>
+      <TouchableOpacity key={index} onPress={() => setFilterCategory(item)}>
         <Text style={[styles.categoryLink, filterCategory === item && styles.activeLink]}>{item}</Text>
       </TouchableOpacity>
     );
@@ -263,7 +287,7 @@ const handleAddItem = () => {
             horizontal
             data={categoryList.sort(customCategorySorting)}
             renderItem={renderCategoryLink}
-            keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
+            keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.options}
         />
@@ -281,7 +305,7 @@ const handleAddItem = () => {
           // Render sections only if there are menu items in the category
           if (filteredItems.length > 0) {
             return (
-              <View style={styles.section} key={category}>
+              <View style={styles.section} >
                 <Text style={styles.sectionTitle}>{category}</Text>
                 {filteredItems.map((item) => (
                   <View key={item._id}>
@@ -326,7 +350,15 @@ const handleAddItem = () => {
           editedItemImage && <Image source={{ uri: editedItemImage }} style={{ width: 100, height: 100, alignSelf: 'center' }} />
         )}
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-        <RadioButton.Group onValueChange={(value) => setSelectedCategory(value)} value={selectedCategory}>
+        <RadioButton.Group onValueChange={(value) => {
+                if (isAddingItem) {
+                  setSelectedCategory(value);
+                } else {
+                  setEditedItemCategory(value); // Use for editing
+                }
+              }}
+              value={isAddingItem ? selectedCategory : editedItemCategory}
+            >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <RadioButton value="Appetizers" color="#90b2ac" />
             <Text style={styles.radioLabel}>Appetizers</Text>

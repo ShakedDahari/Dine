@@ -206,10 +206,18 @@ class DB {
                 image: image,
                 category: category
             };
-            return await this.client.db(this.dbName).collection(collection).updateOne(
+            await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
                 { $push: { menu: item } }
             );
+
+            // Retrieve the newly added item from the database
+            const newItem = await this.client.db(this.dbName).collection(collection).findOne(
+                { _id: new ObjectId(id), 'menu._id': item._id },
+                { projection: { 'menu.$': 1 } } // Only retrieve the newly added menu item
+            );
+            return newItem.menu[0]; // Return the newly added menu item
+
         } catch (error) {
             return error;
         }  finally {

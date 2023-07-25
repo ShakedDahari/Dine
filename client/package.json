@@ -50,6 +50,7 @@
     "react-native-svg": "13.4.0",
     "react-native-webview": "11.26.0",
     "styled-components": "^5.3.11",
+    "uuid": "^9.0.0",
     "watchman": "^1.0.0"
   },
   "devDependencies": {

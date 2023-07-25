@@ -327,18 +327,11 @@ export default function ContextProvider(props) {
         },
       });
       if (res.ok) {
-        const text = await res.text();
-        let data;
-        
-        try {
-          data = await JSON.parse(text);
-        } catch (error) {
-          throw new Error('Invalid JSON response');
-        }
-        console.log(data);  
+        let data = await res.json();
+        console.log(data);
+        console.log(data._id);
+        console.log(data.name);
         return data;
-      } else {
-        throw new Error(`Request failed ${res.status}`);
       }
     } catch (error) {
       console.error(error);

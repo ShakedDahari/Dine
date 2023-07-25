@@ -40,6 +40,17 @@ usersRoute.get('/username/:username', async (req, res) => {
     }
 });
 
+usersRoute.post('/login', async (req, res) => {
+    try {
+        let { username, password } = req.body;
+        let data = await User.LoginUser(username, password);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+
 usersRoute.post('/add', async (req, res) => {
     try {
         let { email, phone, username, image, password, verify } = req.body;

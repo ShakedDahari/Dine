@@ -32,6 +32,16 @@ restaurantsRoute.get('/email/:email', async (req, res) => {
     }
 });
 
+restaurantsRoute.post('/login', async (req, res) => {
+    try {
+        let { username, password } = req.body;
+        let data = await Restaurant.LoginRestaurant(username, password);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
 restaurantsRoute.post('/add', async (req, res) => {
     try {
         let { email, phone, name, location, address, foodType, image, availableSeats, locationSeats: { inside, outside, bar }, password, verify } = req.body;

@@ -116,6 +116,44 @@ export default function ContextProvider(props) {
     }
   };
 
+  const checkLoginUser = async (username, password) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/users/login`, {
+        method: "POST",
+        body: JSON.stringify({username, password}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadUsers();
+    }
+  };
+  
+  const checkLoginRestaurant = async (username, password) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/login`, {
+        method: "POST",
+        body: JSON.stringify({username, password}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadUsers();
+    }
+  };
+
   const addUser = async (user) => {
     try {
       let res = await fetch(`${apiUrl}/api/users/add`, {
@@ -329,8 +367,6 @@ export default function ContextProvider(props) {
       if (res.ok) {
         let data = await res.json();
         console.log(data);
-        console.log(data._id);
-        console.log(data.name);
         return data;
       }
     } catch (error) {
@@ -402,8 +438,8 @@ export default function ContextProvider(props) {
     LoadFoodTypes,
     LoadRestaurants,
     users,
-    checkEmail,
-    checkUsername,
+    checkEmail, checkUsername,
+    checkLoginUser, checkLoginRestaurant,
     location,setLocation,
     errorMsg,setErrorMsg,
     foodType,setFoodType,

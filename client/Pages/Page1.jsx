@@ -11,10 +11,10 @@ export default function Page1(props) {
   
   useEffect(() => {
     LoadFoodTypes();
+    LoadRestaurants();
   }, []);
   
   const renderRestaurants = (foodType) => {
-    LoadRestaurants();
     const filteredRestaurants = restaurants.filter((restaurant) => restaurant.foodType === foodType && restaurant.approved === true);
 
     const handleRestaurantPress = (restaurant) => {

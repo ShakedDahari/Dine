@@ -126,7 +126,9 @@ const fetchApi = async() => {
   try {
     const res  = await fetch(`${apiUrl}/api/users`);
     const data = await res.json();
-    console.log(data);
+    if (data) {
+      console.log("Api Success");
+    }
   } catch (error) {
     console.log(error.message);
   }

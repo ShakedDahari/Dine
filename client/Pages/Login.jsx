@@ -3,23 +3,24 @@ import React, { useContext, useEffect, useState } from "react";
 import { ContextPage } from "../Context/ContextProvider";
 import { sendNotification } from "./PushNotification";
 import { MaterialIcons } from '@expo/vector-icons';
-import { Button, TextInput, HelperText } from 'react-native-paper';
+import { Button, TextInput, HelperText, Checkbox } from 'react-native-paper';
 import { useFonts } from "expo-font";
 
 
 export default function Login(props) {
   
-  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, restaurants, LoadRestaurants, LoadFoodTypes } = useContext(ContextPage);
+  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, restaurants, LoadRestaurants, LoadFoodTypes, checkLoginUser, checkLoginRestaurant, } = useContext(ContextPage);
   
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
+  const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
   const [submit, setSubmit] = useState(false);
   
-  useEffect(() => {
-    LoadUsers();
-    LoadRestaurants();
-    LoadFoodTypes();
-  }, []);
+  // useEffect(() => {
+  //   LoadUsers();
+  //   LoadRestaurants();
+  //   LoadFoodTypes();
+  // }, []);
 
 const [loaded] = useFonts({
   'eb-garamond': require('../assets/EBGaramond-VariableFont_wght.ttf'),
@@ -39,46 +40,76 @@ if (!loaded) {
     setPressed(false);
   };
 
+  // const handleLogin = async() => {
+  //   try {
+  //   console.log(userName, password);
+  //   // setSubmit(true);
+  //   let foundUser = false;
+  //   if (userName && password) {
+  //      users.forEach(user => {
+  //       if ((userName === user.username || userName === user.email) && password === user.password) {
+  //         foundUser = true;
+  //         setLoginUser(user);
+  //       }  
+  //     });
+  //   } 
+  //   console.log(foundUser);
+  //   if (foundUser) {
+  //     sendNotification('Login Successful', 'Welcome to the app!');
+  //     if (userName === "Admin1" || userName === "Admin2") {
+  //       props.navigation.navigate("Admin");
+  //     } else {
+  //       props.navigation.navigate("Main");
+  //     }
+  //   } else {
+  //     // Find the restaurant based on the email provided by the user
+  //     let userRestaurant = restaurants.find(rest => rest.email === userName && rest.password === password);
+  //     if (userRestaurant) {
+  //       if (userRestaurant.approved) {
+  //         props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: userRestaurant  });
+  //       } else {
+  //         alert("Your restaurant hasn't been approved yet. Please wait for approval.");
+  //       }
+  //     } else {
+  //       alert('Invalid username or password');
+  //       return;
+  //     }
+  //   }
+  //  } catch (error) {
+  //     alert('Invalid Error');
+  //     console.log('Error loading users:', error);
+  //   }
+  // };
+
   const handleLogin = async() => {
+    // Call the appropriate login function based on user type
     try {
-    console.log(userName, password);
-    // setSubmit(true);
-    let foundUser = false;
-    if (userName && password) {
-       users.forEach(user => {
-        if ((userName === user.username || userName === user.email) && password === user.password) {
-          foundUser = true;
-          setLoginUser(user);
-        }  
-      });
-    } 
-    console.log(foundUser);
-    if (foundUser) {
-      sendNotification('Login Successful', 'Welcome to the app!');
-      if (userName === "Admin1" || userName === "Admin2") {
-        props.navigation.navigate("Admin");
-      } else {
-        props.navigation.navigate("Main");
-      }
-    } else {
-      // Find the restaurant based on the email provided by the user
-      let userRestaurant = restaurants.find(rest => rest.email === userName && rest.password === password);
-      if (userRestaurant) {
-        if (userRestaurant.approved) {
-          props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: userRestaurant  });
-        } else {
-          alert("Your restaurant hasn't been approved yet. Please wait for approval.");
+      if (!isRestaurantOwner) {
+        const user = await checkLoginUser(userName, password);
+        setLoginUser(user);
+        if (user) {
+          sendNotification('Login Successful', 'Welcome to the app!');
+          if (userName === "Admin1" || userName === "Admin2") {
+            props.navigation.navigate("Admin");
+          } else {
+            props.navigation.navigate("Main");
+          }
         }
       } else {
-        alert('Invalid username or password');
-        return;
+        const restaurant = checkLoginRestaurant(userName, password);
+        if (restaurant) {
+          if (restaurant.approved) {
+            sendNotification('Login Successful', 'Welcome to the app!');
+            props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant  });
+          } else {
+            alert("Your restaurant hasn't been approved yet. Please wait for approval.");
+          }
+        }
       }
-    }
-        
-    
-   } catch (error) {
+      
+    } catch (error) {
       alert('Invalid Error');
-      console.log('Error loading users:', error);
+      console.log(error)
     }
   };
 
@@ -110,6 +141,10 @@ if (!loaded) {
               value={password}
               right={<TextInput.Icon icon={isPasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPasswordVisible)}/>}
             />
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 5 }}>
+            <Checkbox status={isRestaurantOwner ? 'checked' : 'unchecked'} onPress={() => setIsRestaurantOwner(!isRestaurantOwner)} />
+            <Text>Login as a Restaurant Owner</Text>
+          </View>
             <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleLogin}>
               <Button icon="login" style={styles.btn} mode={pressed ? 'outlined' : 'contained'}><Text style={{fontFamily: 'eb-garamond', fontSize: 18}}>Login</Text></Button>
             </TouchableWithoutFeedback>

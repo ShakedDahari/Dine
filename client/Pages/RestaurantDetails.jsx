@@ -305,7 +305,7 @@ const handleAddItem = () => {
           // Render sections only if there are menu items in the category
           if (filteredItems.length > 0) {
             return (
-              <View style={styles.section} >
+              <View style={styles.section} key={category}>
                 <Text style={styles.sectionTitle}>{category}</Text>
                 {filteredItems.map((item) => (
                   <View key={item._id}>

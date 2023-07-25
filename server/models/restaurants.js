@@ -39,6 +39,10 @@ class Restaurant {
         return await new DB().FindByID(Restaurant.collection, id);
     }
 
+    static async LoginRestaurant(username, password) {
+        return await new DB().Login(Restaurant.collection, username, password);
+    }
+
     async InsertOne() {
         return await new DB().Insert(Restaurant.collection, this);
     }

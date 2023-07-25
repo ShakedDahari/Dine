@@ -35,6 +35,10 @@ class User {
         return await new DB().FindUsername(User.collection, username);
     }
 
+    static async LoginUser(username, password) {
+        return await new DB().Login(User.collection, username, password);
+    }
+
     async InsertOne(){
         return await new DB().Insert(User.collection, this);
     }

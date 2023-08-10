@@ -6,7 +6,7 @@ import { Button, TextInput, HelperText } from 'react-native-paper';
 
 export default function Order(props) {
 
-    const { setFoodType, diners, setDiners, isLoading, updateSeats, filteredRestaurants } = useContext(ContextPage);
+    const { setFoodType, diners, setDiners, isLoading, updateSeats, filteredRestaurants, AddReservationRequest } = useContext(ContextPage);
     const [searchInput, setSearchInput] = useState('');
     const [pressed, setPressed] = useState(false);
 
@@ -19,6 +19,9 @@ export default function Order(props) {
       setPressed(false);
     };
     
+    const handleNavigateToDetails = (restaurant) => {
+      props.navigation.navigate('RestaurantDetails', { userType: 'orderUser', restaurant: restaurant });
+    };
 
     const filtered = filteredRestaurants.filter((restaurant) =>
     restaurant.approved === true && 
@@ -35,6 +38,7 @@ export default function Order(props) {
         let numDiners = await diners; // Number of diners for the reservation
         let id = await restaurant._id.toString();
         let name = await restaurant.name;
+        let email = await restaurant.email;
         console.log(id, seatType, numDiners);
         Alert.alert(
           'Make Reservation',
@@ -48,7 +52,7 @@ export default function Order(props) {
               text: 'Yes',
               onPress: () => {
                if (id && seatType && numDiners) { 
-                updateSeats(id, seatType, numDiners);
+                AddReservationRequest(id, seatType, numDiners, email);
                 props.navigation.navigate("Main");               
               };
               },
@@ -109,6 +113,7 @@ export default function Order(props) {
             data={filtered}
             keyExtractor={(item) => item._id.toString()}
             renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleNavigateToDetails(item)}>
               <View style={styles.restaurantContainer}>
                 <View style={{flex: 1, width: '100%', height: 100}}>
                   <Image source={{ uri: item.image }} style={styles.restImg} />
@@ -133,6 +138,7 @@ export default function Order(props) {
                   )}
                 </Text>
               </View>
+              </TouchableOpacity>
             )}
             contentContainerStyle={styles.listContent}
           />

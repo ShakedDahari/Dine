@@ -94,10 +94,31 @@ restaurantsRoute.put('/seats', async (req, res) => {
     }
 });
 
+restaurantsRoute.put('/inc/seats', async (req, res) => {
+    try {
+      let { id, seatType, numDiners } = req.body;
+      let data = await Restaurant.UpdateSeatsBack(id, seatType, numDiners);
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+});
+
 restaurantsRoute.put('/approved/:id', async (req, res) => {
     try {
       let { id } = req.params;
       let data = await Restaurant.ChangeApproved(id);
+      res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+restaurantsRoute.put('/:id/order/approved', async (req, res) => {
+    try {
+      let { id } = req.params;
+      let { orderId } = req.body;
+      let data = await Restaurant.OrderApproval(id, orderId);
       res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ error });
@@ -127,7 +148,6 @@ restaurantsRoute.post('/sendemail', async (req, res) => {
     }
 });
 
-
 restaurantsRoute.delete('/delete/:id', async (req, res) =>{
     try {
         let { id } = req.params;
@@ -149,7 +169,16 @@ restaurantsRoute.delete('/menu/:id/delete', async (req, res) =>{
     }
 });
 
-
+restaurantsRoute.delete('/:id/orders/delete', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { orderId } = req.body;
+        let data = await Restaurant.DeleteOrder(id, orderId);
+        res.status(201).json(data);
+    } catch (error) {
+        res.status(500).json({ error : error.message });
+    }
+});
 
 
 module.exports = restaurantsRoute;

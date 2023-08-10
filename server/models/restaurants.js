@@ -59,12 +59,24 @@ class Restaurant {
         return await new DB().UpdateSeatsByReservation(Restaurant.collection, id, seatType, numDiners);
     }
 
+    static async UpdateSeatsBack(id, seatType, numDiners) {
+        return await new DB().UpdateSeatsAfterReservation(Restaurant.collection, id, seatType, numDiners);
+    }
+
     static async DeleteRestaurant(id){
         return await new DB().DeleteById(Restaurant.collection, id);
     }
 
     static async AddOrder(id, userId, seatType, diners) {
         return await new DB().UpdateOrder(Restaurant.collection, id, userId, seatType, diners);
+    }
+
+    static async OrderApproval(id, orderId) {
+        return await new DB().UpdateOrderApproval(Restaurant.collection, id, orderId);
+    }
+
+    static async DeleteOrder(id, orderId) {
+        return await new DB().DeleteOrder(Restaurant.collection, id, orderId);
     }
 
     static async ChangeApproved(id) {

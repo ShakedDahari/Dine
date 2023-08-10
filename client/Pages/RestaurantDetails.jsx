@@ -5,6 +5,7 @@ import { ContextPage } from '../Context/ContextProvider';
 import { Button, Modal, TextInput, RadioButton  } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from '@react-navigation/native';
+import Reservations from './Reservations';
 
 export default function RestaurantDetails({ route, navigation }) {
 
@@ -61,6 +62,12 @@ export default function RestaurantDetails({ route, navigation }) {
             case 'restaurantOwner':
               navigation.navigate('Login'); 
               return true;
+            case 'orderUser':
+              navigation.navigate('Order');
+              return true; 
+            case 'adminUser':
+              navigation.navigate('Admin');
+              return true; 
             default:
               return false;
           }
@@ -74,14 +81,9 @@ export default function RestaurantDetails({ route, navigation }) {
       }, [navigation, userType]) 
     );
 
-
-  // const generateTempId = () => {
-  //   return 'temp' + Math.random().toString(36).substring(7); // Generate a unique temporary ID
-  // };
-
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [3, 4],
       quality: 1,
@@ -387,6 +389,12 @@ const handleAddItem = () => {
         </View>
       </View>
     </Modal>
+      {userType === 'restaurantOwner' && (
+        <View>
+          <Text style={styles.menu}>Reservations</Text>
+          <Reservations restaurant={restaurant} />
+        </View>
+      )}
     </ScrollView>
     </View>
   );

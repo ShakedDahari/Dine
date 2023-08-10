@@ -18,6 +18,12 @@ export default function BusinessRegistration(props) {
     const [filteredCities, setFilteredCities] = useState([]);
     const [pressed, setPressed] = useState(false);
 
+    useEffect(() => {
+      LoadFoodTypes();
+    }, []);
+
+    const sortedFoodTypes = [...foodTypes].sort((a, b) => a.name.localeCompare(b.name));
+
     const handlePressIn = () => {
       setPressed(true);
     };
@@ -58,7 +64,7 @@ export default function BusinessRegistration(props) {
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
           aspect: [3, 4],
           quality: 1,
@@ -155,7 +161,7 @@ export default function BusinessRegistration(props) {
             onRequestClose={() => setFoodListVisible(false)}
           >
             <View style={styles.modal}>
-              {foodTypes.map((item) => (
+              {sortedFoodTypes.map((item) => (
                 <TouchableOpacity style={styles.modalTO}
                   key={item._id}
                   onPress={() => {

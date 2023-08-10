@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Admin(props) {
 
-    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant, LoadUsers } = useContext(ContextPage);
+    const { users, restaurants, LoadRestaurants, deleteUser, deleteRestaurant, changeApprovedRestaurant } = useContext(ContextPage);
     const [usersListVisible, setUsersListVisible] = useState(false);
     const [restaurantListVisible, setRestaurantListVisible] = useState(false);
     const [selectedOption, setSelectedOption] = useState('all');
@@ -14,6 +14,10 @@ export default function Admin(props) {
   //   // Handle edit action for the user with the specified id
   //   console.log(`Edit user with ID: ${id}`);
   // };
+
+  useEffect(() => {
+    LoadRestaurants();
+  }, []);
 
   const handleDeleteUser = (id) => {
     // Handle delete action for the user with the specified id
@@ -43,6 +47,10 @@ export default function Admin(props) {
       ],
       { cancelable: true }
     );
+  };
+
+  const handleNavigateToDetails = (restaurant) => {
+    props.navigation.navigate('RestaurantDetails', { userType: 'adminUser', restaurant: restaurant });
   };
 
   const handleSelectOption = (option) => {
@@ -104,6 +112,7 @@ export default function Admin(props) {
   const renderRestaurantItem = ({ item }) => {
     if (selectedOption === 'all' && item.approved === true) { 
     return (
+      <TouchableOpacity onPress={() => handleNavigateToDetails(item)}>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
       <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
 
@@ -121,9 +130,11 @@ export default function Admin(props) {
         <MaterialIcons name="delete" size={40} color="red" />
       </TouchableOpacity>
     </View>
+    </TouchableOpacity>
     )} else {
       if (selectedOption === 'pending' && item.approved === false) {
         return (
+          <TouchableOpacity onPress={() => handleNavigateToDetails(item)}>
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
           <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 25, margin: 10 }} />
     
@@ -144,6 +155,7 @@ export default function Admin(props) {
             <MaterialIcons name="delete" size={40} color="red" />
           </TouchableOpacity>
         </View>
+        </TouchableOpacity>
         )
       }
     };

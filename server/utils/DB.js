@@ -142,6 +142,25 @@ class DB {
         }
     }
 
+    async UpdateSeatsAfterReservation(collection, id, seatType, numDiners) {
+        try {
+          await this.client.connect();
+          return await this.client.db(this.dbName).collection(collection).updateOne(
+            { _id: new ObjectId(id) },
+            {
+              $inc: {
+                [`locationSeats.${seatType}`]: + parseInt(numDiners), // Increment instead of decrement
+                availableSeats: + parseInt(numDiners) 
+              }
+            }
+          );
+        } catch (error) {
+          return error;
+        } finally {
+          await this.client.close();
+        }
+    }   
+
     async DeleteById(collection, id) {
         try {
             await this.client.connect();
@@ -159,13 +178,45 @@ class DB {
             let order = {
                 _id : new ObjectId(),
                 userId: new ObjectId(userId),
-                diners: diners,
+                diners: parseInt(diners),
                 seatType: seatType,
+                approved: false,
                 createdAt: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' })
             };
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id) },
                 { $push: { orders: order } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
+    async UpdateOrderApproval(collection, id, orderId) {
+        try {
+          await this.client.connect();
+          return await this.client.db(this.dbName).collection(collection).updateOne(
+            { 
+              _id: new ObjectId(id),
+              'orders._id': new ObjectId(orderId)
+            },
+            { $set: { 'orders.$.approved': true } }
+          );
+        } catch (error) {
+          return error;
+        } finally {
+          await this.client.close();
+        }
+    }
+
+    async DeleteOrder(collection, id, orderId) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $pull: { orders: { _id: new ObjectId(orderId) } } }
             );
         } catch (error) {
             return error;

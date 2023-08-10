@@ -16,12 +16,6 @@ export default function Login(props) {
   const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
   const [submit, setSubmit] = useState(false);
   
-  // useEffect(() => {
-  //   LoadUsers();
-  //   LoadRestaurants();
-  //   LoadFoodTypes();
-  // }, []);
-
 const [loaded] = useFonts({
   'eb-garamond': require('../assets/EBGaramond-VariableFont_wght.ttf'),
   'eb-garamond-italic': require('../assets/EBGaramond-Italic-VariableFont_wght.ttf'),
@@ -40,47 +34,6 @@ if (!loaded) {
     setPressed(false);
   };
 
-  // const handleLogin = async() => {
-  //   try {
-  //   console.log(userName, password);
-  //   // setSubmit(true);
-  //   let foundUser = false;
-  //   if (userName && password) {
-  //      users.forEach(user => {
-  //       if ((userName === user.username || userName === user.email) && password === user.password) {
-  //         foundUser = true;
-  //         setLoginUser(user);
-  //       }  
-  //     });
-  //   } 
-  //   console.log(foundUser);
-  //   if (foundUser) {
-  //     sendNotification('Login Successful', 'Welcome to the app!');
-  //     if (userName === "Admin1" || userName === "Admin2") {
-  //       props.navigation.navigate("Admin");
-  //     } else {
-  //       props.navigation.navigate("Main");
-  //     }
-  //   } else {
-  //     // Find the restaurant based on the email provided by the user
-  //     let userRestaurant = restaurants.find(rest => rest.email === userName && rest.password === password);
-  //     if (userRestaurant) {
-  //       if (userRestaurant.approved) {
-  //         props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: userRestaurant  });
-  //       } else {
-  //         alert("Your restaurant hasn't been approved yet. Please wait for approval.");
-  //       }
-  //     } else {
-  //       alert('Invalid username or password');
-  //       return;
-  //     }
-  //   }
-  //  } catch (error) {
-  //     alert('Invalid Error');
-  //     console.log('Error loading users:', error);
-  //   }
-  // };
-
   const handleLogin = async() => {
     // Call the appropriate login function based on user type
     try {
@@ -94,9 +47,11 @@ if (!loaded) {
           } else {
             props.navigation.navigate("Main");
           }
+        } else {
+          alert('Invalid Error');
         }
       } else {
-        const restaurant = checkLoginRestaurant(userName, password);
+        const restaurant = await checkLoginRestaurant(userName, password);
         if (restaurant) {
           if (restaurant.approved) {
             sendNotification('Login Successful', 'Welcome to the app!');
@@ -104,6 +59,8 @@ if (!loaded) {
           } else {
             alert("Your restaurant hasn't been approved yet. Please wait for approval.");
           }
+        } else {
+          alert('Invalid Error');
         }
       }
       

@@ -16,8 +16,6 @@ export default function Home(props) {
       (async () => {
         try {
 
-      //LoadFoodTypes();
-
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");

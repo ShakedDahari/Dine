@@ -32,6 +32,7 @@ export default function ContextProvider(props) {
   const [foodTypes, setFoodTypes] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
+  const [restaurantOrders, setRestaurantOrders] = useState([]);
 
   const [location, setLocation] = useState();
   const [errorMsg, setErrorMsg] = useState();
@@ -81,6 +82,16 @@ export default function ContextProvider(props) {
       let res = await fetch(`${apiUrl}/api/restaurants`);
       let data = await res.json();
       setRestaurants(data);
+    } catch (error) {
+      console.log({ error });
+    } 
+  }
+
+  const LoadRestaurantOrders = async (id) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/${id}/orders`);
+      let data = res.json();
+      setRestaurantOrders(data)
     } catch (error) {
       console.log({ error });
     } finally {
@@ -252,7 +263,7 @@ export default function ContextProvider(props) {
 
   const sendEmail = async (email, subject, message) => {
     try {
-      console.log(subject, message);
+      //console.log(subject, message);
       let res = await fetch(`${apiUrl}/api/restaurants/sendemail`, {
         method: "POST",
         body: JSON.stringify({ email, subject, message }),
@@ -330,6 +341,8 @@ export default function ContextProvider(props) {
       }
     } catch (error) {
       console.error('Error updating seats:', error);
+    }  finally {
+      LoadRestaurants();
     }
   };
 
@@ -354,6 +367,8 @@ export default function ContextProvider(props) {
       }
     } catch (error) {
       console.error('Error updating seats:', error);
+    }  finally {
+      LoadRestaurants();
     }
   };
 
@@ -391,6 +406,8 @@ export default function ContextProvider(props) {
         }
     } catch (error) {
         console.log(error);
+    }  finally {
+      LoadRestaurantOrders(id);
     }
   }
 
@@ -415,23 +432,28 @@ export default function ContextProvider(props) {
     } catch (error) {
       console.error({error: error.message});
     } finally {
-      LoadRestaurants();
+      LoadRestaurantOrders(id);
     }
   };
 
   const deleteOrder = async (id, orderId) => {
     try {
-      let res = await fetch(`${apiUrl}/api/restaurant/${id}/orders/delete`, {
+      let res = await fetch(`${apiUrl}/api/restaurants/${id}/orders/delete`, {
         method: "DELETE",
         body: JSON.stringify({orderId}),
         headers: {
           "Content-Type": "application/json",
         },
       });
-      let data = await res.json();
-      console.log(data);
+      console.log(res.status);
+      if (res.ok) {
+        let data = await res.json();
+        console.log(data);
+      }
     } catch (error) {
      console.log(error); 
+    } finally {
+      LoadRestaurantOrders(id);
     }
   }
 
@@ -554,6 +576,7 @@ export default function ContextProvider(props) {
     checkEmailBusiness,
     changeApprovedRestaurant,
     addItem, deleteItem, editItem,
+    restaurantOrders, setRestaurantOrders, LoadRestaurantOrders,
     deleteOrder, updateSeatsBack, changeApprovedOrder,
   };
 

@@ -22,6 +22,17 @@ restaurantsRoute.get('/:id', async (req, res) => {
     }
 });
 
+restaurantsRoute.get('/:id/orders', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let data = await Restaurant.FindById(id);
+        let orders = data.orders || [];
+        res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
 restaurantsRoute.get('/email/:email', async (req, res) => {
     try {
         let { email } = req.params;

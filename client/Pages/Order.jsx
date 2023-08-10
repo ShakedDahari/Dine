@@ -6,7 +6,7 @@ import { Button, TextInput, HelperText } from 'react-native-paper';
 
 export default function Order(props) {
 
-    const { setFoodType, diners, setDiners, isLoading, updateSeats, filteredRestaurants, AddReservationRequest } = useContext(ContextPage);
+    const { setFoodType, diners, setDiners, isLoading, filteredRestaurants, AddReservationRequest } = useContext(ContextPage);
     const [searchInput, setSearchInput] = useState('');
     const [pressed, setPressed] = useState(false);
 

@@ -6,8 +6,7 @@ import { ActivityIndicator } from 'react-native-paper';
 
 export default function Reservations({ restaurant }) {
 
-    const { updateSeatsBack, fetchUserData, deleteOrder, changeApprovedOrder } = useContext(ContextPage);
-    const [restaurantOrders, setRestaurantOrders] = useState([]);
+    const { restaurantOrders, LoadRestaurantOrders, updateSeatsBack, fetchUserData, deleteOrder, changeApprovedOrder } = useContext(ContextPage);
     const [selectedOption, setSelectedOption] = useState('all');
     const [userDataMap, setUserDataMap] = useState({});
     const [loadingUserData, setLoadingUserData] = useState(true); 
@@ -15,25 +14,24 @@ export default function Reservations({ restaurant }) {
     useEffect(() => {
         if (restaurant) {
             if (restaurant.orders) {
-                setRestaurantOrders(restaurant.orders);
-                
-                const fetchUserDataForOrders = async () => {
-                  const userDataForOrders = {};
-                  for (const order of restaurant.orders) {
-                    const userData = await fetchUserData(order.userId);
-                    userDataForOrders[order._id] = userData;
-                  }
-                  setUserDataMap(userDataForOrders);
-                  setLoadingUserData(false); // Set loading state to false when done fetching
-                };
-          
-                fetchUserDataForOrders();
+              LoadRestaurantOrders(restaurant._id);
+              fetchUserDataForOrders();
             } else {
                 setLoadingUserData(false); // Set loading state to false when orders is null
             }
         }
-      }, [restaurant]);
+      }, [restaurant, restaurantOrders]);
     
+
+      const fetchUserDataForOrders = async () => {
+        const userDataForOrders = {};
+        for (const order of restaurantOrders) {
+          const userData = await fetchUserData(order.userId);
+          userDataForOrders[order._id] = userData;
+        }
+        setUserDataMap(userDataForOrders);
+        setLoadingUserData(false);
+      };
 
     const handleSelectOption = (option) => {
         setSelectedOption(option);
@@ -47,7 +45,10 @@ export default function Reservations({ restaurant }) {
       'Are you sure you want to delete this order?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => deleteOrder(id, orderId)},
+        { text: 'Delete', style: 'destructive', onPress: async () => {
+          await deleteOrder(id, orderId);
+          await fetchUserDataForOrders(); // Fetch and update orders again
+        }},
       ],
       { cancelable: true }
     );
@@ -61,9 +62,10 @@ export default function Reservations({ restaurant }) {
       'Are you sure you want to remove this order?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => { 
-          deleteOrder(id, orderId);
-          updateSeatsBack(id, seatType, diners);
+        { text: 'Delete', style: 'destructive', onPress: async () => { 
+          await deleteOrder(id, orderId);
+          await updateSeatsBack(id, seatType, diners);
+          await fetchUserDataForOrders(); // Fetch and update orders again
         }}, 
       ],
       { cancelable: true }
@@ -77,7 +79,10 @@ export default function Reservations({ restaurant }) {
       'Are you sure you want to approved this order?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Add', style: 'destructive', onPress: () => { changeApprovedOrder(id, orderId, email, seatType, diners); },
+        { text: 'Add', style: 'destructive', onPress: async () => { 
+          await changeApprovedOrder(id, orderId, email, seatType, diners);
+          await fetchUserDataForOrders(); // Fetch and update orders again
+        },
        }
       ],
       { cancelable: true }
@@ -86,7 +91,7 @@ export default function Reservations({ restaurant }) {
 
       const renderOrderItem = ({ item }) => {
 
-        const userData = userDataMap[item.index] || {};
+        const userData = userDataMap[item._id] || {};
 
         if (selectedOption === 'all' && item.approved === true) { 
         return (
@@ -172,7 +177,7 @@ export default function Reservations({ restaurant }) {
             horizontal 
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ flexDirection: 'column' }}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item) => item._id}
             renderItem={renderOrderItem}
             ListEmptyComponent={() =><Text>No orders found</Text>}
             />

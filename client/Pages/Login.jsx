@@ -1,21 +1,24 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TouchableWithoutFeedback } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { ContextPage } from "../Context/ContextProvider";
-import { sendNotification } from "./PushNotification";
-import { MaterialIcons } from '@expo/vector-icons';
+import { sendPushNotification, registerForPushNotificationsAsync } from "./PushNotification";
 import { Button, TextInput, HelperText, Checkbox } from 'react-native-paper';
 import { useFonts } from "expo-font";
 
 
 export default function Login(props) {
   
-  const { userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, restaurants, LoadRestaurants, LoadFoodTypes, checkLoginUser, checkLoginRestaurant, } = useContext(ContextPage);
+  const { expoPushToken, setExpoPushToken, userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, restaurants, LoadRestaurants, LoadFoodTypes, checkLoginUser, checkLoginRestaurant, } = useContext(ContextPage);
   
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
   const [submit, setSubmit] = useState(false);
+  const [bothHelper, setBothHelper] = useState(false);
+  const [foundHelper, setFoundHelper] = useState(false);
+  const [approvalHelper, setApprovalHelper] = useState(false);
   
+
 const [loaded] = useFonts({
   'eb-garamond': require('../assets/EBGaramond-VariableFont_wght.ttf'),
   'eb-garamond-italic': require('../assets/EBGaramond-Italic-VariableFont_wght.ttf'),
@@ -34,39 +37,64 @@ if (!loaded) {
     setPressed(false);
   };
 
+  const checkInputsValidation = async () => {
+    if (!userName || !password) {
+      setBothHelper(true);
+    } else {
+      setBothHelper(false);
+    }
+  }
+
+
   const handleLogin = async() => {
+
+    await checkInputsValidation();
+    setFoundHelper(false);
+    setApprovalHelper(false);
+
+    if (bothHelper) {
+      return;
+    }
+
     // Call the appropriate login function based on user type
     try {
       if (!isRestaurantOwner) {
         const user = await checkLoginUser(userName, password);
         setLoginUser(user);
         if (user) {
-          sendNotification('Login Successful', 'Welcome to the app!');
+           // Successfully logged in, now get the Expo push token and send a notification
+          const token = await registerForPushNotificationsAsync();
+          setExpoPushToken(token);
+          await sendPushNotification('Login Successful', 'Welcome to the app!', token);
           if (userName === "Admin1" || userName === "Admin2") {
             props.navigation.navigate("Admin");
           } else {
             props.navigation.navigate("Main");
           }
         } else {
-          alert('Invalid Error');
+          //alert('Invalid Error');
+          setFoundHelper(true);
         }
       } else {
         const restaurant = await checkLoginRestaurant(userName, password);
         if (restaurant) {
           if (restaurant.approved) {
-            sendNotification('Login Successful', 'Welcome to the app!');
+            const token = await registerForPushNotificationsAsync();
+            setExpoPushToken(token);
+            await sendPushNotification('Login Successful', 'Welcome to the app!', token);
             props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant  });
           } else {
-            alert("Your restaurant hasn't been approved yet. Please wait for approval.");
+            //alert("Your restaurant hasn't been approved yet. Please wait for approval.");
+            setApprovalHelper(true);
           }
         } else {
-          alert('Invalid Error');
+          setFoundHelper(true);
         }
       }
       
     } catch (error) {
-      alert('Invalid Error');
-      console.log(error)
+      //alert('Invalid Error');
+      setFoundHelper(true);
     }
   };
 
@@ -86,9 +114,6 @@ if (!loaded) {
               onChangeText={setUserName}
               value={userName}
             />
-          {/* <HelperText style={styles.error} type="error" visible={!userName}>
-            Email / Username is invalid
-          </HelperText> */}
           </View>
             <TextInput style={styles.outlinedInput}   
               mode="outlined"        
@@ -97,8 +122,13 @@ if (!loaded) {
               onChangeText={setPassword}
               value={password}
               right={<TextInput.Icon icon={isPasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPasswordVisible)}/>}
-            />
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 5 }}>
+              />
+              <HelperText style={styles.helperText} type="error" visible={bothHelper || foundHelper || approvalHelper}>
+                {bothHelper && 'Both fields are required.'}
+                {!bothHelper && foundHelper && 'Account not found.'}
+                {approvalHelper && 'Please wait for approval.'}
+              </HelperText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
             <Checkbox status={isRestaurantOwner ? 'checked' : 'unchecked'} onPress={() => setIsRestaurantOwner(!isRestaurantOwner)} />
             <Text>Login as a Restaurant Owner</Text>
           </View>
@@ -159,15 +189,16 @@ const styles = StyleSheet.create({
     width: "75%",
     alignSelf: 'center',
   },
+  helperText: {
+    marginTop: -5,
+    width: "80%",
+    alignSelf: 'center',        
+  },
   text: {
     alignSelf: "center",
     fontSize: 18,
     fontFamily: 'eb-garamond',
     fontWeight: 500,
-  },
-  error: {
-    width: "75%",
-    left: 30,
   },
   btn: {
     height: 50,

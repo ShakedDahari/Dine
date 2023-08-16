@@ -6,12 +6,12 @@ import { Button, Modal, TextInput, RadioButton  } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from '@react-navigation/native';
 import Reservations from './Reservations';
+import Reviews from './Reviews';
 
 export default function RestaurantDetails({ route, navigation }) {
 
   const { userType, restaurant } = route.params;
   const { addItem, deleteItem, editItem } = useContext(ContextPage);
-
   
   // State variables for the new menu item details
   const [newItemName, setNewItemName] = useState('');
@@ -99,7 +99,7 @@ export default function RestaurantDetails({ route, navigation }) {
 
 const handleAddItem = () => {
     setIsAddingItem(true);
-  };
+};
 
   // Function to handle adding the new menu item
   const handleSaveItem = async () => {
@@ -395,6 +395,10 @@ const handleAddItem = () => {
           <Reservations restaurant={restaurant} />
         </View>
       )}
+      <View>
+        <Text style={styles.menu}>Reviews</Text>
+        <Reviews restaurant={restaurant} userType={userType} />
+      </View>
     </ScrollView>
     </View>
   );

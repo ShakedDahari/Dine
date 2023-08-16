@@ -169,11 +169,11 @@ export default function Admin(props) {
           <Text style={styles.text}>DineInTime</Text>
         </View>
         <View style={styles.page}>
-            <TouchableOpacity onPress={handleShowUsers}>
-                <Text style={styles.head}>Users</Text>
+            <TouchableOpacity  style={styles.option} onPress={handleShowUsers}>
+                <Text style={styles.optionText}>Users</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleShowRestaurants}>
-                <Text style={styles.head}>Restaurants</Text>
+            <TouchableOpacity  style={styles.option} onPress={handleShowRestaurants}>
+                <Text style={styles.optionText}>Restaurants</Text>
             </TouchableOpacity>
         </View>
         </ScrollView>
@@ -244,6 +244,19 @@ const styles = StyleSheet.create({
         fontFamily: 'eb-garamond',
         margin: 15,
         textAlign: 'center',
+    },
+    option: {
+      backgroundColor: '#aaccc6',
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 10,
+      margin: 10,
+    },
+    optionText: {
+      color: '#ffffff',
+      fontSize: 16,
+      fontWeight: 'bold',
+      fontFamily: 'eb-garamond',
     },
     column: {
         flexDirection: 'row',

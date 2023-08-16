@@ -194,6 +194,27 @@ class DB {
         }
     }
 
+    async InsertReview(collection, id, user, rating, description) {
+        try {
+            await this.client.connect();
+            let review = {
+                _id : new ObjectId(),
+                user: user,
+                rating: parseInt(rating),
+                description: description,
+                createdAt: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' })
+            };
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $push: { reviews: review } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
     async UpdateOrderApproval(collection, id, orderId) {
         try {
           await this.client.connect();

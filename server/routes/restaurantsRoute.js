@@ -33,6 +33,17 @@ restaurantsRoute.get('/:id/orders', async (req, res) => {
     }
 });
 
+restaurantsRoute.get('/:id/reviews', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let data = await Restaurant.FindById(id);
+        let reviews = data.reviews || [];
+        res.status(200).json(reviews);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
 restaurantsRoute.get('/email/:email', async (req, res) => {
     try {
         let { email } = req.params;
@@ -78,6 +89,17 @@ restaurantsRoute.post('/orders/:id', async (req, res) => {
         let { id } = req.params;
         let { userId, seatType, diners } = req.body;
         let data = await Restaurant.AddOrder(id, userId, seatType, diners);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+restaurantsRoute.post('/reviews/:id', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { user, rating, description } = req.body;
+        let data = await Restaurant.AddReview(id, user, rating, description);
         res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ error });

@@ -71,6 +71,10 @@ class Restaurant {
         return await new DB().UpdateOrder(Restaurant.collection, id, userId, seatType, diners);
     }
 
+    static async AddReview(id, user, rating, description) {
+        return await new DB().InsertReview(Restaurant.collection, id, user, rating, description);
+    }
+
     static async OrderApproval(id, orderId) {
         return await new DB().UpdateOrderApproval(Restaurant.collection, id, orderId);
     }

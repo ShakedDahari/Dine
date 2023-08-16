@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
 import React, { useContext, useState, useEffect } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -13,8 +13,8 @@ export default function Reservations({ restaurant }) {
 
     useEffect(() => {
         if (restaurant) {
-            if (restaurant.orders) {
-              LoadRestaurantOrders(restaurant._id);
+          LoadRestaurantOrders(restaurant._id);
+            if (restaurant.orders) {              
               fetchUserDataForOrders();
             } else {
                 setLoadingUserData(false); // Set loading state to false when orders is null

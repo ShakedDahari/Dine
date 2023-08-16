@@ -1,6 +1,6 @@
 import React, { createContext, useState } from "react";
 import { apiUrl } from "../utils/api_url";
-import { sendNotification } from "../Pages/PushNotification";
+import { sendPushNotification } from "../Pages/PushNotification";
 
 export const ContextPage = createContext();
 
@@ -13,6 +13,7 @@ export default function ContextProvider(props) {
   const [loginUser, setLoginUser] = useState();
 
   const [userData, setUserData] = useState({});
+  const [expoPushToken, setExpoPushToken] = useState('');
 
   const [emailB, setEmailB] = useState();
   const [phoneB, setPhoneB] = useState();
@@ -33,6 +34,7 @@ export default function ContextProvider(props) {
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [restaurantOrders, setRestaurantOrders] = useState([]);
+  const [restaurantReviews, setRestaurantReviews] = useState([]);
 
   const [location, setLocation] = useState();
   const [errorMsg, setErrorMsg] = useState();
@@ -42,7 +44,6 @@ export default function ContextProvider(props) {
   const [foodListVisible, setFoodListVisible] = useState(false);
   const [dinersListVisible, setDinersListVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
 
   const dinersList = [
     { key: 1, value: "1" },
@@ -56,6 +57,32 @@ export default function ContextProvider(props) {
     { key: 9, value: "9" },
     { key: 10, value: "10" },
   ];
+
+  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g
+  const phoneRegex = /^(?:(?:(\+?972|\(\+?972\)|\+?\(972\))(?:\s|\.|-)?([1-9]\d?))|(0[23489]{1})|(0[57]{1}[0-9]))(?:\s|\.|-)?([^0\D]{1}\d{2}(?:\s|\.|-)?\d{4})$/gm
+  const usernameRegex = /^(?=.{3,20}$)(?![_.-])(?!.*[_.-]{2})[a-zA-Z0-9_-]+([^._-])$/
+  const passwordRegex = /^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{5,})\S$/
+  const numbersRegex = /^[0-9]+$/
+
+  const isValidEmail = (email) => {
+    return emailRegex.test(email);
+  }
+
+  const isValidPhone = (phone) => {
+    return phoneRegex.test(phone);
+  }
+
+  const isValidUsername = (username) => {
+    return usernameRegex.test(username);
+  }
+
+  const isValidPassword = (password) => {
+    return passwordRegex.test(password);
+  }
+
+  const isValidNumbers = (number) => {
+    return numbersRegex.test(number);
+  }
 
   const LoadUsers = async () => {
     try {
@@ -90,8 +117,20 @@ export default function ContextProvider(props) {
   const LoadRestaurantOrders = async (id) => {
     try {
       let res = await fetch(`${apiUrl}/api/restaurants/${id}/orders`);
-      let data = res.json();
-      setRestaurantOrders(data)
+      let data = await res.json();
+      setRestaurantOrders(data);
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      LoadRestaurants();
+    }
+  }
+
+  const LoadRestaurantReviews = async (id) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/${id}/reviews`);
+      let data = await res.json();
+      setRestaurantReviews(data);
     } catch (error) {
       console.log({ error });
     } finally {
@@ -166,6 +205,26 @@ export default function ContextProvider(props) {
       LoadUsers();
     }
   };
+
+  // const uploadImage = async (img) => {
+  //   const formData = new FormData();
+  //   formData.append('image', img);
+  
+  //   try {
+  //     let res = await fetch(`${apiUrl}/upload`, {
+  //       method: 'POST',
+  //       body: formData,
+  //     });
+  
+  //     if (res.ok) {
+  //       console.log('Image uploaded successfully');
+  //     } else {
+  //       console.error('Image upload failed');
+  //     }
+  //   } catch (error) {
+  //     console.error('Image upload error:', error);
+  //   }
+  // }
 
   const fetchUserData = async (userId) => {
     try {
@@ -394,8 +453,7 @@ export default function ContextProvider(props) {
             let message = `We would like to inform you that a new reservation has been made at your restaurant.\n
             To manage and approve the reservation, please access the app.`;
             await sendEmail(email, subject, message);
-            sendNotification('Reservation Request Send', 'We will keep you informed once your reservation request is approved by the restaurant.');
-          
+            await sendPushNotification('Reservation Request Send', 'We will keep you informed once your reservation request is approved by the restaurant.', expoPushToken);  
           } catch (error) {
             throw new Error('Invalid JSON response');
           }
@@ -527,9 +585,38 @@ export default function ContextProvider(props) {
     }
   };
 
+  const addReview = async (id, user, rating, description) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/reviews/${id}`, {
+          method: "POST",
+          body: JSON.stringify({ user, rating, description }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (res.ok) {
+          const text = await res.text();
+          let data;    
+          try {
+            data = await JSON.parse(text);
+          } catch (error) {
+            throw new Error('Invalid JSON response');
+          }
+          console.log(data);  
+          return data;
+        } else {
+          throw new Error(`Request failed ${res.status}`);
+        }
+    } catch (error) {
+        console.log(error);
+    }  finally {
+      LoadRestaurantReviews(id);
+    }
+  }
 
 
-  const value = {
+  const value = { 
+    isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers,
     email, setEmail,
     phone, setPhone,
     userName, setUserName,
@@ -539,7 +626,7 @@ export default function ContextProvider(props) {
     LoadUsers,
     LoadFoodTypes,
     LoadRestaurants,
-    users,
+    users, expoPushToken, setExpoPushToken,
     userData, setUserData, fetchUserData,
     checkEmail, checkUsername,
     checkLoginUser, checkLoginRestaurant,
@@ -578,6 +665,8 @@ export default function ContextProvider(props) {
     addItem, deleteItem, editItem,
     restaurantOrders, setRestaurantOrders, LoadRestaurantOrders,
     deleteOrder, updateSeatsBack, changeApprovedOrder,
+    restaurantReviews, setRestaurantReviews, LoadRestaurantReviews,
+    addReview,
   };
 
   return (

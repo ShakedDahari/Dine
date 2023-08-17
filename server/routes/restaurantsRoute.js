@@ -162,14 +162,23 @@ restaurantsRoute.put('/edit/:id/menu', async (req, res) => {
     try {
         let { id } = req.params;
         let { itemId, name, price, image, category } = req.body;
-        console.log(id, itemId, name, price, image);
-      let data = await Restaurant.EditMenu(id, itemId, name, price, image, category);
-      res.status(200).json(data);
+        let data = await Restaurant.EditMenu(id, itemId, name, price, image, category);
+        res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ error });
     }
 });
 
+restaurantsRoute.put('/edit/:id/reviews', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { reviewId, user, rating, description } = req.body;
+        let data = await Restaurant.EditReview(id, reviewId, user, rating, description);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
 
 restaurantsRoute.post('/sendemail', async (req, res) => {
     try {
@@ -196,6 +205,17 @@ restaurantsRoute.delete('/menu/:id/delete', async (req, res) =>{
         let { id } = req.params;
         let { itemId } = req.body;
         let data = await Restaurant.DeleteItem(id, itemId);
+        res.status(201).json(data);
+    } catch (error) {
+        res.status(500).json({ error : error.message });
+    }
+});
+
+restaurantsRoute.delete('/reviews/:id/delete', async (req, res) =>{
+    try {
+        let { id } = req.params;
+        let { reviewId } = req.body;
+        let data = await Restaurant.DeleteReview(id, reviewId);
         res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error : error.message });

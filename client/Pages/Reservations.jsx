@@ -17,7 +17,7 @@ export default function Reservations({ restaurant }) {
             if (restaurant.orders) {              
               fetchUserDataForOrders();
             } else {
-                setLoadingUserData(false); // Set loading state to false when orders is null
+              setLoadingUserData(false); // Set loading state to false when orders is null
             }
         }
       }, [restaurant, restaurantOrders]);
@@ -179,7 +179,7 @@ export default function Reservations({ restaurant }) {
             contentContainerStyle={{ flexDirection: 'column' }}
             keyExtractor={(item) => item._id}
             renderItem={renderOrderItem}
-            ListEmptyComponent={() =><Text>No orders found</Text>}
+            ListEmptyComponent={() =><Text style={styles.notFoundText}>No Orders Available</Text>}
             />
         </View>
         )}
@@ -224,5 +224,10 @@ const styles = StyleSheet.create({
       fontFamily: 'eb-garamond-italic',
       paddingLeft: 3,
       fontSize: 20,
+    },
+    notFoundText: {
+      alignSelf: 'center', 
+      fontSize: 16, 
+      fontFamily: 'eb-garamond-italic',
     },
 });

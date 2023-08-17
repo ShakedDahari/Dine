@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert, BackHandler, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert, BackHandler} from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
-import { Button, Modal, TextInput, RadioButton  } from 'react-native-paper';
+import { Button, Modal, TextInput, RadioButton, HelperText  } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from '@react-navigation/native';
 import Reservations from './Reservations';
@@ -121,9 +121,10 @@ const handleAddItem = () => {
         // If menuItems already has items, spread the existing items and add the newItem
         setMenuItems([...menuItems, itemAdded]);
       }  
-    } else {
-      alert('Invalid Error');
-    }
+    } 
+    // else {
+    //   alert('Invalid Error');
+    // }
 
     // Close the modal and reset the captured details
     setIsAddingItem(false);
@@ -178,9 +179,10 @@ const handleAddItem = () => {
           }
         });
       });
-    } else {
-      alert('Invalid Error');
-    }
+    } 
+    // else {
+    //   alert('Invalid Error');
+    // }
 
     // Close the edit modal
     setEditModalVisible(false);
@@ -281,10 +283,10 @@ const handleAddItem = () => {
             <MaterialIcons name={'mail'} style={styles.material} />
             <Text style={styles.font}>{restaurant.email}</Text>
         </View>
-    </View>
+    </View> 
     <View>
       <Text style={styles.menu}>Menu</Text>
-      {categoryList.length > 1 && (
+      {categoryList.length > 1 ? (
         <FlatList
             horizontal
             data={categoryList.sort(customCategorySorting)}
@@ -293,9 +295,11 @@ const handleAddItem = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.options}
         />
+      ) : (
+        <Text style={styles.notFoundText}>No Menu Available</Text> 
       )}  
-      {userType === 'restaurantOwner' && (
-         <Button mode='outlined' style={styles.btn} onPress={handleAddItem}>Add Item</Button>
+      {userType === 'restaurantOwner' && ( 
+         <Button icon="note-plus-outline" mode='outlined' style={styles.btn} onPress={handleAddItem}>Add Item</Button>
         )}
 
       <ScrollView>
@@ -322,36 +326,61 @@ const handleAddItem = () => {
         }
       })}
       </ScrollView>
+    {/* { backgroundColor: '#aaccc6', alignSelf: 'center', padding: 10, margin: 5 } */}
     </View>
-      <Modal visible={isAddingItem || editModalVisible} 
+
+      {userType === 'restaurantOwner' && (
+        <View>
+          <Text style={styles.menu}>Reservations</Text>
+          <Reservations restaurant={restaurant} />
+        </View>
+      )}
+      <View>
+        <Text style={styles.menu}>Reviews</Text>
+        <Reviews restaurant={restaurant} userType={userType} />
+      </View>
+    </ScrollView>
+    <Modal visible={isAddingItem || editModalVisible} 
         transparent={true} 
         animationType="slide"
         onDismiss={handleCancelEdit}>
-      <View style={{ backgroundColor: '#aaccc6', alignSelf: 'center', padding: 10, margin: 5 }}>
+      <View style={styles.modalContainer}>
         <TextInput
           mode="outlined"
           label="Item Name"
           value={isAddingItem ? newItemName : editedItemName}
           onChangeText={isAddingItem ? setNewItemName : setEditedItemName}
+          style={styles.outlinedInput}
         />
+        <HelperText style={styles.helperText} type="error" visible={isAddingItem ? !newItemName : !editedItemName}>
+          Item name is required
+        </HelperText> 
         <TextInput
           mode="outlined"
           label="Item Price"
           value={isAddingItem ? newItemPrice : editedItemPrice}
           onChangeText={isAddingItem ? setNewItemPrice : setEditedItemPrice}
           keyboardType="numeric"
+          style={styles.outlinedInput}
         />
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+        <HelperText style={styles.helperText} type="error" visible={isAddingItem ? !newItemPrice : !editedItemPrice}>
+          Item price is required  
+        </HelperText>
+        <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
           <TouchableOpacity onPress={pickImage}>
             <MaterialIcons style={styles.imgBtn} name="add-photo-alternate" />
           </TouchableOpacity>
+          {isAddingItem ? (
+            newItemImage && <Image source={{ uri: newItemImage }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />
+          ) : (
+            editedItemImage && <Image source={{ uri: editedItemImage }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />
+          )}
+          <HelperText style={styles.helperText2} type="error" visible={isAddingItem ? !newItemImage : !editedItemImage}>
+            Item image is required
+          </HelperText>
         </View>
-        {isAddingItem ? (
-          newItemImage && <Image source={{ uri: newItemImage }} style={{ width: 100, height: 100, alignSelf: 'center' }} />
-        ) : (
-          editedItemImage && <Image source={{ uri: editedItemImage }} style={{ width: 100, height: 100, alignSelf: 'center' }} />
-        )}
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+        <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
         <RadioButton.Group onValueChange={(value) => {
                 if (isAddingItem) {
                   setSelectedCategory(value);
@@ -382,24 +411,26 @@ const handleAddItem = () => {
             <Text style={styles.radioLabel}>Beverages</Text>
           </View>
         </RadioButton.Group>
+        <HelperText style={styles.helperText2} type="error" visible={isAddingItem ? !selectedCategory : !editedItemCategory}>
+          Please select a category
+        </HelperText>
+        </View>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <Button mode="outlined" style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={isAddingItem ? handleSaveItem : handleSaveEdit}>Save</Button>
+          <Button icon="content-save" mode="outlined" style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={() => {
+              if (isAddingItem) {
+                if (newItemName && newItemPrice && newItemImage && selectedCategory) {
+                  handleSaveItem();
+                } 
+              } else {
+                if (editedItemName && editedItemPrice && editedItemImage && editedItemCategory) {
+                  handleSaveEdit();
+                } 
+              }}}>Save</Button>
           <Button mode="outlined" style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={isAddingItem ? () => setIsAddingItem(false) : handleCancelEdit}>Cancel</Button>
         </View>
       </View>
     </Modal>
-      {userType === 'restaurantOwner' && (
-        <View>
-          <Text style={styles.menu}>Reservations</Text>
-          <Reservations restaurant={restaurant} />
-        </View>
-      )}
-      <View>
-        <Text style={styles.menu}>Reviews</Text>
-        <Reviews restaurant={restaurant} userType={userType} />
-      </View>
-    </ScrollView>
     </View>
   );
 };
@@ -443,6 +474,11 @@ const styles = StyleSheet.create({
       alignSelf: 'center',
       color: '#90b2ac',
   },
+  notFoundText: {
+    alignSelf: 'center', 
+    fontSize: 16, 
+    fontFamily: 'eb-garamond-italic',
+  },
     font: {
         fontSize: 20,
         fontFamily: 'eb-garamond-italic',
@@ -466,14 +502,14 @@ const styles = StyleSheet.create({
     btn: {
         height: 50,
         alignSelf: "center",
-        width: "75%",
+        width: "50%",
         borderWidth: 2,
         margin: 10,
     },
     imgBtn: {
         fontSize: 50,
         alignSelf: "center",
-        borderColor: "#B0B0B0",
+        borderColor: "#90b2ac",
         borderWidth: 1,
         margin: 10,
         padding: 5,
@@ -481,7 +517,15 @@ const styles = StyleSheet.create({
     radioLabel: {
       fontSize: 14,
       fontFamily: 'eb-garamond',
-      marginVertical: 8,
+    },
+    helperText: {
+      marginTop: -5,
+      width: "80%",
+      alignSelf: 'center',        
+    },
+    helperText2: {
+      marginTop: -5,
+      alignSelf: 'center',        
     },
     options: {
       flexDirection: 'row',
@@ -512,5 +556,17 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       fontFamily: 'eb-garamond',
       marginBottom: 10,
+    },
+    modalContainer: {
+      backgroundColor: '#fff',
+      padding: 20,
+      borderRadius: 10,
+      margin: 20,
+      alignItems: 'center',
+      elevation: 15,
+    },
+    outlinedInput: {
+      width: "75%",
+      alignSelf: 'center',
     },
 });

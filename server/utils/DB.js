@@ -334,12 +334,42 @@ class DB {
         }
     }
 
+    async DeleteReviewItem(collection, id, reviewId) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $pull: { reviews: { _id: new ObjectId(reviewId) } } }, 
+                { new: true }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
     async EditMenuItem(collection, id, itemId, name, price, image, category) {
         try {
             await this.client.connect();
             return await this.client.db(this.dbName).collection(collection).updateOne(
                 { _id: new ObjectId(id), 'menu._id': new ObjectId(itemId) },
                 { $set: { 'menu.$.name': name, 'menu.$.price': price, 'menu.$.image': image, 'menu.$.category': category } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
+    async EditReviewItem(collection, id, reviewId, user, rating, description) {
+        try {
+            await this.client.connect();
+            let createdAt = new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' })
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id), 'reviews._id': new ObjectId(reviewId) },
+                { $set: { 'reviews.$.user': user, 'reviews.$.rating': rating, 'reviews.$.description': description, 'reviews.$.createdAt': createdAt } }
             );
         } catch (error) {
             return error;

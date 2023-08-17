@@ -246,7 +246,7 @@ export default function BusinessRegistration(props) {
               Invalid phone number
             </HelperText>
              <View style={{flexDirection:'row', justifyContent:'center'}}> 
-             <View style={{flexDirection:'column', width: '45%'}}>
+             <View style={{flexDirection:'column', width: '48%'}}>
               <TextInput
                 style={styles.outlinedInput1}
                 mode="outlined"
@@ -258,7 +258,7 @@ export default function BusinessRegistration(props) {
                 Invalid name
               </HelperText>
               </View>
-              <View style={{flexDirection:'column', width: '45%'}}>
+              <View style={{flexDirection:'column', width: '48%'}}>
           <TouchableOpacity style={styles.outlinedInput} onPress={() => setFoodListVisible(true)}>
             <Text style={{ fontSize: 12, color: '#1C1B1F', margin: 15}}>{foodTypeB || "Food Type"}</Text>
           </TouchableOpacity>
@@ -324,14 +324,14 @@ export default function BusinessRegistration(props) {
             </View>
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
+              {imgB && <Image source={{ uri: imgB }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
             </View>
             <HelperText style={styles.helperText1} type="error" visible={imgB ? false : true}>
                 Select image
             </HelperText>
-            {imgB && <Image source={{ uri: imgB }} style={{ width: 100, height: 100, alignSelf:'center' }} />}
 
             <View style={{flexDirection:'row', justifyContent:'center'}}> 
-            <View style={{flexDirection:'column', width: '45%'}}>  
+            <View style={{flexDirection:'column', width: '48%'}}>  
               <TextInput
               style={styles.outlinedInput1}
               mode="outlined"
@@ -344,7 +344,7 @@ export default function BusinessRegistration(props) {
               Invalid number
             </HelperText>
             </View>  
-            <View style={{flexDirection:'column', width: '45%'}}>
+            <View style={{flexDirection:'column', width: '48%'}}>
             <TextInput
               style={styles.outlinedInput1}
               mode="outlined"
@@ -359,7 +359,7 @@ export default function BusinessRegistration(props) {
             </View>
             </View>
             <View style={{flexDirection:'row', justifyContent:'center'}}> 
-            <View style={{flexDirection:'column', width: '45%'}}> 
+            <View style={{flexDirection:'column', width: '48%'}}> 
             <TextInput
               style={styles.outlinedInput1}
               mode="outlined"
@@ -372,7 +372,7 @@ export default function BusinessRegistration(props) {
               Invalid number
             </HelperText>
             </View>
-            <View style={{flexDirection:'column', width: '45%'}}> 
+            <View style={{flexDirection:'column', width: '48%'}}> 
             <TextInput
               style={styles.outlinedInput1}
               mode="outlined"
@@ -388,7 +388,7 @@ export default function BusinessRegistration(props) {
           </View>
 
             <View style={{flexDirection:'row', justifyContent:'center'}}> 
-            <View style={{flexDirection:'column', width: '45%'}}> 
+            <View style={{flexDirection:'column', width: '48%'}}> 
             <TextInput    
               style={styles.outlinedInput1}
               mode="outlined"       
@@ -398,7 +398,7 @@ export default function BusinessRegistration(props) {
               value={passwordB}
               right={<TextInput.Icon icon={isPasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPasswordVisible)}/>}
             />
-            <HelperText style={styles.helperText1} type="error" visible={passwordHelper}>
+            <HelperText style={styles.helperText2} type="error" visible={passwordHelper}>
               Password must have
               {!isLengthValid && '\n*At least 6 characters'}
               {!hasUppercase && '\n*At least 1 uppercase letter'}
@@ -406,7 +406,7 @@ export default function BusinessRegistration(props) {
               {!hasDigit && '\n*At least 1 digit'}
             </HelperText>
             </View>
-            <View style={{flexDirection:'column', width: '45%'}}> 
+            <View style={{flexDirection:'column', width: '48%'}}> 
             <TextInput style={styles.outlinedInput1}
               mode="outlined"
               label="Verify"
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
     helperText2: {
       marginTop: -5,
       width: "90%",
-      alignSelf: 'center',        
+      alignSelf: 'center', 
     },
   text: {
     alignSelf: "center",
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
     imgBtn: {
       fontSize: 50,
       alignSelf: "center",
-      borderColor: "#B0B0B0",
+      borderColor: "#90b2ac",
       borderWidth: 1,
       margin: 10,
       padding: 5,

@@ -1,24 +1,38 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Button, TextInput, HelperText } from 'react-native-paper';
+import { Button, TextInput, HelperText, ActivityIndicator } from 'react-native-paper';
 import { ContextPage } from '../Context/ContextProvider';
+import WebView from 'react-native-webview';
 
 export default function Reviews({ restaurant, userType }) {
 
-    const { loginUser, restaurantReviews, LoadRestaurantReviews, addReview } = useContext(ContextPage);
-    ///const [reviews, setReviews] = useState([]);
+    const { rating, setRating, description, setDescription, loginUser, restaurantReviews, LoadRestaurantReviews, loadingReviews, setLoadingReviews, addReview, editReview, deleteReview } = useContext(ContextPage);
     const [isAddingReview, setIsAddingReview] = useState(false);
-    const [rating, setRating] = useState(0);
-    const [description, setDescription] = useState('');
-    const [ratingError, setRatingError] = useState(true);
-    const [descriptionError, setDescriptionError] = useState(true);
+    const [ratingError, setRatingError] = useState(false);
+    const [descriptionError, setDescriptionError] = useState(false);
+    const [isEditingReview, setIsEditingReview] = useState(false);
+    const [reviewToEdit, setReviewToEdit] = useState([]);
 
     useEffect(() => {
         if (restaurant) {
-          LoadRestaurantReviews(restaurant._id);
+            //LoadRestaurantReviews(restaurant._id);    
+            fetchReviewsData();                          
         }
-      }, [restaurant, restaurantReviews]);
+      }, [restaurant]);
+
+
+      const fetchReviewsData = async () => {
+        try {
+            setLoadingReviews(true);
+            await LoadRestaurantReviews(restaurant._id);
+        } catch (error) {
+            // Handle any error that might occur during loading reviews
+            console.error('Error loading reviews:', error);
+        }  finally {
+            setLoadingReviews(false); // Ensure loading state is set to false whether successful or not
+        }
+      }
 
     const checkInputsValidation = async () => {
         if (rating === 0) {
@@ -27,64 +41,265 @@ export default function Reviews({ restaurant, userType }) {
             setRatingError(false);
         }
 
-        if (!description.trim()) {
+        if (description === '') {
             setDescriptionError(true);
         } else {
             setDescriptionError(false);
         }
     }
 
+    // Function to handle canceling the edit modal
+  const handleCancelEdit = () => {
+    if (isAddingReview) {
+      setIsAddingReview(false);
+    } else {
+      // Close the edit modal
+      setIsEditingReview(false);
+    }
+  };
+
   const handleAddReview = async () => {
 
     await checkInputsValidation();
     
-    const newReview = {
+        const newReview = {
+            restaurant: restaurant._id,
+            username: loginUser.username,
+            rating: rating,
+            description: description,
+        };
+        
+        if (restaurant._id && loginUser.username && rating && description) {
+            setIsAddingReview(false);
+            
+            const reviewAdded = await addReview(newReview.restaurant, newReview.username, newReview.rating, newReview.description);
+            // if (reviews === undefined) {
+            //     setReviews([reviewAdded]);
+            // } else {
+            //     setReviews([...reviews, reviewAdded]);
+            // } 
+            await fetchReviewsData();
+            console.log(reviewAdded);
+            setRating(0);
+            setDescription('');
+        }
+  };
+
+
+  const handleEditReview = async (review) => {
+    // Handle edit action for the user with the specified id
+    console.log(`Edit review with ID: ${review._id}`);
+    setIsEditingReview(true);
+    setReviewToEdit(review);
+    setRating(review.rating);
+    setRatingError(false);
+    setDescription(review.description);
+    setDescriptionError(false);
+  };
+
+  const saveEditReview = async (review) => {
+
+    await checkInputsValidation();
+
+    const editedReview = {
+        reviewId: review._id,
         restaurant: restaurant._id,
-        username: loginUser.username,
+        username: review.user,
         rating: rating,
         description: description,
-    };
-    
-    if (!ratingError && !descriptionError) {
-        const reviewAdded = await addReview(newReview.restaurant, newReview.username, newReview.rating, newReview.description);
-        //setReviews([...reviews, reviewAdded]);
-        console.log(reviewAdded);
-        setIsAddingReview(false);
+    }
+
+    if (restaurant._id && review.user && rating && description) {
+        setIsEditingReview(false);
+        
+        const reviewEdit = await editReview(editedReview.restaurant, editReview.reviewId, editedReview.username, editedReview.rating, editedReview.description);
+        await fetchReviewsData();
+        console.log(reviewEdit);
         setRating(0);
         setDescription('');
     }
+  }
+
+  const handleDeleteReview = (id, reviewId) => {
+    console.log(`Delete review with ID: ${reviewId}`);
+    Alert.alert(
+      'Delete Review',
+      'Are you sure you want to delete this review?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => deleteReview(id, reviewId) },
+      ],
+      { cancelable: true }
+    );
   };
 
   const handleStarPress = (selectedRating) => {
     setRating(selectedRating);
   };
 
+  const renderChart = () => {
+    const ratingCounts = [0, 0, 0, 0, 0]; // Initialize an array to count ratings from 1 to 5
+
+        // Count the ratings
+        restaurantReviews.forEach(review => {
+          ratingCounts[review.rating - 1]++; // Increment the count for the corresponding rating
+        });        
+   
+    const totalReviews = restaurantReviews.length;
+    const totalRatings = restaurantReviews.reduce((sum, review) => sum + review.rating, 0);
+    const averageRating = totalRatings / totalReviews;
+
+    const generateStarIcons = (averageRating) => {
+        const fullStars = Math.floor(averageRating);
+        const emptyStars = 5 - fullStars;
+        const starIcons = Array(fullStars).fill('★').concat(Array(emptyStars).fill('☆')).join('');
+        return starIcons;
+    };
+
+    const ratingPercentages = [
+        (ratingCounts[4] / totalReviews) * 100,
+        (ratingCounts[3] / totalReviews) * 100,
+        (ratingCounts[2] / totalReviews) * 100,
+        (ratingCounts[1] / totalReviews) * 100,
+        (ratingCounts[0] / totalReviews) * 100,
+      ];
+ 
+    const chartConfig = {
+        type: 'bar',
+        data: {
+            labels: ['5', '4', '3', '2', '1'],
+            datasets: [
+              {
+                label: 'Number of Reviews',
+                data: ratingPercentages,
+                backgroundColor: '#aaccc6',
+                borderWidth: 1,
+                borderColor: 'black',
+              },
+            ],
+          },
+          options: {
+            indexAxis: 'y',
+            scales: {
+              x: {
+                stacked: true,
+                max: 100,
+                grid: {
+                  display: false,
+                },
+                ticks: {
+                  display: false,
+                },
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: false,
+                },
+                ticks: {
+                  font: {
+                    size: 30,
+                  },
+                },
+              },
+            },
+            plugins: {
+              tooltip: {
+                titleFont: {
+                  size: 30,
+                },
+                bodyFont: {
+                  size: 30,
+                },
+              },
+              legend: {
+                display: false,
+              },
+            },
+          },
+    };
+  
+    const chartHTML = `
+    <html>
+    <head>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body style="display: flex; flex-direction: row; align-items: center; text-align: center;" >
+      <div style="width: 95%;">
+        <canvas id="reviewChart"></canvas>
+      </div>
+      <div>
+        <p style="font-size: 80px; margin: 0;">${averageRating.toFixed(1)}</p>
+        <p style="font-size: 50px; color: #aaccc6; margin: 0;">${generateStarIcons(averageRating)}</p>
+        <p style="font-size: 40px; margin-top: 10px;">${totalReviews} Reviews</p>
+      </div>
+      <script>
+        const ctx = document.getElementById('reviewChart').getContext('2d');
+        new Chart(ctx, ${JSON.stringify(chartConfig)});
+      </script>
+    </body>
+  </html>
+    `;
+
+    return (
+      <View style={{ height: 200 }}>
+        <WebView
+          originWhitelist={['*']}
+          source={{ html: chartHTML }}
+          style={{ flex: 1, backgroundColor: '#ededed' }}
+        />
+      </View>
+    );
+  };
+
   return (
     <View>
         {userType !== 'restaurantOwner' && (
-            <Button mode='outlined' style={styles.btn} onPress={() => setIsAddingReview(true)}>Add Review</Button>
+            <Button icon="note-edit-outline" mode='outlined' style={styles.btn} onPress={() => setIsAddingReview(true)}>Add Review</Button>
         )}
-      {restaurantReviews && restaurantReviews.map((review, index) => (
-        <View key={index} style={styles.review}>
-          <Text style={styles.reviewDescription}>{review.user}</Text>
-          <View style={styles.reviewRating}>
-            {[1, 2, 3, 4, 5].map((starNumber) => (
-              <MaterialIcons
-                key={starNumber}
-                name={starNumber <= review.rating ? 'star' : 'star-border'}
-                size={24}
-                color={starNumber <= review.rating ? '#FFD700' : '#ccc'}
-              />
-            ))}
-          </View>
-          <Text style={styles.reviewDescription}>{review.description}</Text>
-          <Text style={styles.reviewDescription}>{review.createdAt}</Text>
-        </View>
-      ))}
 
-      <Modal visible={isAddingReview} transparent={true} animationType="slide">
+    {loadingReviews ? (
+        <ActivityIndicator size={100} color="#D9D9D9" />
+    ) : restaurantReviews && restaurantReviews.length > 0 ? (
+        <>
+        {renderChart()}
+        {restaurantReviews.map((review, index) => (
+            <View key={index} style={styles.review}>
+            <Text style={styles.reviewDescription}>{review.user}</Text>
+            <View style={styles.reviewRating}>
+                {[1, 2, 3, 4, 5].map((starNumber) => (
+                <MaterialIcons
+                    key={starNumber}
+                    name={starNumber <= review.rating ? 'star' : 'star-border'}
+                    size={24}
+                    color={starNumber <= review.rating ? '#90b2ac' : '#ccc'}
+                />
+                ))}
+            </View>
+            <Text style={styles.reviewDescription}>{review.description}</Text>
+            <Text style={styles.reviewDescription}>{review.createdAt}</Text>
+            {loginUser && loginUser.username === review.user || userType === 'adminUser' ? (
+                <View style={{flexDirection: 'row'}}>
+                  <TouchableOpacity onPress={() => handleEditReview(review)}>
+                    <MaterialIcons name="edit" size={40} color="#90b2ac" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDeleteReview(restaurant._id, review._id)}>
+                    <MaterialIcons name="delete" size={40} color="red" />
+                  </TouchableOpacity>
+                </View>
+              ) : null}
+            </View>
+        ))}
+        </>
+    ) : (
+        <Text style={styles.notFoundText}>No Reviews Available</Text>
+    )}
+
+      <Modal visible={isAddingReview || isEditingReview} transparent={true} animationType="slide" onRequestClose={handleCancelEdit}>
         <View style={styles.modalContainer}>
-          <Text style={styles.text}>Add Review</Text>
+        {isAddingReview ? (<Text style={styles.text}>Add Review</Text> ) : (
+            <Text style={styles.text}>Edit Review</Text>
+        )}
           <View style={styles.starContainer}>
             {[1, 2, 3, 4, 5].map((starNumber) => (
               <TouchableOpacity
@@ -114,8 +329,11 @@ export default function Reviews({ restaurant, userType }) {
             Please provide a description
         </HelperText>
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <Button mode='outlined' style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={() => handleAddReview()}>Add</Button>
-          <Button mode='outlined' style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={() => setIsAddingReview(false)}>Cancel</Button>
+            {isAddingReview ? (
+                <Button mode='outlined' style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={handleAddReview}>Add</Button>
+                ) : (
+                <Button icon="content-save" mode='outlined' style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={() => saveEditReview(reviewToEdit)}>Save</Button>)}
+          <Button mode='outlined' style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={handleCancelEdit}>Cancel</Button>
         </View>
         </View>
       </Modal>
@@ -126,27 +344,31 @@ export default function Reviews({ restaurant, userType }) {
 const styles =  StyleSheet.create({
   review: {
     alignSelf: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 10,
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#aaccc6',
+    borderRadius: 10,
+    padding: 20,
+    margin: 10, 
   },
   reviewRating: {
     flexDirection: 'row',
     marginBottom: 5,
   },
   reviewDescription: {
-    fontSize: 16,
+    fontSize: 20,
+    fontFamily: 'eb-garamond',
+    margin: 5,
   },
   text: {
     alignSelf: "center",
-    fontSize: 20,
+    fontSize: 25,
     fontFamily: 'eb-garamond',
   },
   modalContainer: {
     backgroundColor: '#fff',
     padding: 20,
-    marginTop: 180,
+    marginTop: 150,
     borderRadius: 10,
     margin: 20,
     alignItems: 'center',
@@ -168,7 +390,7 @@ const styles =  StyleSheet.create({
   btn: {
     height: 50,
     alignSelf: "center",
-    width: "75%",
+    width: "50%",
     borderWidth: 2,
     margin: 10,
     },
@@ -176,5 +398,10 @@ helperText: {
     marginTop: -5,
     width: "80%",
     alignSelf: 'center',        
+  },
+  notFoundText: {
+    alignSelf: 'center', 
+    fontSize: 16, 
+    fontFamily: 'eb-garamond-italic',
   },
 });

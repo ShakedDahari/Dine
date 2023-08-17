@@ -240,11 +240,11 @@ export default function Register(props) {
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={handleAddImage}><MaterialIcons style={styles.imgBtn} name="add-a-photo" /></TouchableOpacity>
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
+              {imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
             </View>
               <HelperText style={styles.helperText} type="error" visible={imgSrc ? false : true}>
                 Select image
               </HelperText>
-            {imgSrc && <Image source={{ uri: imgSrc }} style={{ width: 100, height: 100, alignSelf:'center' }} />}
             <TextInput style={styles.outlinedInput}   
               mode="outlined"        
               label="Password"
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     imgBtn: {
       fontSize: 50,
       alignSelf: "center",
-      borderColor: "#B0B0B0",
+      borderColor: "#90b2ac",
       borderWidth: 1,
       margin: 10,
       padding: 5,

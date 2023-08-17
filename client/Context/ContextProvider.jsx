@@ -36,6 +36,10 @@ export default function ContextProvider(props) {
   const [restaurantOrders, setRestaurantOrders] = useState([]);
   const [restaurantReviews, setRestaurantReviews] = useState([]);
 
+  const [rating, setRating] = useState(0);
+  const [description, setDescription] = useState('');
+  const [loadingReviews, setLoadingReviews] = useState(true);
+
   const [location, setLocation] = useState();
   const [errorMsg, setErrorMsg] = useState();
   const [foodType, setFoodType] = useState();
@@ -595,13 +599,7 @@ export default function ContextProvider(props) {
           },
         });
         if (res.ok) {
-          const text = await res.text();
-          let data;    
-          try {
-            data = await JSON.parse(text);
-          } catch (error) {
-            throw new Error('Invalid JSON response');
-          }
+          let data = await res.json();
           console.log(data);  
           return data;
         } else {
@@ -613,6 +611,54 @@ export default function ContextProvider(props) {
       LoadRestaurantReviews(id);
     }
   }
+
+  const editReview = async (id, reviewId, user, rating, description) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/edit/${id}/reviews`, {
+        method: "PUT",
+        body: JSON.stringify({ reviewId, user, rating, description }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const text = await res.text();
+        let data;
+        
+        try {
+          data = await JSON.parse(text);
+        } catch (error) {
+          throw new Error('Invalid JSON response');
+        }
+        console.log(data);  
+        return data;
+      } else {
+        throw new Error(`Request failed ${res.status}`);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadRestaurants();
+    }
+  }
+
+  const deleteReview = async (id, reviewId) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/reviews/${id}/delete`, {
+        method: "DELETE",
+        body: JSON.stringify({reviewId}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadRestaurants();
+    }
+  };
 
 
   const value = { 
@@ -666,7 +712,8 @@ export default function ContextProvider(props) {
     restaurantOrders, setRestaurantOrders, LoadRestaurantOrders,
     deleteOrder, updateSeatsBack, changeApprovedOrder,
     restaurantReviews, setRestaurantReviews, LoadRestaurantReviews,
-    addReview,
+    addReview, rating, setRating, description, setDescription,
+    loadingReviews, setLoadingReviews, deleteReview, editReview,
   };
 
   return (

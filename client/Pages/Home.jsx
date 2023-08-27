@@ -2,13 +2,22 @@ import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, Tou
 import React, { useContext, useEffect, useState } from "react";
 import * as Location from "expo-location";
 import { ContextPage } from "../Context/ContextProvider";
-import { Button, TextInput, HelperText } from 'react-native-paper';
+import { Button, TextInput, HelperText, RadioButton  } from 'react-native-paper';
+import MapView, { Marker, Circle } from 'react-native-maps';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Slider } from '@react-native-assets/slider';
+
 
 export default function Home(props) {
 
-  const { location, setLocation, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible,
-    setFoodListVisible, dinersListVisible, setDinersListVisible, foodTypes, dinersList, findRestaurants, setIsLoading } = useContext(ContextPage);
+  const { restaurants, location, setLocation, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible, filteredRestaurants, setFilteredRestaurants, 
+    setFoodListVisible, dinersListVisible, setDinersListVisible, foodTypes, dinersList, findRestaurants, nearbyRestaurants, setIsLoading } = useContext(ContextPage);
     const [pressed, setPressed] = useState(false);
+    const [userLocation, setUserLocation] = useState();
+    const [isLocationLoad, setIsLocationLoad] = useState(false);
+    const [newLocation, setNewLocation] = useState();
+    const [chosenRange, setChosenRange] = useState(5);
+    const [searchType, setSearchType] = useState('city');
     
     const cities = require('../utils/cities.json');
     
@@ -24,57 +33,57 @@ export default function Home(props) {
       
       let location = await Location.getCurrentPositionAsync({});
       
-      let heading = await Location.getHeadingAsync({});
+      //let heading = await Location.getHeadingAsync({});
+      setUserLocation(location.coords);
       let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
-      console.log(reverse, 'reverse');
+      // console.log(reverse);
+      await locationToCity(reverse);
       
-      let l;
-      
-      if (reverse && reverse[0].city) {
-        
-        let cityName = reverse[0].city;
-        console.log(cityName);
-        
-        // l = await cities.find((c) => c.name === cityName)?.english_name;
-        l = await cities.find((c)=>cityName===c.english_name)?.english_name  //?.=setting l to the english name of the city
-        if(l === undefined) {
-          l = await cities.find((c) => c.name === cityName)?.english_name;
-        }
-        console.log(l);
-        setLocation(l);        
-        
-      } else {
-        // Handle the case when the city is not available
-        let userLatitude = location.coords.latitude; // User's latitude
-        let userLongitude = location.coords.longitude; // User's longitude
-        
-        let closestCity = null;
-        let shortestDistance = Infinity;
-        
-        await cities.forEach((city) => {
-          const distance = calculateDistance(
-            userLatitude,
-            userLongitude,
-            city.latt,
-            city.long
-            );
-            
-            if (distance < shortestDistance) {
-              shortestDistance = distance;
-              closestCity = city.english_name;
-            }
-          });
-          
-          console.log("Closest city:", closestCity);
-          setLocation(closestCity);
-        }
       } catch (error) {
         console.log(error.message);
       }
     })();
   }, []);
   
-  
+  const locationToCity = async (reverse) => {
+    let l;
+    if (reverse && reverse[0].city) {
+      
+      let cityName = reverse[0].city;
+      
+      l = cities.find((c)=>cityName===c.english_name)?.english_name  //?.=setting l to the english name of the city
+      if (l === undefined) {
+        l = cities.find((c) => c.name === cityName)?.english_name;
+      }
+
+      setLocation(l);        
+      
+    } else {
+      // Handle the case when the city is not available
+      let userLatitude = location.coords.latitude; // User's latitude
+      let userLongitude = location.coords.longitude; // User's longitude
+      
+      let closestCity = null;
+      let shortestDistance = Infinity;
+      
+      cities.forEach((city) => {
+        const distance = calculateDistance(
+          userLatitude,
+          userLongitude,
+          city.latt,
+          city.long
+          );
+          
+          if (distance < shortestDistance) {
+            shortestDistance = distance;
+            closestCity = city.english_name;
+          }
+        });
+        
+        setLocation(closestCity);
+      }
+  }
+
   const handlePressIn = () => {
     setPressed(true);
   };
@@ -109,7 +118,7 @@ export default function Home(props) {
   }
 
   
-  let text = "Searching for Location..";
+  let text = "Searching for Location";
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
@@ -121,16 +130,63 @@ export default function Home(props) {
     }
   }
 
+  const handleMap = () => {
+    if (isLocationLoad) {
+      setIsLocationLoad(false);
+    } else {
+      setIsLocationLoad(true);
+    }
+  }
+
+  const saveLocation = async () => {
+      if (newLocation) {
+        let reverse = await Location.reverseGeocodeAsync(newLocation);
+        await locationToCity(reverse);
+      } 
+      setIsLocationLoad(false);
+  }
+
+  const resetLocation = async () => {
+    setNewLocation(''); // Clear the new location
+    let reverse = await Location.reverseGeocodeAsync(userLocation, { language: 'en' });
+    await locationToCity(reverse);
+  }
+
+  const findNearbyRestaurants = async () => {
+    const nearbyRestaurants = await Promise.all(
+      filteredRestaurants.map(async (restaurant) => {
+        const reverse = await Location.reverseGeocodeAsync(restaurant.location);
+        const distance = calculateDistance(
+          newLocation ? newLocation.latitude : userLocation.latitude,
+          newLocation ? newLocation.longitude : userLocation.longitude,
+          reverse[0].latitude,
+          reverse[0].longitude
+        );
+        return distance <= chosenRange ? restaurant : null;
+      })
+    );
+     // Filter out null values (restaurants that are not within the chosen range)
+     if (nearbyRestaurants) {
+       const validNearbyRestaurants = nearbyRestaurants.filter((restaurant) => restaurant !== null);
+       setFilteredRestaurants(validNearbyRestaurants);
+     }
+  }
 
   const handleFind = () => {
     console.log(location, foodType, diners);
     if (location && foodType && diners) {
+      if (searchType === 'city') {
         findRestaurants(location, foodType, diners);
+      } else {
+        nearbyRestaurants(foodType, diners);
+        findNearbyRestaurants();
+      }
         setIsLoading(true);
         props.navigation.navigate("Order");
-    } else {
-        alert('Invalid Error');
-    }
+    } 
+    // else {
+    //     alert('Invalid Error');
+    // }
   }
 
   return (
@@ -143,6 +199,49 @@ export default function Home(props) {
           />
           <Text style={styles.text}>DineInTime</Text>
         </View>
+      <Button style={{paddingTop: 10}} icon={() => <MaterialCommunityIcons name="map-search" size={50} color="#333" />} onPress={handleMap}></Button>
+      {isLocationLoad && (
+        <MapView
+          style={{ width: '100%', height: 300 }}
+          initialRegion={{
+            latitude: userLocation ? userLocation.latitude : 0,
+            longitude: userLocation ? userLocation.longitude : 0,
+            latitudeDelta: 0.15,
+            longitudeDelta: 0.15,
+          }} onPress={(e) => {         
+            setNewLocation(e.nativeEvent.coordinate);
+          }}>
+          {userLocation && (
+            <Marker coordinate={userLocation} title="You are here" />
+          )}
+          {newLocation && (
+            <Marker coordinate={newLocation} title="New Location" pinColor="#aaccc6" />
+          )}
+          {userLocation && (
+          <Circle
+            center={newLocation ? newLocation : userLocation}
+            radius={chosenRange * 1000} // Convert range to meters
+            fillColor="rgba(90, 157, 255, 0.3)"
+            strokeColor="rgba(90, 157, 255, 0.5)"
+          />)}
+        </MapView>    
+      )}
+      {isLocationLoad && (<View style={styles.rangeContainer}>
+        <Text>Range: {chosenRange} km</Text>
+        <Slider
+          style={{ width: 200, height: 50 }}
+          minimumValue={5}
+          maximumValue={20}
+          step={1}
+          value={chosenRange}
+          onValueChange={(value) => setChosenRange(value)}
+        />
+      </View>)}
+      {isLocationLoad && (
+      <View style={{ flexDirection: 'row', alignSelf: 'center', paddingTop: 10 }}>
+        <Button mode="outlined" style={{ marginHorizontal: 5 }} onPress={saveLocation}>Save</Button>
+        <Button mode="outlined" style={{ marginHorizontal: 5 }} onPress={resetLocation}>Reset</Button>
+      </View>)}
         <View style={styles.inputCon}>
           <TextInput
             style={styles.outlinedInput2}
@@ -153,9 +252,15 @@ export default function Home(props) {
             editable={false}
             value={text}
           />
+           <HelperText style={styles.helperText} type="error" visible={!location}>
+              Location not found
+            </HelperText>
           <TouchableOpacity style={styles.outlinedInput1} onPress={() => setFoodListVisible(true)}>
             <Text style={{ fontSize: 14, color: '#1C1B1F', margin: 10 }}>{foodType || "Type of Food"}</Text>
           </TouchableOpacity>
+            <HelperText style={styles.helperText} type="error" visible={!foodType}>
+              Please select food type
+            </HelperText>
           <Modal
             animationType="slide"
             transparent={true}
@@ -179,6 +284,9 @@ export default function Home(props) {
           <TouchableOpacity style={styles.outlinedInput1} onPress={() => setDinersListVisible(true)}>
             <Text style={{ fontSize: 14, color: '#1C1B1F', margin: 10 }}>{diners || "Diners Amount"}</Text>
           </TouchableOpacity>
+            <HelperText style={styles.helperText} type="error" visible={!diners}>
+              Please select diners
+            </HelperText>
           <Modal
             animationType="slide"
             transparent={true}
@@ -200,6 +308,18 @@ export default function Home(props) {
               ))}
             </View>
           </Modal>
+          <View style={styles.radioContainer}>
+            <RadioButton.Group
+              onValueChange={(value) => setSearchType(value)}
+              value={searchType}>
+              <View style={styles.radioOption}>
+                <RadioButton value="city" color="#90b2ac" />
+                <Text style={styles.radioLabel}>Search by City</Text>
+                <RadioButton value="nearest" color="#90b2ac" />
+                <Text style={styles.radioLabel}>Search Nearest</Text>
+              </View>
+            </RadioButton.Group>
+          </View>
             <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleFind}>
               <Button icon="store-search-outline" style={styles.btn} mode={pressed ? 'outlined' : 'contained'}><Text style={{fontFamily: 'eb-garamond', fontSize: 18}}>Find</Text></Button>
             </TouchableWithoutFeedback>
@@ -238,22 +358,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     margin: 30,
     padding: 20,
-    marginTop: 80,
-    height: 300,
+    height: 380,
     justifyContent: "center",
   },
-  input: {
-    height: 50,
-    width: "75%",
-    alignSelf: "center",
-    verticalAlign: "middle",
-    borderColor: "#B0B0B0",
-    borderWidth: 1,
-    margin: 10,
-    padding: 5,
-  },
   outlinedInput1: {
-    margin: 5,
     width: "75%",
     alignSelf: 'center',
     backgroundColor: 'white',
@@ -262,10 +370,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: 'gray',
     borderWidth: 1,
-    marginTop: 10,
   },
   outlinedInput2: {
-    margin: 5,
+    // margin: 5,
     width: "75%",
     alignSelf: 'center',
   },
@@ -297,5 +404,27 @@ const styles = StyleSheet.create({
   title: {
     alignSelf: "center",
     fontSize: 20,
+  },
+  helperText: {
+    marginTop: -5,
+    width: "80%",
+    alignSelf: 'center',        
+  },
+  rangeContainer: {
+    padding: 10,
+    alignItems: 'center',
+  },
+  radioContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center', 
+  },
+  radioOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  radioLabel: {
+    fontSize: 16,
+    fontFamily: 'eb-garamond',
   },
 });

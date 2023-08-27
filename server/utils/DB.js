@@ -124,6 +124,22 @@ class DB {
         }
     }
 
+    async FindManyRestaurants(collection, foodType, diners) {
+        try {
+          await this.client.connect();
+          const query = {
+            foodType: foodType,
+            availableSeats: { $gte: parseInt(diners) }
+          };
+          return await this.client.db(this.dbName).collection(collection).find(query).toArray();
+        } catch (error) {
+          return error;
+        } finally {
+          await this.client.close();
+        }
+      }
+      
+
     async UpdateSeatsByReservation(collection, id, seatType, numDiners) {
         try {
             await this.client.connect();   

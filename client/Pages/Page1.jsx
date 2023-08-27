@@ -3,12 +3,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 import Charts from './Charts';
 
-
 export default function Page1(props) {
 
   const { LoadFoodTypes, foodTypes, restaurants, LoadRestaurants } = useContext(ContextPage);
   const [selectedFoodType, setSelectedFoodType] = useState();
-  
+
   useEffect(() => {
     LoadFoodTypes();
     LoadRestaurants();

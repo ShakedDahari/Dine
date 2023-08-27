@@ -20,7 +20,6 @@ import React, { useEffect } from 'react';
 import { apiUrl } from './utils/api_url';
 import { BackHandler, I18nManager } from 'react-native';
 
-
 const theme =  createTheme({
   ...DefaultTheme,
   colors: {

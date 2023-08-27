@@ -7,7 +7,6 @@ class Restaurant {
     phone;
     name;
     location; 
-    address;
     foodType; 
     image;
     availableSeats; 
@@ -16,12 +15,11 @@ class Restaurant {
     verify;
     approved;
 
-    constructor(email, phone, name, location, address, foodType, image, availableSeats, { inside, outside, bar }, password, verify) {
+    constructor(email, phone, name, location, foodType, image, availableSeats, { inside, outside, bar }, password, verify) {
         this.email = email;
         this.phone = phone;
         this.name = name;
         this.location = location;
-        this.address = address;
         this.foodType = foodType;
         this.image = image;
         this.availableSeats = availableSeats;
@@ -53,6 +51,10 @@ class Restaurant {
 
     static async FindRestaurantsForUser(location, foodType, diners) {
         return await new DB().FindRestaurantsByInputs(Restaurant.collection, location, foodType, diners);
+    }
+
+    static async FindRestaurants(foodType, diners) {
+        return await new DB().FindManyRestaurants(Restaurant.collection, foodType, diners);
     }
 
     static async UpdateSeats(id, seatType, numDiners) {

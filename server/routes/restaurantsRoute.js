@@ -66,8 +66,8 @@ restaurantsRoute.post('/login', async (req, res) => {
 
 restaurantsRoute.post('/add', async (req, res) => {
     try {
-        let { email, phone, name, location, address, foodType, image, availableSeats, locationSeats: { inside, outside, bar }, password, verify } = req.body;
-        let data = await new Restaurant(email, phone, name, location, address, foodType, image, availableSeats, { inside, outside, bar }, password, verify).InsertOne();
+        let { email, phone, name, location, foodType, image, availableSeats, locationSeats: { inside, outside, bar }, password, verify } = req.body;
+        let data = await new Restaurant(email, phone, name, location, foodType, image, availableSeats, { inside, outside, bar }, password, verify).InsertOne();
         res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -78,6 +78,16 @@ restaurantsRoute.post('/find', async (req, res) => {
     try {
         let { location, foodType, diners } = req.body;
         let data = await Restaurant.FindRestaurantsForUser(location, foodType, diners);
+        res.status(201).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+restaurantsRoute.post('/near', async (req, res) => {
+    try {
+        let { foodType, diners } = req.body;
+        let data = await Restaurant.FindRestaurants(foodType, diners);
         res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error });

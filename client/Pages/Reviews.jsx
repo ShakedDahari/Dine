@@ -12,7 +12,7 @@ export default function Reviews({ restaurant, userType }) {
     const [ratingError, setRatingError] = useState(false);
     const [descriptionError, setDescriptionError] = useState(false);
     const [isEditingReview, setIsEditingReview] = useState(false);
-    const [reviewToEdit, setReviewToEdit] = useState([]);
+    const [reviewToEdit, setReviewToEdit] = useState();
 
     useEffect(() => {
         if (restaurant) {
@@ -70,14 +70,8 @@ export default function Reviews({ restaurant, userType }) {
         };
         
         if (restaurant._id && loginUser.username && rating && description) {
-            setIsAddingReview(false);
-            
+            setIsAddingReview(false);         
             const reviewAdded = await addReview(newReview.restaurant, newReview.username, newReview.rating, newReview.description);
-            // if (reviews === undefined) {
-            //     setReviews([reviewAdded]);
-            // } else {
-            //     setReviews([...reviews, reviewAdded]);
-            // } 
             await fetchReviewsData();
             console.log(reviewAdded);
             setRating(0);
@@ -97,22 +91,15 @@ export default function Reviews({ restaurant, userType }) {
     setDescriptionError(false);
   };
 
-  const saveEditReview = async (review) => {
+  const saveEditReview = async () => {
+    console.log(reviewToEdit);
 
     await checkInputsValidation();
 
-    const editedReview = {
-        reviewId: review._id,
-        restaurant: restaurant._id,
-        username: review.user,
-        rating: rating,
-        description: description,
-    }
-
-    if (restaurant._id && review.user && rating && description) {
+    if (restaurant._id && reviewToEdit.user && rating && description) {
         setIsEditingReview(false);
         
-        const reviewEdit = await editReview(editedReview.restaurant, editReview.reviewId, editedReview.username, editedReview.rating, editedReview.description);
+        const reviewEdit = await editReview(restaurant._id, reviewToEdit._id, reviewToEdit.user, rating, description);
         await fetchReviewsData();
         console.log(reviewEdit);
         setRating(0);
@@ -127,7 +114,10 @@ export default function Reviews({ restaurant, userType }) {
       'Are you sure you want to delete this review?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => deleteReview(id, reviewId) },
+        { text: 'Delete', style: 'destructive', onPress: () => {
+          deleteReview(id, reviewId);
+          fetchReviewsData(); 
+        } },
       ],
       { cancelable: true }
     );
@@ -175,6 +165,7 @@ export default function Reviews({ restaurant, userType }) {
                 backgroundColor: '#aaccc6',
                 borderWidth: 1,
                 borderColor: 'black',
+                borderRadius: 20,
               },
             ],
           },
@@ -198,19 +189,14 @@ export default function Reviews({ restaurant, userType }) {
                 },
                 ticks: {
                   font: {
-                    size: 30,
+                    size: 40,
                   },
                 },
               },
             },
             plugins: {
               tooltip: {
-                titleFont: {
-                  size: 30,
-                },
-                bodyFont: {
-                  size: 30,
-                },
+                enabled: false,
               },
               legend: {
                 display: false,
@@ -332,7 +318,7 @@ export default function Reviews({ restaurant, userType }) {
             {isAddingReview ? (
                 <Button mode='outlined' style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={handleAddReview}>Add</Button>
                 ) : (
-                <Button icon="content-save" mode='outlined' style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={() => saveEditReview(reviewToEdit)}>Save</Button>)}
+                <Button icon="content-save" mode='outlined' style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={saveEditReview}>Save</Button>)}
           <Button mode='outlined' style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={handleCancelEdit}>Cancel</Button>
         </View>
         </View>

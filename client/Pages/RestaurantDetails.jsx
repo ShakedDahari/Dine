@@ -5,6 +5,8 @@ import { ContextPage } from '../Context/ContextProvider';
 import { Button, Modal, TextInput, RadioButton, HelperText  } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Location from "expo-location";
+import MapView, { Marker } from 'react-native-maps';
 import Reservations from './Reservations';
 import Reviews from './Reviews';
 
@@ -32,12 +34,14 @@ export default function RestaurantDetails({ route, navigation }) {
 
   const [filterCategory, setFilterCategory] = useState('All'); 
   const categoryList = ['All', ...(menuItems ? new Set(menuItems.map(item => item.category)) : [])];
+  const [restaurantLocation, setRestaurantLocation] = useState([]);
 
   
   // Update the menuItems state when the restaurant prop changes
   useEffect(() => {
     if (restaurant) {
       setMenuItems(restaurant.menu);
+      fetchRestaurantData();
     }
   }, [restaurant]);
 
@@ -80,6 +84,17 @@ export default function RestaurantDetails({ route, navigation }) {
         };
       }, [navigation, userType]) 
     );
+
+
+    const fetchRestaurantData = async () => {
+      // Fetch restaurant data
+      const location = await Location.geocodeAsync(restaurant.location);
+      console.log(location[0]);
+      if (location) {
+        setRestaurantLocation(location[0]);
+      }
+    };
+    
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -273,7 +288,7 @@ const handleAddItem = () => {
         <Text style={styles.header}>{restaurant.name}</Text>
         <View style={{flexDirection: 'row', margin: 5}}> 
             <MaterialIcons name={'location-on'} style={styles.material} />
-            <Text style={styles.font}>{restaurant.address}, {restaurant.location}</Text>
+            <Text style={styles.font}>{restaurant.location}</Text>
         </View>
         <View style={{flexDirection: 'row', margin: 5}}> 
             <MaterialIcons name={'call'} style={styles.material} />
@@ -284,6 +299,22 @@ const handleAddItem = () => {
             <Text style={styles.font}>{restaurant.email}</Text>
         </View>
     </View> 
+        {restaurantLocation && restaurantLocation.latitude && restaurantLocation.longitude  && (
+        <MapView
+          key={`${restaurantLocation.latitude}_${restaurantLocation.longitude}`}
+          style={{ width: '100%', height: 200 }}
+          initialRegion={{
+            latitude: restaurantLocation ? restaurantLocation.latitude : 0,
+            longitude: restaurantLocation ? restaurantLocation.longitude : 0,
+            latitudeDelta: 0.015,
+            longitudeDelta: 0.0121,
+        }}>
+        <Marker
+            coordinate={restaurantLocation}
+            title={restaurant.name}
+        />
+        </MapView>
+        )}
     <View>
       <Text style={styles.menu}>Menu</Text>
       {categoryList.length > 1 ? (
@@ -326,7 +357,6 @@ const handleAddItem = () => {
         }
       })}
       </ScrollView>
-    {/* { backgroundColor: '#aaccc6', alignSelf: 'center', padding: 10, margin: 5 } */}
     </View>
 
       {userType === 'restaurantOwner' && (

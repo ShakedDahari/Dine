@@ -383,6 +383,39 @@ export default function ContextProvider(props) {
     }
   };
 
+  const nearbyRestaurants = async (foodType, diners) => {
+    try {
+        let res = await fetch(`${apiUrl}/api/restaurants/near`, {
+            method: "POST",
+            body: JSON.stringify({ foodType, diners }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (res.ok) {
+            const text = await res.text();
+            let data;
+      
+            try {
+              data = await JSON.parse(text);
+            } catch (error) {
+              throw new Error('Invalid JSON response');
+            }
+            console.log(data);
+            if (data) {
+              setFilteredRestaurants(data);
+              setIsLoading(false);
+            }
+            
+            return data;
+          } else {
+            throw new Error(`Request failed ${res.status}`);
+          }
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
   const updateSeats = async (id, seatType, numDiners) => {
     try {
       let res = await fetch(`${apiUrl}/api/restaurants/seats`, {
@@ -685,7 +718,7 @@ export default function ContextProvider(props) {
     foodTypes,
     dinersList,
     restaurants,setRestaurants,
-    findRestaurants,
+    findRestaurants, nearbyRestaurants,
     isLoading,setIsLoading,
     updateSeats, AddReservationRequest,
     filteredRestaurants, setFilteredRestaurants,

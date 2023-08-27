@@ -17,7 +17,6 @@ export default function Login(props) {
   const [bothHelper, setBothHelper] = useState(false);
   const [foundHelper, setFoundHelper] = useState(false);
   const [approvalHelper, setApprovalHelper] = useState(false);
-  
 
 const [loaded] = useFonts({
   'eb-garamond': require('../assets/EBGaramond-VariableFont_wght.ttf'),
@@ -100,6 +99,18 @@ if (!loaded) {
 
   return (
     <View style={styles.container}>
+       {/* <View style={{ flex: 1 }}>
+      <GooglePlacesAutocomplete
+        placeholder='Search'
+        onPress={(data, details = null) => {
+          console.log(data, details);
+        }}
+        query={{
+          key: 'AIzaSyDWbY5FTNa0zDnUokvrGw3BrPTvl6mixqQ',
+          language: 'en',
+        }}
+      />
+    </View> */}
       <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
           <View style={styles.iconCon}>
             <Image source={require("../assets/icon.png")} style={styles.icon}/>

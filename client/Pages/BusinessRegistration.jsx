@@ -4,11 +4,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
 import { Button, TextInput, HelperText } from 'react-native-paper';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 export default function BusinessRegistration(props) {
 
     let { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers, foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, city, setCity, foodTypeB, setFoodTypeB, imgB, setImgB, 
         passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant, checkEmail } = useContext(ContextPage);
+
+    const googleMapsApiKey = "api-key";
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [foodListVisible, setFoodListVisible] = useState(false);
@@ -190,8 +193,8 @@ export default function BusinessRegistration(props) {
             email: emailB,
             phone: phoneB,
             name: nameB, 
-            location: city, 
-            address: address,
+            location: address, 
+            // address: address,
             foodType: foodTypeB, 
             image: imgB,
             availableSeats: parseInt(availableSeats), 
@@ -202,12 +205,10 @@ export default function BusinessRegistration(props) {
             },
             password: passwordB,
             verify: confirmB        
-        }
+        } 
 
-        
-
-        if (emailB && phoneB && nameB && city && address && foodTypeB && imgB && availableSeats && inside && outside && bar && passwordB && confirmB &&
-        !emailHelper && !phoneHelper && !nameHelper && !addressHelper && !availableSeatsHelper && !insideHelper && !outsideHelper && !passwordHelper && !confirmHelper) {
+        if (emailB && phoneB && nameB && address && foodTypeB && imgB && availableSeats && inside && outside && bar && passwordB && confirmB &&
+          !emailHelper && !phoneHelper && !nameHelper && !addressHelper && !availableSeatsHelper && !insideHelper && !outsideHelper && !passwordHelper && !confirmHelper) {
             addRestaurant(business);
             props.navigation.navigate("Login");
         }
@@ -287,7 +288,7 @@ export default function BusinessRegistration(props) {
             </View>
           </Modal>
             </View>
-            <TextInput
+            {/* <TextInput
               style={styles.outlinedInput1}
               mode="outlined"
               label="Address"
@@ -321,7 +322,42 @@ export default function BusinessRegistration(props) {
                   style={styles.cityList}
                 />
               )}
-            </View>
+            </View> */}
+    
+       <GooglePlacesAutocomplete
+          placeholder='Address'
+          horizontal
+          contentContainerStyle={styles.googleAuto}
+          showsHorizontalScrollIndicator={false}
+          onPress={(data, details = null) => {
+            // Handle address selection
+            setAddress(data.description);
+          }}
+          query={{
+            key: googleMapsApiKey,
+            language: 'en',
+            types: 'address',
+            components: 'country:il',
+          }}
+          styles={{
+            textInputContainer: {
+              width: '90%', 
+              alignSelf: 'center',
+            },
+            textInput: {
+              color: '#1C1B1F',
+              borderRadius: 5,
+              borderColor: 'gray',
+              borderWidth: 1,
+              fontSize: 12,
+              height: 50,
+              marginTop: 6,
+            },
+          }}/>
+          <HelperText style={styles.helperText1} type="error" visible={!address}>
+            Select address
+          </HelperText>
+
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
               {imgB && <Image source={{ uri: imgB }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
@@ -398,13 +434,6 @@ export default function BusinessRegistration(props) {
               value={passwordB}
               right={<TextInput.Icon icon={isPasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPasswordVisible)}/>}
             />
-            <HelperText style={styles.helperText2} type="error" visible={passwordHelper}>
-              Password must have
-              {!isLengthValid && '\n*At least 6 characters'}
-              {!hasUppercase && '\n*At least 1 uppercase letter'}
-              {!hasLowercase && '\n*At least 1 lowercase letter'}
-              {!hasDigit && '\n*At least 1 digit'}
-            </HelperText>
             </View>
             <View style={{flexDirection:'column', width: '48%'}}> 
             <TextInput style={styles.outlinedInput1}
@@ -415,11 +444,16 @@ export default function BusinessRegistration(props) {
               value={confirmB}
               right={<TextInput.Icon icon={isVerifyVisible ? 'eye-off' : 'eye'} onPress={() => setIsVerifyVisible(!isVerifyVisible)}/>}
             />
-            <HelperText style={styles.helperText2} type="error" visible={confirmHelper}>
-              Password and verify do not match
+            </View>
+            </View>
+            <HelperText style={styles.helperText1} type="error" visible={passwordHelper || confirmHelper}>
+              {passwordHelper && 'Password must have'}
+              {passwordHelper && !isLengthValid && '\n*At least 6 characters'}
+              {passwordHelper && !hasUppercase && '\n*At least 1 uppercase letter'}
+              {passwordHelper && !hasLowercase && '\n*At least 1 lowercase letter'}
+              {passwordHelper && !hasDigit && '\n*At least 1 digit'}
+              {confirmHelper && '\nPassword and verify do not match'}
             </HelperText>
-            </View>
-            </View>
             <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleSend}>
               <Button style={styles.btn} mode={pressed ? 'outlined' : 'contained'}><Text style={{fontFamily: 'eb-garamond', fontSize: 18}}>Send</Text></Button>
             </TouchableWithoutFeedback>
@@ -582,7 +616,13 @@ const styles = StyleSheet.create({
       alignSelf: "center",
       fontSize: 20,
       fontFamily: 'eb-garamond',
-      //margin: 10,
       marginBottom: 20,
     },
+    googleAuto: {
+      width: '85%',
+      flexDirection: 'column',
+      justifyContent: 'center', 
+      alignSelf: 'center',
+      marginLeft: 20,
+    }
   });

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert, BackHandler} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert, BackHandler, Linking } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
@@ -95,6 +95,31 @@ export default function RestaurantDetails({ route, navigation }) {
       }
     };
     
+    const handleCall = (phoneNumber) => {
+      const phoneUrl = `tel:${phoneNumber}`;
+      Linking.canOpenURL(phoneUrl)
+        .then((supported) => {
+          if (!supported) {
+            console.log(`Phone call not supported for number: ${phoneNumber}`);
+          } else {
+            return Linking.openURL(phoneUrl);
+          }
+        })
+        .catch((error) => console.error('Error opening phone app:', error));
+    };  
+    
+    const handleEmail = (emailAddress) => {
+      const emailUrl = `mailto:${emailAddress}`;
+      Linking.canOpenURL(emailUrl)
+        .then((supported) => {
+          if (!supported) {
+            console.log(`Email not supported for address: ${emailAddress}`);
+          } else {
+            return Linking.openURL(emailUrl);
+          }
+        })
+        .catch((error) => console.error('Error opening email app:', error));
+    };    
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -292,11 +317,11 @@ const handleAddItem = () => {
         </View>
         <View style={{flexDirection: 'row', margin: 5}}> 
             <MaterialIcons name={'call'} style={styles.material} />
-            <Text style={styles.font}>{restaurant.phone}</Text>
+            <Text style={styles.font} onPress={() => handleCall(restaurant.phone)}>{restaurant.phone}</Text>
         </View>
         <View style={{flexDirection: 'row', margin: 5}}> 
             <MaterialIcons name={'mail'} style={styles.material} />
-            <Text style={styles.font}>{restaurant.email}</Text>
+            <Text style={styles.font} onPress={() => handleEmail(restaurant.email)}>{restaurant.email}</Text>
         </View>
     </View> 
         {restaurantLocation && restaurantLocation.latitude && restaurantLocation.longitude  && (

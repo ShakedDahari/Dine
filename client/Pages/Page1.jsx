@@ -27,7 +27,7 @@ export default function Page1(props) {
         </View>
         <View style={{flex: 1, height: 70, alignItems: 'center'}}>
         <Text style={styles.name}>{restaurant.name}</Text>
-        <Text style={styles.address}>{restaurant.address}, {restaurant.location}</Text>  
+        <Text style={styles.address}>{restaurant.location}</Text>  
         </View>
       </TouchableOpacity>
     ));

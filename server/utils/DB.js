@@ -17,6 +17,10 @@ class DB {
         this.emailUsername = process.env.EMAIL_USERNAME;
         this.emailPassword = process.env.EMAIL_PASSWORD;
     }
+
+    async getGoogleMapsApiKey() {
+        return process.env.GOOGLE_MAPS_API_KEY; 
+    }
     
     async FindAll(collection, query = {}, projection = {}) {
         try {

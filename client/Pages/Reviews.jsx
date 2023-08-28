@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, Alert } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Button, TextInput, HelperText, ActivityIndicator } from 'react-native-paper';
 import { ContextPage } from '../Context/ContextProvider';
 import WebView from 'react-native-webview';
@@ -13,6 +13,8 @@ export default function Reviews({ restaurant, userType }) {
     const [descriptionError, setDescriptionError] = useState(false);
     const [isEditingReview, setIsEditingReview] = useState(false);
     const [reviewToEdit, setReviewToEdit] = useState();
+    const reviewsPerPage = 3;
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         if (restaurant) {
@@ -25,6 +27,7 @@ export default function Reviews({ restaurant, userType }) {
       const fetchReviewsData = async () => {
         try {
             setLoadingReviews(true);
+            setCurrentPage(1);
             await LoadRestaurantReviews(restaurant._id);
         } catch (error) {
             // Handle any error that might occur during loading reviews
@@ -33,6 +36,18 @@ export default function Reviews({ restaurant, userType }) {
             setLoadingReviews(false); // Ensure loading state is set to false whether successful or not
         }
       }
+
+      const handleNextPage = () => {
+        setCurrentPage(currentPage + 1);
+      };
+    
+      const handlePrevPage = () => {
+        setCurrentPage(currentPage - 1);
+      };
+    
+      const startIndex = (currentPage - 1) * reviewsPerPage;
+      const endIndex = startIndex + reviewsPerPage;
+      const paginatedReviews = restaurantReviews.slice(startIndex, endIndex);
 
     const checkInputsValidation = async () => {
         if (rating === 0) {
@@ -249,7 +264,7 @@ export default function Reviews({ restaurant, userType }) {
     ) : restaurantReviews && restaurantReviews.length > 0 ? (
         <>
         {renderChart()}
-        {restaurantReviews.map((review, index) => (
+        {paginatedReviews.map((review, index) => (
             <View key={index} style={styles.review}>
             <Text style={styles.reviewDescription}>{review.user}</Text>
             <View style={styles.reviewRating}>
@@ -276,6 +291,15 @@ export default function Reviews({ restaurant, userType }) {
               ) : null}
             </View>
         ))}
+         <View style={styles.pagination}>
+            <TouchableOpacity onPress={handlePrevPage} disabled={currentPage === 1}>
+              <MaterialCommunityIcons name="arrow-left-circle-outline" size={40} color={currentPage === 1 ? '#ccc' : '#90b2ac'} />
+            </TouchableOpacity>
+            <Text style={styles.paginationText}>{currentPage}</Text>
+            <TouchableOpacity onPress={handleNextPage} disabled={endIndex >= restaurantReviews.length}>
+              <MaterialCommunityIcons name="arrow-right-circle-outline" size={40} color={endIndex >= restaurantReviews.length ? '#ccc' : '#90b2ac'} />
+            </TouchableOpacity>
+          </View>
         </>
     ) : (
         <Text style={styles.notFoundText}>No Reviews Available</Text>
@@ -389,5 +413,14 @@ helperText: {
     alignSelf: 'center', 
     fontSize: 16, 
     fontFamily: 'eb-garamond-italic',
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  paginationText: {
+    fontSize: 25,
+    marginHorizontal: 30,
   },
 });

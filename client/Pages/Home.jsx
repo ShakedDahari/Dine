@@ -55,7 +55,6 @@ export default function Home(props) {
       if (l === undefined) {
         l = cities.find((c) => c.name === cityName)?.english_name;
       }
-
       setLocation(l);        
       
     } else {
@@ -155,14 +154,16 @@ export default function Home(props) {
   const findNearbyRestaurants = async () => {
     const nearbyRestaurants = await Promise.all(
       filteredRestaurants.map(async (restaurant) => {
-        const reverse = await Location.reverseGeocodeAsync(restaurant.location);
-        const distance = calculateDistance(
-          newLocation ? newLocation.latitude : userLocation.latitude,
-          newLocation ? newLocation.longitude : userLocation.longitude,
-          reverse[0].latitude,
-          reverse[0].longitude
-        );
-        return distance <= chosenRange ? restaurant : null;
+        if (restaurant.location) {
+          const reverse = await Location.reverseGeocodeAsync(restaurant.location);
+          const distance = calculateDistance(
+            newLocation ? newLocation.latitude : userLocation.latitude,
+            newLocation ? newLocation.longitude : userLocation.longitude,
+            reverse[0].latitude,
+            reverse[0].longitude
+          );
+          return distance <= chosenRange ? restaurant : null;
+        }
       })
     );
      // Filter out null values (restaurants that are not within the chosen range)

@@ -6,10 +6,19 @@ const path = require('path');
 
 const PORT = process.env.PORT || 5500;
 
+const DB = require('../server/utils/DB'); // Import your DB class definition
+const db = new DB();
+
 const server = express();
 server.use(cors());
 server.use(express.json());
 //server.use(express.static(path.join(__dirname, '../client', 'dist')));
+
+// Route to provide Google Maps API key
+server.get('/api/google-maps-api-key', (req, res) => {
+    const apiKey = db.getGoogleMapsApiKey();
+    res.json({ apiKey });
+});
 
 server.use('/api/users', require('./routes/usersRoute'));
 

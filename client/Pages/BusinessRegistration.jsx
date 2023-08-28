@@ -11,8 +11,7 @@ export default function BusinessRegistration(props) {
     let { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers, foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, city, setCity, foodTypeB, setFoodTypeB, imgB, setImgB, 
         passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant, checkEmail } = useContext(ContextPage);
 
-    const googleMapsApiKey = "api-key";
-
+    const [googleMapsApiKey, setGoogleMapsApiKey] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [foodListVisible, setFoodListVisible] = useState(false);
     const [isVerifyVisible, setIsVerifyVisible] = useState(false);
@@ -38,6 +37,14 @@ export default function BusinessRegistration(props) {
 
     useEffect(() => {
       LoadFoodTypes();
+
+      fetch('/api/google-maps-api-key')
+      .then(res => res.json())
+      .then(data => {
+          setGoogleMapsApiKey(data.apiKey);
+      })
+      .catch(error => console.error('Error fetching API key:', error));
+      
     }, []);
 
     const sortedFoodTypes = [...foodTypes].sort((a, b) => a.name.localeCompare(b.name));

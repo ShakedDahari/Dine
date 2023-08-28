@@ -14,6 +14,7 @@ import Charts from './Pages/Charts';
 import BusinessRegistration from './Pages/BusinessRegistration';
 import RestaurantDetails from './Pages/RestaurantDetails';
 import Reservations from './Pages/Reservations';
+import Reviews from './Pages/Reviews';
 import ContextProvider from './Context/ContextProvider';
 import React, { useEffect } from 'react';
 
@@ -173,6 +174,7 @@ export default function App() {
         <Stack.Screen name="BusinessRegistration" component={BusinessRegistration} />
         <Stack.Screen name="RestaurantDetails" component={RestaurantDetails} />
         <Stack.Screen name="Reservations" component={Reservations} />
+        <Stack.Screen name="Reviews" component={Reviews} />
       </Stack.Navigator>
       </MyDrawer>
   </NavigationContainer>

@@ -9,6 +9,7 @@ class DB {
     emailService;
     emailUsername;
     emailPassword;
+    googleApi;
 
     constructor() {
         this.client = new MongoClient(process.env.DB_URI);
@@ -16,10 +17,11 @@ class DB {
         this.emailService = process.env.EMAIL_SERVICE;
         this.emailUsername = process.env.EMAIL_USERNAME;
         this.emailPassword = process.env.EMAIL_PASSWORD;
+        this.googleApi = process.env.GOOGLE_MAPS_API_KEY;
     }
 
     async getGoogleMapsApiKey() {
-        return process.env.GOOGLE_MAPS_API_KEY; 
+        return this.googleApi; 
     }
     
     async FindAll(collection, query = {}, projection = {}) {

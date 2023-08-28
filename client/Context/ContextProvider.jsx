@@ -14,6 +14,7 @@ export default function ContextProvider(props) {
 
   const [userData, setUserData] = useState({});
   const [expoPushToken, setExpoPushToken] = useState('');
+  const [googleMapsApiKey, setGoogleMapsApiKey] = useState('');
 
   const [emailB, setEmailB] = useState();
   const [phoneB, setPhoneB] = useState();
@@ -139,6 +140,17 @@ export default function ContextProvider(props) {
       console.log({ error });
     } finally {
       LoadRestaurants();
+    }
+  }
+
+  const GetGoogleApi = async () => {
+    try {
+      let res = await fetch(`${apiUrl}/api/google-maps-api-key`);
+      let data = await res.json();
+      console.log(data);
+      setGoogleMapsApiKey(data.apiKey);
+    } catch (error) {
+      console.log({ error });
     }
   }
 
@@ -747,6 +759,7 @@ export default function ContextProvider(props) {
     restaurantReviews, setRestaurantReviews, LoadRestaurantReviews,
     addReview, rating, setRating, description, setDescription,
     loadingReviews, setLoadingReviews, deleteReview, editReview,
+    googleMapsApiKey, GetGoogleApi,
   };
 
   return (

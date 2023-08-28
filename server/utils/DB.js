@@ -20,8 +20,13 @@ class DB {
         this.googleApi = process.env.GOOGLE_MAPS_API_KEY;
     }
 
-    async getGoogleMapsApiKey() {
-        return this.googleApi; 
+    getGoogleMapsApiKey() {
+        try {
+            const apiKey = this.googleApi;
+            return apiKey; 
+        } catch (error) {
+            return error
+        }
     }
     
     async FindAll(collection, query = {}, projection = {}) {

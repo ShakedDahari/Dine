@@ -20,7 +20,7 @@ class DB {
         this.googleApi = process.env.GOOGLE_MAPS_API_KEY;
     }
 
-    getGoogleMapsApiKey() {
+    async getGoogleMapsApiKey() {
         try {
             const apiKey = this.googleApi;
             return apiKey; 

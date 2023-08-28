@@ -15,9 +15,9 @@ server.use(express.json());
 //server.use(express.static(path.join(__dirname, '../client', 'dist')));
 
 // Route to provide Google Maps API key
-server.get('/api/google-maps-api-key', (req, res) => {
-    const apiKey = db.getGoogleMapsApiKey();
-    console.log(apiKey);
+server.get('/api/google-maps-api-key', async(req, res) => {
+    const apiKey = await db.getGoogleMapsApiKey();
+    console.log(apiKey + " api");
     res.json({ apiKey });
 });
 

@@ -13,7 +13,7 @@ import Reviews from './Reviews';
 export default function RestaurantDetails({ route, navigation }) {
 
   const { userType, restaurant } = route.params;
-  const { addItem, deleteItem, editItem } = useContext(ContextPage);
+  const { addItem, deleteItem, editItem, handleLocalImageUpload, GetFirebaseConfig } = useContext(ContextPage);
   
   // State variables for the new menu item details
   const [newItemName, setNewItemName] = useState('');
@@ -42,6 +42,7 @@ export default function RestaurantDetails({ route, navigation }) {
     if (restaurant) {
       setMenuItems(restaurant.menu);
       fetchRestaurantData();
+      GetFirebaseConfig();
     }
   }, [restaurant]);
 
@@ -423,7 +424,7 @@ const handleAddItem = () => {
         </HelperText>
         <View style={{flexDirection: 'row'}}>
         <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-          <TouchableOpacity onPress={pickImage}>
+          <TouchableOpacity onPress={handleLocalImageUpload}>
             <MaterialIcons style={styles.imgBtn} name="add-photo-alternate" />
           </TouchableOpacity>
           {isAddingItem ? (

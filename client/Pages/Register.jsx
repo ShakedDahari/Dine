@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -11,12 +11,11 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function Register(props) {
 
-    const { isValidEmail, isValidPhone, isValidUsername, isValidPassword, email, setEmail, phone, setPhone, 
-      userName, setUserName, password, setPassword, confirm, setConfirm, addUser, checkEmail, checkUsername, checkEmailBusiness } = useContext(ContextPage);
+    const { isValidEmail, isValidPhone, isValidUsername, isValidPassword, email, setEmail, phone, setPhone, imgSrc, setImgSrc,
+      userName, setUserName, password, setPassword, confirm, setConfirm, addUser, checkEmail, checkUsername, checkEmailBusiness,  handleLocalImageUpload, GetFirebaseConfig } = useContext(ContextPage);
     
       const [camera, setCamera] = useState();
       const [type, setType] = useState(CameraType.back);
-      const [imgSrc, setImgSrc] = useState('');
       const [permission, requestPermission] = Camera.useCameraPermissions();
       const [showCamera, setShowCamera] = useState(false);
       const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -34,6 +33,10 @@ export default function Register(props) {
       const [hasUppercase, setHasUppercase] = useState(true);
       const [hasLowercase, setHasLowercase] = useState(true);
       const [hasDigit, setHasDigit] = useState(true);
+
+      useEffect(() => {
+        GetFirebaseConfig();
+      }, []);
 
       const handlePressIn = () => {
         setPressed(true);
@@ -78,6 +81,7 @@ export default function Register(props) {
       setImgSrc(photo.uri);
       console.log(imgSrc);
       setShowCamera(false);
+      handleLocalImageUpload();
     }
 
     const pickImage = async () => {
@@ -239,7 +243,7 @@ export default function Register(props) {
             </HelperText>
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={handleAddImage}><MaterialIcons style={styles.imgBtn} name="add-a-photo" /></TouchableOpacity>
-              <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
+              <TouchableOpacity onPress={handleLocalImageUpload}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
               {imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
             </View>
               <HelperText style={styles.helperText} type="error" visible={imgSrc ? false : true}>

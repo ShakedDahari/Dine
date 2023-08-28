@@ -1,6 +1,11 @@
 import React, { createContext, useState } from "react";
 import { apiUrl } from "../utils/api_url";
 import { sendPushNotification } from "../Pages/PushNotification";
+import * as ImagePicker from 'expo-image-picker';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth'
+import 'firebase/compat/firestore'
+import "firebase/compat/storage";
 
 export const ContextPage = createContext();
 
@@ -49,6 +54,12 @@ export default function ContextProvider(props) {
   const [foodListVisible, setFoodListVisible] = useState(false);
   const [dinersListVisible, setDinersListVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState(null);
+  const [imgSrc, setImgSrc] = useState('');
+  const [firebaseConfig, setFirebaseConfig] = useState('');
 
   const dinersList = [
     { key: 1, value: "1" },
@@ -147,8 +158,20 @@ export default function ContextProvider(props) {
     try {
       let res = await fetch(`${apiUrl}/api/google-maps-api-key`);
       let data = await res.json();
-      console.log(data);
       setGoogleMapsApiKey(data.apiKey);
+    } catch (error) {
+      console.log({ error });
+    }
+  }
+
+  const GetFirebaseConfig = async () => {
+    try {
+      let res = await fetch(`${apiUrl}/api/firebase-config`);
+      let data = await res.json();
+      setFirebaseConfig(data.firebaseConfig);
+      if (firebaseConfig) {
+        firebase.initializeApp(firebaseConfig);
+      }
     } catch (error) {
       console.log({ error });
     }
@@ -221,26 +244,6 @@ export default function ContextProvider(props) {
       LoadUsers();
     }
   };
-
-  // const uploadImage = async (img) => {
-  //   const formData = new FormData();
-  //   formData.append('image', img);
-  
-  //   try {
-  //     let res = await fetch(`${apiUrl}/upload`, {
-  //       method: 'POST',
-  //       body: formData,
-  //     });
-  
-  //     if (res.ok) {
-  //       console.log('Image uploaded successfully');
-  //     } else {
-  //       console.error('Image upload failed');
-  //     }
-  //   } catch (error) {
-  //     console.error('Image upload error:', error);
-  //   }
-  // }
 
   const fetchUserData = async (userId) => {
     try {
@@ -338,7 +341,6 @@ export default function ContextProvider(props) {
 
   const sendEmail = async (email, subject, message) => {
     try {
-      //console.log(subject, message);
       let res = await fetch(`${apiUrl}/api/restaurants/sendemail`, {
         method: "POST",
         body: JSON.stringify({ email, subject, message }),
@@ -705,6 +707,139 @@ export default function ContextProvider(props) {
     }
   };
 
+  const takePictureAndUpload = async () => {
+    return imgSrc;
+  }
+
+  const uploadImageFromDevice = async () => {
+    console.log("uploadImageFromDevice run")
+    let imgURI = null;
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      imgURI = result.assets[0].uri;
+    }
+
+    return imgURI;
+  };
+
+  const getBlobFromUri = async (uri) => {
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+
+    console.log('FINISHING BLOB FUNC'); 
+    return blob;
+  };
+
+  const manageFileUpload = async (
+    fileBlob,
+    { onStart, onProgress, onComplete, onFail }
+  ) => {
+    console.log('starting mngfileupload function');
+    const imgName = "img-" + new Date().getTime();
+
+    const storageRef = firebase.storage().ref(`images/${imgName}.jpg`);
+
+    console.log("uploading file", imgName);
+
+    // Create file metadata including the content type
+    const metadata = {
+      contentType: "image/jpeg",
+    };
+
+    // Trigger file upload start event
+    onStart && onStart();
+    const uploadTask = storageRef.put(fileBlob, metadata);
+    // Listen for state changes, errors, and completion of the upload.
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+        // Monitor uploading progress
+        onProgress && onProgress(Math.fround(progress).toFixed(2));
+      },
+      (error) => {
+        // Something went wrong - dispatch onFail event with error  response
+        onFail && onFail(error);
+      },
+      () => {
+        // Upload completed successfully, now we can get the download URL
+
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          // dispatch on complete event
+          onComplete && onComplete(downloadURL);
+
+          console.log("File available at", downloadURL);
+          return downloadURL;
+        });
+      }
+    );
+  };
+
+  const handleLocalImageUpload = async () => {
+    console.log("handleLocalImageUpload run");
+    let fileURI;
+    
+    if (!imgSrc) {
+      fileURI = await uploadImageFromDevice();
+    } else {
+      fileURI = await takePictureAndUpload();
+    }
+
+    if (fileURI) {
+      console.log("we got a file")
+     await handleCloudImageUpload(fileURI);
+    }
+  };
+
+  const onStart = () => {
+    console.log("started with blob")
+    setIsUploading(true);
+  };
+
+  const onProgress = (progress) => {
+    setProgress(progress);
+  };
+  const onComplete = (fileUrl) => {
+    // setImgURL(fileUrl);
+    // console.log('IMG URL = = = ', fileUrl);
+    setNewItemImage(fileUrl);
+    console.log('NewItemImg value = ' , newItemImage);
+    setIsUploading(false);
+    console.log("completed with blob")
+  };
+
+  const onFail = (error) => {
+    setError(error);
+    setIsUploading(false);
+  };
+  const handleCloudImageUpload = async (imgURI) => {
+    if (!imgURI) return;
+    console.log("did we run?")
+    let fileToUpload = null;
+
+    const blob = await getBlobFromUri(imgURI);
+
+    await manageFileUpload(blob, { onStart, onProgress, onComplete, onFail });
+  };
+
 
   const value = { 
     isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers,
@@ -759,7 +894,8 @@ export default function ContextProvider(props) {
     restaurantReviews, setRestaurantReviews, LoadRestaurantReviews,
     addReview, rating, setRating, description, setDescription,
     loadingReviews, setLoadingReviews, deleteReview, editReview,
-    googleMapsApiKey, GetGoogleApi,
+    googleMapsApiKey, GetGoogleApi, handleLocalImageUpload, GetFirebaseConfig,
+    imgSrc, setImgSrc,
   };
 
   return (

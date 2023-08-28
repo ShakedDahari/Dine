@@ -6,7 +6,7 @@ const path = require('path');
 
 const PORT = process.env.PORT || 5500;
 
-const DB = require('../server/utils/DB'); // Import your DB class definition
+const DB = require('../server/utils/DB'); 
 const db = new DB();
 
 const server = express();
@@ -17,8 +17,13 @@ server.use(express.json());
 // Route to provide Google Maps API key
 server.get('/api/google-maps-api-key', async(req, res) => {
     const apiKey = await db.getGoogleMapsApiKey();
-    console.log(apiKey + " api");
     res.json({ apiKey });
+});
+
+// Route to provide firebase config
+server.get('/api/firebase-config', async(req, res) => {
+    const firebaseConfig = await db.getFirebaseConfig(); 
+    res.json({ firebaseConfig });
 });
 
 server.use('/api/users', require('./routes/usersRoute'));

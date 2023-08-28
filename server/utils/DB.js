@@ -10,6 +10,12 @@ class DB {
     emailUsername;
     emailPassword;
     googleApi;
+    firebaseApi;
+    authDomain;
+    projectId;
+    storageBucket;
+    messagingSenderId;
+    appId;
 
     constructor() {
         this.client = new MongoClient(process.env.DB_URI);
@@ -18,12 +24,34 @@ class DB {
         this.emailUsername = process.env.EMAIL_USERNAME;
         this.emailPassword = process.env.EMAIL_PASSWORD;
         this.googleApi = process.env.GOOGLE_MAPS_API_KEY;
+        this.firebaseApi = process.env.FIREBASE_API_KEY;
+        this.authDomain = process.env.AUTH_DOMAIN;
+        this.projectId = process.env.PROJECT_ID;
+        this.storageBucket = process.env.STORAGE_BUCKET;
+        this.messagingSenderId = process.env.MESSAGING_SENDER_ID;
+        this.appId = process.env.APP_ID;
     }
 
     async getGoogleMapsApiKey() {
         try {
             const apiKey = this.googleApi;
             return apiKey; 
+        } catch (error) {
+            return error
+        }
+    }
+
+    async getFirebaseConfig() {
+        try {
+            const firebaseConfig = {
+                apiKey: this.firebaseApi,
+                authDomain: this.authDomain,
+                projectId: this.projectId,
+                storageBucket: this.storageBucket,
+                messagingSenderId: this.messagingSenderId,
+                appId: this.appId,
+            };
+            return firebaseConfig; 
         } catch (error) {
             return error
         }

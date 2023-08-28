@@ -9,7 +9,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 export default function BusinessRegistration(props) {
 
     let { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers, foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, city, setCity, foodTypeB, setFoodTypeB, imgB, setImgB, 
-        passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant, checkEmail, googleMapsApiKey, GetGoogleApi } = useContext(ContextPage);
+        passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant, checkEmail, googleMapsApiKey, GetGoogleApi, handleLocalImageUpload, GetFirebaseConfig } = useContext(ContextPage);
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [foodListVisible, setFoodListVisible] = useState(false);
@@ -37,6 +37,7 @@ export default function BusinessRegistration(props) {
     useEffect(() => {
       LoadFoodTypes();
       GetGoogleApi();
+      GetFirebaseConfig();
     }, []);
 
     const sortedFoodTypes = [...foodTypes].sort((a, b) => a.name.localeCompare(b.name));
@@ -358,7 +359,7 @@ export default function BusinessRegistration(props) {
           </HelperText>
 
             <View style={{flexDirection:'row', justifyContent:'center'}}>
-              <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
+              <TouchableOpacity onPress={handleLocalImageUpload}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
               {imgB && <Image source={{ uri: imgB }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
             </View>
             <HelperText style={styles.helperText1} type="error" visible={imgB ? false : true}>

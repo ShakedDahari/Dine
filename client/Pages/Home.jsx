@@ -32,11 +32,10 @@ export default function Home(props) {
       }
       
       let location = await Location.getCurrentPositionAsync({});
-      
       //let heading = await Location.getHeadingAsync({});
       setUserLocation(location.coords);
       let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
-      // console.log(reverse);
+      console.log(reverse);
       await locationToCity(reverse);
       
       } catch (error) {
@@ -50,8 +49,7 @@ export default function Home(props) {
     if (reverse && reverse[0].city) {
       
       let cityName = reverse[0].city;
-      
-      l = cities.find((c)=>cityName===c.english_name)?.english_name  //?.=setting l to the english name of the city
+      l = cities.find((c)=>cityName===c.english_name)?.english_name;  //?.=setting l to the english name of the city
       if (l === undefined) {
         l = cities.find((c) => c.name === cityName)?.english_name;
       }
@@ -400,6 +398,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "75%",
     borderWidth: 2,
+    borderColor: "#90b2ac",
     margin: 10,
   },
   title: {

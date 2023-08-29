@@ -1,7 +1,6 @@
 const Restaurant = require('../models/restaurants');
 const restaurantsRoute = require('express').Router();
 require('dotenv').config();
-const nodemailer = require('nodemailer');
 
 restaurantsRoute.get('/', async (req, res) => {
     try {
@@ -68,6 +67,17 @@ restaurantsRoute.post('/add', async (req, res) => {
     try {
         let { email, phone, name, location, foodType, image, availableSeats, locationSeats: { inside, outside, bar }, password, verify } = req.body;
         let data = await new Restaurant(email, phone, name, location, foodType, image, availableSeats, { inside, outside, bar }, password, verify).InsertOne();
+        res.status(201).json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+restaurantsRoute.put('/edit/:id', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { image, availableSeats, inside, outside, bar, password, verify } = req.body;
+        let data = await Restaurant.EditRestaurant(id, image, availableSeats, inside, outside, bar, password, verify);
         res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });

@@ -8,11 +8,10 @@ import { useFonts } from "expo-font";
 
 export default function Login(props) {
   
-  const { expoPushToken, setExpoPushToken, userName, password, setUserName, setPassword, users, LoadUsers, setLoginUser, restaurants, LoadRestaurants, LoadFoodTypes, checkLoginUser, checkLoginRestaurant, } = useContext(ContextPage);
+  const { expoPushToken, setExpoPushToken, userName, password, setUserName, setPassword, setLoginUser, checkLoginUser, checkLoginRestaurant, isRestaurantOwner, setIsRestaurantOwner } = useContext(ContextPage);
   
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
-  const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
   const [submit, setSubmit] = useState(false);
   const [bothHelper, setBothHelper] = useState(false);
   const [foundHelper, setFoundHelper] = useState(false);
@@ -76,6 +75,7 @@ if (!loaded) {
         }
       } else {
         const restaurant = await checkLoginRestaurant(userName, password);
+        setLoginUser(restaurant);
         if (restaurant) {
           if (restaurant.approved) {
             const token = await registerForPushNotificationsAsync();
@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "75%",
     borderWidth: 2,
+    borderColor: "#90b2ac",
     margin: 10,
   },
   bottomCon: {

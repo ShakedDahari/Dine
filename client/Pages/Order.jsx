@@ -246,6 +246,7 @@ const styles = StyleSheet.create({
       alignSelf: "center",
       width: "75%",
       borderWidth: 2,
+      borderColor: "#90b2ac",
       margin: 10,
       },
       title: {

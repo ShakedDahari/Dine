@@ -402,6 +402,7 @@ const styles =  StyleSheet.create({
     alignSelf: "center",
     width: "50%",
     borderWidth: 2,
+    borderColor: "#90b2ac",
     margin: 10,
     },
 helperText: {

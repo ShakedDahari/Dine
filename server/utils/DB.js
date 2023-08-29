@@ -216,6 +216,34 @@ class DB {
         }
     }   
 
+    async EditById(collection, id, image, password, verify) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $set: { 'image': image, 'password': password, 'verify': verify } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
+    async EditRestaurant(collection, id, image, availableSeats, inside, outside, bar, password, verify) {
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                { $set: { 'image': image, 'availableSeats': availableSeats, 'locationSeats.inside': inside, 'locationSeats.outside': outside, 'locationSeats.bar': bar, 'password': password, 'verify': verify } }
+            );
+        } catch (error) {
+            return error;
+        }  finally {
+            await this.client.close();
+        }
+    }
+
     async DeleteById(collection, id) {
         try {
             await this.client.connect();

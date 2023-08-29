@@ -54,6 +54,7 @@ export default function ContextProvider(props) {
   const [foodListVisible, setFoodListVisible] = useState(false);
   const [dinersListVisible, setDinersListVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
 
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -161,17 +162,15 @@ export default function ContextProvider(props) {
       setGoogleMapsApiKey(data.apiKey);
     } catch (error) {
       console.log({ error });
-    }
+    }  
   }
 
   const GetFirebaseConfig = async () => {
     try {
       let res = await fetch(`${apiUrl}/api/firebase-config`);
       let data = await res.json();
+      firebase.initializeApp(data.firebaseConfig);
       setFirebaseConfig(data.firebaseConfig);
-      if (firebaseConfig) {
-        firebase.initializeApp(firebaseConfig);
-      }
     } catch (error) {
       console.log({ error });
     }
@@ -273,6 +272,24 @@ export default function ContextProvider(props) {
       LoadUsers();
     }
   };
+  
+  const editUser = async (id, image, password, verify) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/users/edit/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ image, password, verify }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadUsers();
+    }
+  };
 
   const deleteUser = async (id) => {
     try {
@@ -293,6 +310,24 @@ export default function ContextProvider(props) {
       let res = await fetch(`${apiUrl}/api/restaurants/add`, {
         method: "POST",
         body: JSON.stringify(business),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadRestaurants();
+    }
+  };
+
+  const editRestaurant = async (id, image, availableSeats, inside, outside, bar, password, verify) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/edit/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ image, availableSeats, inside, outside, bar, password, verify }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -707,27 +742,6 @@ export default function ContextProvider(props) {
     }
   };
 
-  const takePictureAndUpload = async () => {
-    return imgSrc;
-  }
-
-  const uploadImageFromDevice = async () => {
-    console.log("uploadImageFromDevice run")
-    let imgURI = null;
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 4],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      imgURI = result.assets[0].uri;
-    }
-
-    return imgURI;
-  };
-
   const getBlobFromUri = async (uri) => {
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -741,8 +755,6 @@ export default function ContextProvider(props) {
       xhr.open("GET", uri, true);
       xhr.send(null);
     });
-
-    console.log('FINISHING BLOB FUNC'); 
     return blob;
   };
 
@@ -750,7 +762,6 @@ export default function ContextProvider(props) {
     fileBlob,
     { onStart, onProgress, onComplete, onFail }
   ) => {
-    console.log('starting mngfileupload function');
     const imgName = "img-" + new Date().getTime();
 
     const storageRef = firebase.storage().ref(`images/${imgName}.jpg`);
@@ -786,31 +797,20 @@ export default function ContextProvider(props) {
           // dispatch on complete event
           onComplete && onComplete(downloadURL);
 
-          console.log("File available at", downloadURL);
           return downloadURL;
         });
       }
     );
   };
 
-  const handleLocalImageUpload = async () => {
-    console.log("handleLocalImageUpload run");
-    let fileURI;
-    
-    if (!imgSrc) {
-      fileURI = await uploadImageFromDevice();
-    } else {
-      fileURI = await takePictureAndUpload();
-    }
-
-    if (fileURI) {
-      console.log("we got a file")
-     await handleCloudImageUpload(fileURI);
+  const handleLocalImageUpload = async (imgSrc) => {
+    await GetFirebaseConfig();
+    if (imgSrc) {
+     await handleCloudImageUpload(imgSrc);
     }
   };
 
   const onStart = () => {
-    console.log("started with blob")
     setIsUploading(true);
   };
 
@@ -818,12 +818,8 @@ export default function ContextProvider(props) {
     setProgress(progress);
   };
   const onComplete = (fileUrl) => {
-    // setImgURL(fileUrl);
-    // console.log('IMG URL = = = ', fileUrl);
-    setNewItemImage(fileUrl);
-    console.log('NewItemImg value = ' , newItemImage);
+    setImgSrc(fileUrl);
     setIsUploading(false);
-    console.log("completed with blob")
   };
 
   const onFail = (error) => {
@@ -832,7 +828,6 @@ export default function ContextProvider(props) {
   };
   const handleCloudImageUpload = async (imgURI) => {
     if (!imgURI) return;
-    console.log("did we run?")
     let fileToUpload = null;
 
     const blob = await getBlobFromUri(imgURI);
@@ -869,7 +864,7 @@ export default function ContextProvider(props) {
     isLoading,setIsLoading,
     updateSeats, AddReservationRequest,
     filteredRestaurants, setFilteredRestaurants,
-    deleteUser,
+    deleteUser, editUser,
     deleteRestaurant,
     loginUser, setLoginUser,
     emailB, setEmailB,
@@ -895,7 +890,7 @@ export default function ContextProvider(props) {
     addReview, rating, setRating, description, setDescription,
     loadingReviews, setLoadingReviews, deleteReview, editReview,
     googleMapsApiKey, GetGoogleApi, handleLocalImageUpload, GetFirebaseConfig,
-    imgSrc, setImgSrc,
+    imgSrc, setImgSrc, isRestaurantOwner, setIsRestaurantOwner, editRestaurant,
   };
 
   return (

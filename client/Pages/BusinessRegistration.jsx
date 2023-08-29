@@ -8,8 +8,8 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 
 export default function BusinessRegistration(props) {
 
-    let { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers, foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, city, setCity, foodTypeB, setFoodTypeB, imgB, setImgB, 
-        passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant, checkEmail, googleMapsApiKey, GetGoogleApi, handleLocalImageUpload, GetFirebaseConfig } = useContext(ContextPage);
+    let { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers, foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, foodTypeB, setFoodTypeB, imgSrc, setImgSrc,
+        passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant, googleMapsApiKey, GetGoogleApi, handleLocalImageUpload } = useContext(ContextPage);
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [foodListVisible, setFoodListVisible] = useState(false);
@@ -35,9 +35,13 @@ export default function BusinessRegistration(props) {
     const [hasDigit, setHasDigit] = useState(true);
 
     useEffect(() => {
+      resetInputs();
       LoadFoodTypes();
       GetGoogleApi();
-      GetFirebaseConfig();
+
+      return () => {
+        resetInputs();
+      };
     }, []);
 
     const sortedFoodTypes = [...foodTypes].sort((a, b) => a.name.localeCompare(b.name));
@@ -79,16 +83,33 @@ export default function BusinessRegistration(props) {
       </TouchableOpacity>
     );  
 
+    const resetInputs = async () => {
+      setEmailB('');
+      setPhoneB('');
+      setNameB('');
+      setAddress('');
+      setFoodTypeB('');
+      setImgSrc('');
+      setAvailableSeats('');
+      setInside('');
+      setOutside('');
+      setBar('');
+      setPasswordB('');
+      setConfirmB('');
+    }
+
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
-          aspect: [3, 4],
+          aspect: [4, 4],
           quality: 1,
       });
         if (!result.canceled) {
-          setImgB(result.assets[0].uri);
+          // setImgB(result.assets[0].uri);
+          // setImgSrc(result.assets[0].uri);
+          await handleLocalImageUpload(result.assets[0].uri);
       }
     };
 
@@ -194,9 +215,8 @@ export default function BusinessRegistration(props) {
             phone: phoneB,
             name: nameB, 
             location: address, 
-            // address: address,
             foodType: foodTypeB, 
-            image: imgB,
+            image: imgSrc,
             availableSeats: parseInt(availableSeats), 
             locationSeats : {
                 inside: parseInt(inside),
@@ -207,7 +227,7 @@ export default function BusinessRegistration(props) {
             verify: confirmB        
         } 
 
-        if (emailB && phoneB && nameB && address && foodTypeB && imgB && availableSeats && inside && outside && bar && passwordB && confirmB &&
+        if (emailB && phoneB && nameB && address && foodTypeB && imgSrc && availableSeats && inside && outside && bar && passwordB && confirmB &&
           !emailHelper && !phoneHelper && !nameHelper && !addressHelper && !availableSeatsHelper && !insideHelper && !outsideHelper && !passwordHelper && !confirmHelper) {
             addRestaurant(business);
             props.navigation.navigate("Login");
@@ -263,7 +283,7 @@ export default function BusinessRegistration(props) {
           <TouchableOpacity style={styles.outlinedInput} onPress={() => setFoodListVisible(true)}>
             <Text style={{ fontSize: 12, color: '#1C1B1F', margin: 15}}>{foodTypeB || "Food Type"}</Text>
           </TouchableOpacity>
-            <HelperText style={styles.helperText2} type="error" visible={foodTypeB}>
+            <HelperText style={styles.helperText2} type="error" visible={!foodTypeB}>
               Select food type
             </HelperText>
             </View>
@@ -288,41 +308,6 @@ export default function BusinessRegistration(props) {
             </View>
           </Modal>
             </View>
-            {/* <TextInput
-              style={styles.outlinedInput1}
-              mode="outlined"
-              label="Address"
-              onChangeText={setAddress}
-              value={address}
-            />
-            <HelperText style={styles.helperText1} type="error" visible={addressHelper}>
-              Invalid address
-            </HelperText>
-            <TextInput
-              value={searchQuery}
-              onChangeText={handleSearch}
-              mode="outlined"
-              label="City"
-              style={styles.outlinedInput1}
-              onFocus={() => setIsCityListVisible(true)}
-              onMagicTap={() => setIsCityListVisible(false)}
-            />
-              <HelperText style={styles.helperText1} type="error" visible={city}>
-                Select city
-              </HelperText>
-            <View>
-              {isCityListVisible && (
-                <FlatList
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ flexDirection: "column" }}
-                  data={filteredCities}
-                  renderItem={renderItem}
-                  keyExtractor={(_, index) => index.toString()}
-                  style={styles.cityList}
-                />
-              )}
-            </View> */}
     
        <GooglePlacesAutocomplete
           placeholder='Address'
@@ -359,10 +344,10 @@ export default function BusinessRegistration(props) {
           </HelperText>
 
             <View style={{flexDirection:'row', justifyContent:'center'}}>
-              <TouchableOpacity onPress={handleLocalImageUpload}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
-              {imgB && <Image source={{ uri: imgB }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
+              <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
+              {imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
             </View>
-            <HelperText style={styles.helperText1} type="error" visible={imgB ? false : true}>
+            <HelperText style={styles.helperText1} type="error" visible={imgSrc ? false : true}>
                 Select image
             </HelperText>
 
@@ -591,6 +576,7 @@ const styles = StyleSheet.create({
       alignSelf: "center",
       width: "75%",
       borderWidth: 2,
+      borderColor: "#90b2ac",
       margin: 10,
     },
     title: {

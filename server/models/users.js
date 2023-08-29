@@ -43,6 +43,10 @@ class User {
         return await new DB().Insert(User.collection, this);
     }
 
+    static async EditUser(id, image, password, verify) {
+        return await new DB().EditById(User.collection, id, image, password, verify);
+    }
+
     static async DeleteUser(id){
         return await new DB().DeleteById(User.collection, id);
     }

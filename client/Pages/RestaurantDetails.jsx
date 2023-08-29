@@ -13,7 +13,7 @@ import Reviews from './Reviews';
 export default function RestaurantDetails({ route, navigation }) {
 
   const { userType, restaurant } = route.params;
-  const { addItem, deleteItem, editItem, handleLocalImageUpload, GetFirebaseConfig } = useContext(ContextPage);
+  const { addItem, deleteItem, editItem, imgSrc, handleLocalImageUpload } = useContext(ContextPage);
   
   // State variables for the new menu item details
   const [newItemName, setNewItemName] = useState('');
@@ -42,7 +42,6 @@ export default function RestaurantDetails({ route, navigation }) {
     if (restaurant) {
       setMenuItems(restaurant.menu);
       fetchRestaurantData();
-      GetFirebaseConfig();
     }
   }, [restaurant]);
 
@@ -90,7 +89,6 @@ export default function RestaurantDetails({ route, navigation }) {
     const fetchRestaurantData = async () => {
       // Fetch restaurant data
       const location = await Location.geocodeAsync(restaurant.location);
-      console.log(location[0]);
       if (location) {
         setRestaurantLocation(location[0]);
       }
@@ -126,15 +124,19 @@ export default function RestaurantDetails({ route, navigation }) {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [3, 4],
+      aspect: [4, 4],
       quality: 1,
   });
     if (!result.canceled) {
-      if (!isAddingItem) {
-        setEditedItemImage(result.assets[0].uri);
-      } else {
-        setNewItemImage(result.assets[0].uri);
-      }
+      await handleLocalImageUpload(result.assets[0].uri);
+      // if (!isAddingItem) {
+      //   // setEditedItemImage(result.assets[0].uri);
+      //   // setImgSrc(result.assets[0].uri);
+      // } else {
+      //   // setNewItemImage(result.assets[0].uri);
+      //   // setImgSrc(result.assets[0].uri);
+      //   await handleLocalImageUpload(result.assets[0].uri);
+      // }
     }
 };
 
@@ -148,12 +150,12 @@ const handleAddItem = () => {
     const newItem = {
       name: newItemName,
       price: parseFloat(newItemPrice),
-      image: newItemImage,
+      image: imgSrc,
       category: selectedCategory,
     };
 
     console.log(newItem);
-    if (newItemName && newItemPrice && newItemImage && selectedCategory) {
+    if (newItemName && newItemPrice && imgSrc && selectedCategory) {
       const itemAdded = await addItem(restaurant._id, newItem.name, newItem.price, newItem.image, newItem.category);
       if (menuItems === undefined) {
         // If menuItems is empty, create a new array with the newItem
@@ -196,13 +198,13 @@ const handleAddItem = () => {
       itemId: editedItemId,
       name: editedItemName,
       price: parseFloat(editedItemPrice),
-      image: editedItemImage,
+      image: imgSrc,
       category: editedItemCategory,
     };
 
     console.log(updateItem);
 
-    if (editedItemId && editedItemName && editedItemPrice && editedItemImage && editedItemCategory) {
+    if (editedItemId && editedItemName && editedItemPrice && imgSrc && editedItemCategory) {
       editItem(restaurant._id, updateItem.itemId, updateItem.name, updateItem.price, updateItem.image, updateItem.category);
       // Update the state by replacing the old item with the edited item
       setMenuItems((prevItems) => {
@@ -424,15 +426,18 @@ const handleAddItem = () => {
         </HelperText>
         <View style={{flexDirection: 'row'}}>
         <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-          <TouchableOpacity onPress={handleLocalImageUpload}>
+          <TouchableOpacity onPress={pickImage}>
             <MaterialIcons style={styles.imgBtn} name="add-photo-alternate" />
           </TouchableOpacity>
-          {isAddingItem ? (
-            newItemImage && <Image source={{ uri: newItemImage }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />
-          ) : (
-            editedItemImage && <Image source={{ uri: editedItemImage }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />
+          {imgSrc && (
+            imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />
+          //   newItemImage && <Image source={{ uri: newItemImage }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />
+          // )
+          //  : (
+          //   editedItemImage && <Image source={{ uri: editedItemImage }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />
+          // )
           )}
-          <HelperText style={styles.helperText2} type="error" visible={isAddingItem ? !newItemImage : !editedItemImage}>
+          <HelperText style={styles.helperText2} type="error" visible={!imgSrc}>
             Item image is required
           </HelperText>
         </View>
@@ -475,11 +480,11 @@ const handleAddItem = () => {
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
           <Button icon="content-save" mode="outlined" style={{ backgroundColor: '#f0f0f0', margin: 5 }} onPress={() => {
               if (isAddingItem) {
-                if (newItemName && newItemPrice && newItemImage && selectedCategory) {
+                if (newItemName && newItemPrice && imgSrc && selectedCategory) {
                   handleSaveItem();
                 } 
               } else {
-                if (editedItemName && editedItemPrice && editedItemImage && editedItemCategory) {
+                if (editedItemName && editedItemPrice && imgSrc && editedItemCategory) {
                   handleSaveEdit();
                 } 
               }}}>Save</Button>
@@ -560,6 +565,7 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         width: "50%",
         borderWidth: 2,
+        borderColor: "#90b2ac",
         margin: 10,
     },
     imgBtn: {

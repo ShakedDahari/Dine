@@ -12,7 +12,7 @@ const windowHeight = Dimensions.get('window').height;
 export default function Register(props) {
 
     const { isValidEmail, isValidPhone, isValidUsername, isValidPassword, email, setEmail, phone, setPhone, imgSrc, setImgSrc,
-      userName, setUserName, password, setPassword, confirm, setConfirm, addUser, checkEmail, checkUsername, checkEmailBusiness,  handleLocalImageUpload, GetFirebaseConfig } = useContext(ContextPage);
+      userName, setUserName, password, setPassword, confirm, setConfirm, addUser, checkEmail, checkUsername,  handleLocalImageUpload } = useContext(ContextPage);
     
       const [camera, setCamera] = useState();
       const [type, setType] = useState(CameraType.back);
@@ -35,7 +35,11 @@ export default function Register(props) {
       const [hasDigit, setHasDigit] = useState(true);
 
       useEffect(() => {
-        GetFirebaseConfig();
+        resetInputs();
+
+        return () => {
+          resetInputs();
+        };
       }, []);
 
       const handlePressIn = () => {
@@ -52,6 +56,15 @@ export default function Register(props) {
 
     const handleBack = () => {
       setShowCamera(false);
+    }
+
+    const resetInputs = async () => {
+      setEmail('');
+      setPhone('');
+      setUserName('');
+      setImgSrc('');
+      setPassword('');
+      setConfirm('');
     }
   
     if (!permission) {
@@ -71,30 +84,29 @@ export default function Register(props) {
       setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
     }
   
-    const takePicture = () => {
+    const takePicture = async () => {
       if (camera) {
         camera.takePictureAsync({ onPictureSaved: onPictureSaved });
       }
     };
-  
-    const onPictureSaved = photo => {
-      setImgSrc(photo.uri);
-      console.log(imgSrc);
+    
+    const onPictureSaved = async (photo) => {
+      // setImgSrc(photo.uri);
+      await handleLocalImageUpload(photo.uri);
       setShowCamera(false);
-      handleLocalImageUpload();
     }
 
     const pickImage = async () => {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [3, 4],
+        aspect: [4, 4],
         quality: 1,
     });
       if (!result.canceled) {
-        setImgSrc(result.assets[0].uri);
-        //uploadImage(result.assets[0].uri);
-    }
+        //setImgSrc(result.assets[0].uri);
+        await handleLocalImageUpload(result.assets[0].uri);
+      }
   };
 
 
@@ -243,7 +255,7 @@ export default function Register(props) {
             </HelperText>
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={handleAddImage}><MaterialIcons style={styles.imgBtn} name="add-a-photo" /></TouchableOpacity>
-              <TouchableOpacity onPress={handleLocalImageUpload}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
+              <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
               {imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
             </View>
               <HelperText style={styles.helperText} type="error" visible={imgSrc ? false : true}>
@@ -385,6 +397,7 @@ const styles = StyleSheet.create({
       alignSelf: "center",
       width: "75%",
       borderWidth: 2,
+      borderColor: "#90b2ac",
       margin: 10,
     },
     title: {

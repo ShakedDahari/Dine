@@ -15,6 +15,7 @@ import BusinessRegistration from './Pages/BusinessRegistration';
 import RestaurantDetails from './Pages/RestaurantDetails';
 import Reservations from './Pages/Reservations';
 import Reviews from './Pages/Reviews';
+import Profile from './Pages/Profile';
 import ContextProvider from './Context/ContextProvider';
 import React, { useEffect } from 'react';
 
@@ -75,7 +76,7 @@ function MyDrawer() {
         component={Admin}
         options={{ drawerLabel: 'Admin' }}
       />
-        <Drawer.Screen
+      <Drawer.Screen
         name="Chart"
         component={Charts}
         options={{ drawerLabel: 'Chart' }}
@@ -89,6 +90,11 @@ function MyDrawer() {
         name="RestaurantDetails"
         component={RestaurantDetails}
         options={{ drawerLabel: 'RestaurantDetails' }}
+      />
+      <Drawer.Screen
+        name="Profile"
+        component={Profile}
+        options={{ drawerLabel: 'Profile' }}
       />
     </Drawer.Navigator>
   );
@@ -175,6 +181,7 @@ export default function App() {
         <Stack.Screen name="RestaurantDetails" component={RestaurantDetails} />
         <Stack.Screen name="Reservations" component={Reservations} />
         <Stack.Screen name="Reviews" component={Reviews} />
+        <Stack.Screen name="Profile" component={Profile} />
       </Stack.Navigator>
       </MyDrawer>
   </NavigationContainer>

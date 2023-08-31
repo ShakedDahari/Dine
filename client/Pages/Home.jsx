@@ -35,7 +35,6 @@ export default function Home(props) {
       //let heading = await Location.getHeadingAsync({});
       setUserLocation(location.coords);
       let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
-      console.log(reverse);
       await locationToCity(reverse);
       
       } catch (error) {
@@ -153,22 +152,32 @@ export default function Home(props) {
     const nearbyRestaurants = await Promise.all(
       filteredRestaurants.map(async (restaurant) => {
         if (restaurant.location) {
-          const reverse = await Location.reverseGeocodeAsync(restaurant.location);
-          const distance = calculateDistance(
-            newLocation ? newLocation.latitude : userLocation.latitude,
-            newLocation ? newLocation.longitude : userLocation.longitude,
-            reverse[0].latitude,
-            reverse[0].longitude
-          );
-          return distance <= chosenRange ? restaurant : null;
+          try {
+            const geocode = await Location.geocodeAsync(restaurant.location);
+            if (geocode.length > 0) {
+              const { latitude, longitude } = geocode[0];
+              const distance = calculateDistance(
+                userLocation.latitude,
+                userLocation.longitude,
+                latitude,
+                longitude
+              );
+              return distance <= chosenRange ? restaurant : null;
+            }
+          } catch (error) {
+            console.log(error.message); // Handle error gracefully
+          }
         }
       })
     );
-     // Filter out null values (restaurants that are not within the chosen range)
-     if (nearbyRestaurants) {
-       const validNearbyRestaurants = nearbyRestaurants.filter((restaurant) => restaurant !== null);
-       setFilteredRestaurants(validNearbyRestaurants);
-     }
+  
+    // Filter out null values (restaurants that are not within the chosen range)
+    if (nearbyRestaurants) {
+      const validNearbyRestaurants = nearbyRestaurants.filter((restaurant) => restaurant !== null);
+      if (validNearbyRestaurants) {
+        setFilteredRestaurants(validNearbyRestaurants);
+      }
+    }
   }
 
   const handleFind = () => {

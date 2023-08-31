@@ -1,7 +1,6 @@
 import React, { createContext, useState } from "react";
 import { apiUrl } from "../utils/api_url";
 import { sendPushNotification } from "../Pages/PushNotification";
-import * as ImagePicker from 'expo-image-picker';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth'
 import 'firebase/compat/firestore'
@@ -891,6 +890,7 @@ export default function ContextProvider(props) {
     loadingReviews, setLoadingReviews, deleteReview, editReview,
     googleMapsApiKey, GetGoogleApi, handleLocalImageUpload, GetFirebaseConfig,
     imgSrc, setImgSrc, isRestaurantOwner, setIsRestaurantOwner, editRestaurant,
+    isUploading, setIsUploading,
   };
 
   return (

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal, FlatList, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -8,7 +8,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 
 export default function BusinessRegistration(props) {
 
-    let { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers, foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, foodTypeB, setFoodTypeB, imgSrc, setImgSrc,
+    const { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isValidNumbers, isUploading, foodTypes, LoadFoodTypes, emailB, setEmailB, phoneB, setPhoneB, nameB, setNameB, address, setAddress, foodTypeB, setFoodTypeB, imgSrc, setImgSrc,
         passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, checkEmailBusiness, addRestaurant, googleMapsApiKey, GetGoogleApi, handleLocalImageUpload } = useContext(ContextPage);
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -345,7 +345,11 @@ export default function BusinessRegistration(props) {
 
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
-              {imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
+              {isUploading ? (
+                <ActivityIndicator size={50} color="#90b2ac" />
+              ) : imgSrc ? (
+                <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf: 'center' }} />
+              ) : null}
             </View>
             <HelperText style={styles.helperText1} type="error" visible={imgSrc ? false : true}>
                 Select image
@@ -458,6 +462,7 @@ const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
       //backgroundColor: "#94B285",
+      paddingTop: 100,
       width: "100%",
       height: "100%",
     },
@@ -518,7 +523,6 @@ const styles = StyleSheet.create({
       padding: 5,
     },
     outlinedInput1: {
-      // margin: 5,
       width: "90%",
       alignSelf: 'center',
       fontSize: 12,
@@ -529,7 +533,6 @@ const styles = StyleSheet.create({
       alignSelf: 'center',        
     },
     outlinedInput2: {
-    // margin: 5,
     width: "45%",
     alignSelf: 'center',
     fontSize: 12,

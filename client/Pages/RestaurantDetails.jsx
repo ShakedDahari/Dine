@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert, BackHandler, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Alert, BackHandler, Linking, ActivityIndicator } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContextPage } from '../Context/ContextProvider';
@@ -13,7 +13,7 @@ import Reviews from './Reviews';
 export default function RestaurantDetails({ route, navigation }) {
 
   const { userType, restaurant } = route.params;
-  const { addItem, deleteItem, editItem, imgSrc, handleLocalImageUpload } = useContext(ContextPage);
+  const { addItem, deleteItem, editItem, imgSrc, setImgSrc, isUploading, handleLocalImageUpload } = useContext(ContextPage);
   
   // State variables for the new menu item details
   const [newItemName, setNewItemName] = useState('');
@@ -61,7 +61,7 @@ export default function RestaurantDetails({ route, navigation }) {
         const handleBackPress = () => {
           switch (userType) {
             case 'regularUser':
-              navigation.navigate('Main'); 
+              navigation.navigate('Home'); 
               return true; // Prevent the default back press behavior
             case 'restaurantOwner':
               navigation.navigate('Login'); 
@@ -141,6 +141,7 @@ export default function RestaurantDetails({ route, navigation }) {
 };
 
 const handleAddItem = () => {
+    setImgSrc('');
     setIsAddingItem(true);
 };
 
@@ -173,6 +174,7 @@ const handleAddItem = () => {
     setIsAddingItem(false);
     setNewItemName('');
     setNewItemPrice('');
+    setImgSrc('');
     setNewItemImage('');
     setSelectedCategory('');
   };
@@ -185,6 +187,7 @@ const handleAddItem = () => {
       setEditedItemId(id);
       setEditedItemName(selectedItem.name);
       setEditedItemPrice(selectedItem.price.toString());
+      setImgSrc(selectedItem.image);
       setEditedItemImage(selectedItem.image);
       setEditedItemCategory(selectedItem.category);
       setEditModalVisible(true);
@@ -232,6 +235,7 @@ const handleAddItem = () => {
     setEditedItemId('');
     setEditedItemName('');
     setEditedItemPrice('');
+    setImgSrc('');
     setEditedItemImage('');
     setEditedItemCategory('');
   };
@@ -429,14 +433,11 @@ const handleAddItem = () => {
           <TouchableOpacity onPress={pickImage}>
             <MaterialIcons style={styles.imgBtn} name="add-photo-alternate" />
           </TouchableOpacity>
-          {imgSrc && (
-            imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />
-          //   newItemImage && <Image source={{ uri: newItemImage }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />
-          // )
-          //  : (
-          //   editedItemImage && <Image source={{ uri: editedItemImage }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />
-          // )
-          )}
+          {isUploading ? (
+              <ActivityIndicator size={50} color="#90b2ac" />
+            ) : imgSrc ? (
+              <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf: 'center' }} />
+            ) : null}
           <HelperText style={styles.helperText2} type="error" visible={!imgSrc}>
             Item image is required
           </HelperText>

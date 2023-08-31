@@ -31,7 +31,7 @@ export default function Order(props) {
         setFoodType('');
         setDiners('');
         setSearchInput('');
-        props.navigation.navigate("Home");
+        props.navigation.navigate("Reservation");
     }
 
     const handleSeatReservation = async (restaurant, seatType) => {
@@ -53,7 +53,7 @@ export default function Order(props) {
               onPress: () => {
                if (id && seatType && numDiners) { 
                 AddReservationRequest(id, seatType, numDiners, email);
-                props.navigation.navigate("Main");               
+                props.navigation.navigate("Home");               
               };
               },
             },

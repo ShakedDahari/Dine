@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { ContextPage } from '../Context/ContextProvider';
 import WebView from 'react-native-webview';
+import { subMonths, format } from 'date-fns';
 
 //Function to generate background colors
 const generateBackgroundColors = (count) => {
@@ -19,26 +20,30 @@ const generateBackgroundColors = (count) => {
   return colors;
 };
 
-export default function Charts(props) {
+export default function Charts() {
 
-    const { LoadRestaurants, restaurants, LoadFoodTypes, foodTypes } = useContext(ContextPage);
-    const [selectedCity, setSelectedCity] = useState('All'); 
+    const { LoadRestaurants, restaurants, LoadFoodTypes, foodTypes, LoadUsers, users } = useContext(ContextPage);
+    // const [selectedCity, setSelectedCity] = useState('All'); 
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
       LoadRestaurants();
+      LoadFoodTypes();
+      LoadUsers();
     }, []);
 
   // Generate background colors for food types
   const backgroundColors = generateBackgroundColors(foodTypes.length);
 
-  const cityList = ['All', ...new Set(restaurants.map(restaurant => restaurant.location))];
+  //const cityList = ['All', ...new Set(restaurants.map(restaurant => restaurant.location))];
 
   const getFilteredRestaurantData = () => {
-    if (selectedCity === 'All') {
-      return restaurants.filter(restaurant => restaurant.approved === true);
-    }
-    return restaurants.filter(restaurant => restaurant.location === selectedCity && restaurant.approved === true);
+    return restaurants.filter(restaurant => restaurant.approved === true);
+
+    // if (selectedCity === 'All') {
+    //   return restaurants.filter(restaurant => restaurant.approved === true);
+    // }
+    // return restaurants.filter(restaurant => restaurant.location === selectedCity && restaurant.approved === true);
   };
 
   const filteredRestaurantData = getFilteredRestaurantData();
@@ -46,7 +51,6 @@ export default function Charts(props) {
   const filteredAvailableSeatsData = filteredRestaurantData.map(
     restaurant => restaurant.availableSeats
   );
-
 
 
   // Render the city dropdown
@@ -77,6 +81,72 @@ export default function Charts(props) {
     );
   };
 
+  const usersAndRestaurantsChartConfig = {
+    type: 'bar',
+    data: {
+      labels: ['Users', 'Restaurants'],
+      datasets: [
+        {
+          label: 'Amount',
+          data: [users.length, restaurants.length],
+          backgroundColor: ['#aaccc6', '#1a8e9a'],
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 2, // Set step size for y-axis ticks
+            font: {
+              size: 25, // Adjust the font size for y-axis values
+            },
+          },
+        },
+        x: {
+          beginAtZero: true,
+          ticks: {
+            font: {
+              size: 25, // Adjust the font size for y-axis values
+            },
+          },
+        },
+      },
+      plugins: {
+        tooltip: {
+          titleFont: {
+            size: 35
+          },
+          bodyFont: {
+            size: 25
+          },
+        },
+        legend: {
+          display: false, // Hide the legend label
+        },
+      },
+    },
+  };
+
+  const chartHTMLCount = `
+  <html>
+    <head>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+      <div style="width: 95%; margin: auto;">
+        <canvas id="allUsersAndRestaurants"></canvas>
+      </div>
+      <script>
+        const ctx = document.getElementById('allUsersAndRestaurants').getContext('2d');
+        new Chart(ctx, ${JSON.stringify(usersAndRestaurantsChartConfig)});
+      </script>
+    </body>
+  </html>
+`;
+
   const chartConfig = {
     type: 'bar',
     data: {
@@ -103,6 +173,7 @@ export default function Charts(props) {
             },
           },
           legend: {
+            display: false, // Hide the legend label
             labels :{
                 font: {
                   size: 25
@@ -235,18 +306,32 @@ export default function Charts(props) {
   
 
   return (
-    <View style={{flex: 1}}>
-      {restaurants.length === 0 ? (
+    <View style={{ justifyContent: "center", width: "100%", height: "100%" }}>
+      <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
+      {restaurants.length === 0 && foodTypes.length === 0 && users.length === 0 ? (
          <ActivityIndicator size={100} color="#D9D9D9" />
       ) : (
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+        <View>
+          {/* <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{fontSize: 20, fontWeight: 'bold', margin: 15, fontFamily: 'eb-garamond'}}>Filter by City:</Text>
             <TouchableOpacity onPress={() => setModalVisible(true)}>
               <Text style={{ fontSize: 16, fontFamily: 'eb-garamond-italic' }}>{selectedCity}</Text>
             </TouchableOpacity>
+          </View> */}
+          {/* {renderCityDropdown()} */}
+          <View>
+            <Text style={{alignSelf: 'center', margin: 15, fontSize: 20, fontWeight: 'bold', fontFamily: 'eb-garamond'}}>Users and Restaurants</Text>
           </View>
-          {renderCityDropdown()}
+          <View style={{ height: 200 }}>
+            <WebView
+              originWhitelist={['*']}
+              source={{ html: chartHTMLCount }}
+              style={{ flex: 1, backgroundColor: '#ededed' }}
+            />
+          </View>
+          <View>
+            <Text style={{alignSelf: 'center', margin: 15, fontSize: 20, fontWeight: 'bold', fontFamily: 'eb-garamond'}}>Available Seats</Text>
+          </View>
           <View style={{ height: 200 }}>
             <WebView
               originWhitelist={['*']}
@@ -263,9 +348,9 @@ export default function Charts(props) {
               source={{ html: chartHTMLFood }}
               style={{ flex: 1, backgroundColor: '#ededed' }}
             />
-          </View>
-        </View>
-      )}
+          </View> 
+        </View>  )}
+      </ScrollView>
     </View>
   );
 };

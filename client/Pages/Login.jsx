@@ -5,14 +5,12 @@ import { sendPushNotification, registerForPushNotificationsAsync } from "./PushN
 import { Button, TextInput, HelperText, Checkbox } from 'react-native-paper';
 import { useFonts } from "expo-font";
 
-
 export default function Login(props) {
   
   const { expoPushToken, setExpoPushToken, userName, password, setUserName, setPassword, setLoginUser, checkLoginUser, checkLoginRestaurant, isRestaurantOwner, setIsRestaurantOwner } = useContext(ContextPage);
   
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
-  const [submit, setSubmit] = useState(false);
   const [bothHelper, setBothHelper] = useState(false);
   const [foundHelper, setFoundHelper] = useState(false);
   const [approvalHelper, setApprovalHelper] = useState(false);
@@ -64,10 +62,10 @@ if (!loaded) {
           const token = await registerForPushNotificationsAsync();
           setExpoPushToken(token);
           await sendPushNotification('Login Successful', 'Welcome to the app!', token);
-          if (userName === "Admin1" || userName === "Admin2") {
+          if (userName === "Admin1" || userName === "Admin2" || userName === "shaked1299@gmail.com" || userName === "ofekbub@gmail.com") {
             props.navigation.navigate("Admin");
           } else {
-            props.navigation.navigate("Main");
+            props.navigation.navigate("Home");
           }
         } else {
           //alert('Invalid Error');
@@ -81,7 +79,7 @@ if (!loaded) {
             const token = await registerForPushNotificationsAsync();
             setExpoPushToken(token);
             await sendPushNotification('Login Successful', 'Welcome to the app!', token);
-            props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant  });
+            props.navigation.navigate('RestaurantDetails', { userType: 'restaurantOwner', restaurant: restaurant });
           } else {
             //alert("Your restaurant hasn't been approved yet. Please wait for approval.");
             setApprovalHelper(true);
@@ -151,6 +149,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     //backgroundColor: "#94B285",
+    paddingTop: 100,
     width: "100%",
     height: "100%",
   },

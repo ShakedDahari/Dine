@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
@@ -11,7 +11,7 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function Register(props) {
 
-    const { isValidEmail, isValidPhone, isValidUsername, isValidPassword, email, setEmail, phone, setPhone, imgSrc, setImgSrc,
+    const { isValidEmail, isValidPhone, isValidUsername, isValidPassword, isUploading, email, setEmail, phone, setPhone, imgSrc, setImgSrc,
       userName, setUserName, password, setPassword, confirm, setConfirm, addUser, checkEmail, checkUsername,  handleLocalImageUpload } = useContext(ContextPage);
     
       const [camera, setCamera] = useState();
@@ -256,7 +256,11 @@ export default function Register(props) {
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={handleAddImage}><MaterialIcons style={styles.imgBtn} name="add-a-photo" /></TouchableOpacity>
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
-              {imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
+              {isUploading ? (
+                <ActivityIndicator size={50} color="#90b2ac" />
+              ) : imgSrc ? (
+                <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf: 'center' }} />
+              ) : null}
             </View>
               <HelperText style={styles.helperText} type="error" visible={imgSrc ? false : true}>
                 Select image
@@ -308,6 +312,7 @@ const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
       // backgroundColor: "#94B285",
+      paddingTop: 100,
       width: "100%",
       height: "100%",
     },

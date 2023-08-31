@@ -82,26 +82,28 @@ export default function Page1(props) {
           <Text style={styles.text}>DineInTime</Text>
         </View>
         <TouchableOpacity>
-            <Text style={styles.headline} onPress={() => props.navigation.navigate("Home")}>Search by Location</Text>
+            <Text style={styles.headline} onPress={() => props.navigation.navigate("Reservation")}>Search by Location</Text>
         </TouchableOpacity>
         <View>
             <Text style={styles.categories}>Categories</Text>
         </View>
-        <View>
-          <FlatList style={{flexDirection: "row"}}
-            data = {foodTypes.sort((a, b) => a.name.localeCompare(b.name))}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingVertical: 10, flexDirection: "row" }}
-            keyExtractor={(item) => item._id.toString()}
-            renderItem={renderItem}/>
-          {selectedFoodType && (
-            <View>
-              {renderRestaurants(selectedFoodType)}
-            </View>
-          )}
-          <Charts />
-        </View>
+        { foodTypes && foodTypes.length === 0 ? (<ActivityIndicator size={100} color="#D9D9D9" />) : (
+          <View>
+            <FlatList style={{flexDirection: "row"}}
+              data = {foodTypes.sort((a, b) => a.name.localeCompare(b.name))}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingVertical: 10, flexDirection: "row" }}
+              keyExtractor={(item) => item._id.toString()}
+              renderItem={renderItem}/>
+            {selectedFoodType && (
+              <View>
+                {renderRestaurants(selectedFoodType)}
+              </View>
+            )}
+            {/* <Charts /> */}
+          </View>
+        )}
     </ScrollView>
     </View>
   )

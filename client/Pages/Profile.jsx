@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import React, { useContext, useState } from 'react';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { ContextPage } from '../Context/ContextProvider';
@@ -10,7 +10,7 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function Profile() {
 
-    const { isRestaurantOwner, loginUser, isValidPassword, isValidNumbers, setEmail, setPhone, imgSrc, setImgSrc, setUserName, password, setPassword, confirm, setConfirm, handleLocalImageUpload, editUser,setEmailB, setPhoneB,
+    const { isRestaurantOwner, loginUser, setLoginUser, isUploading, isValidPassword, isValidNumbers, setEmail, setPhone, imgSrc, setImgSrc, setUserName, password, setPassword, confirm, setConfirm, handleLocalImageUpload, editUser, setEmailB, setPhoneB,
          setNameB, setAddress, setFoodTypeB, passwordB, setPasswordB, confirmB, setConfirmB, availableSeats, setAvailableSeats, inside, setInside, outside, setOutside, bar, setBar, editRestaurant } = useContext(ContextPage);
     
     const [camera, setCamera] = useState();
@@ -31,6 +31,7 @@ export default function Profile() {
     const [hasUppercase, setHasUppercase] = useState(true);
     const [hasLowercase, setHasLowercase] = useState(true);
     const [hasDigit, setHasDigit] = useState(true);
+    
 
     const handleEdit = () => {
         setEmail(loginUser.email);
@@ -70,9 +71,10 @@ export default function Profile() {
         await checkInputsValidation();
 
         const user = {
+            _id: loginUser._id,
             email: loginUser.email,
             phone: loginUser.phone,
-            username: loginUser.userName,
+            username: loginUser.username,
             image: imgSrc,
             password: password,
             verify: confirm,
@@ -80,7 +82,9 @@ export default function Profile() {
   
   
         if (imgSrc && password && confirm && !passwordHelper && !confirmHelper) {
-            editUser(loginUser._id, imgSrc, password, confirm);
+            await editUser(loginUser._id, imgSrc, password, confirm);
+            handleEditModalClose();
+            setLoginUser(user);  
         }
     };
 
@@ -88,11 +92,12 @@ export default function Profile() {
         await inputsValidationRestaurant();
 
         const business = {
+            _id: loginUser._id,
             email: loginUser.email,
             phone: loginUser.phone,
             name: loginUser.name, 
-            location: loginUser.address, 
-            foodType: loginUser.foodTypeB, 
+            location: loginUser.location, 
+            foodType: loginUser.foodType, 
             image: imgSrc,
             availableSeats: parseInt(availableSeats), 
             locationSeats : {
@@ -107,7 +112,9 @@ export default function Profile() {
         if ( imgSrc && availableSeats && inside && outside && bar && passwordB && confirmB &&
             !availableSeatsHelper && !insideHelper && !outsideHelper && !passwordHelper && !confirmHelper) {
             
-            editRestaurant(loginUser._id, imgSrc, availableSeats, inside, outside, bar, passwordB, confirmB);
+            await editRestaurant(loginUser._id, imgSrc, parseInt(availableSeats), parseInt(inside), parseInt(outside), parseInt(bar), passwordB, confirmB);
+            handleEditRestaurantClose();
+            setLoginUser(business);
         }
     }
 
@@ -337,7 +344,11 @@ export default function Profile() {
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={handleAddImage}><MaterialIcons style={styles.imgBtn} name="add-a-photo" /></TouchableOpacity>
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
-              {imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
+              {isUploading ? (
+                <ActivityIndicator size={50} color="#90b2ac" />
+              ) : imgSrc ? (
+                <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf: 'center' }} />
+              ) : null}
             </View>
               <HelperText style={styles.helperText} type="error" visible={imgSrc ? false : true}>
                 Select image
@@ -383,7 +394,11 @@ export default function Profile() {
 
             <View style={{flexDirection:'row', justifyContent:'center'}}>
               <TouchableOpacity onPress={pickImage}><MaterialIcons style={styles.imgBtn} name="add-photo-alternate" /></TouchableOpacity>
-              {imgSrc && <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf:'center' }} />}
+              {isUploading ? (
+                <ActivityIndicator size={50} color="#90b2ac" />
+              ) : imgSrc ? (
+                <Image source={{ uri: imgSrc }} style={{ margin: 10, padding: 5, width: 65, height: 65, alignSelf: 'center' }} />
+              ) : null}
             </View>
             <HelperText style={styles.helperText} type="error" visible={imgSrc ? false : true}>
                 Select image

@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { MD3LightTheme as DefaultTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { createTheme } from '@mui/material/styles';
+import { Ionicons } from '@expo/vector-icons';
 
 import Page1 from './Pages/Page1';
 import Login from './Pages/Login';
@@ -16,6 +17,8 @@ import RestaurantDetails from './Pages/RestaurantDetails';
 import Reservations from './Pages/Reservations';
 import Reviews from './Pages/Reviews';
 import Profile from './Pages/Profile';
+import About from './Pages/About';
+import Contact from './Pages/Contact';
 import ContextProvider from './Context/ContextProvider';
 import React, { useEffect } from 'react';
 
@@ -42,59 +45,87 @@ const Drawer = createDrawerNavigator();
 
 I18nManager.allowRTL(false);
 
+
 //creates the popup hamburger menu with the pages options
 function MyDrawer() {
   return (            //startup page 
-    <Drawer.Navigator initialRouteName="Login">  
+    <Drawer.Navigator initialRouteName="Login" 
+    screenOptions={{
+      drawerType: 'slide',
+      drawerLabelStyle: {
+        fontSize: 20,
+      },
+      drawerItemStyle: { 
+        height: 70, 
+        justifyContent: 'center',
+     },
+    }}>  
       <Drawer.Screen
-          name="Login"
-          component={Login}
-          options={{ drawerLabel: 'Login' }}
-      />
-      <Drawer.Screen
-        name="Main"                       //page title
-        component={Page1}                  //component = page element
-        options={{ drawerLabel: 'Main' }} //sets menu label of page
+          name="Login"                                                             //page title
+          component={Login}                                                       //component = page element
+          options={{ drawerItemStyle: { height: 0 }, headerShown: false}}        //sets menu label of page
       />
       <Drawer.Screen
         name="Register"
         component={Register}
-        options={{ drawerLabel: 'Register' }}
-      />
-      <Drawer.Screen
-        name="Home"
-        component={Home}
-        options={{ drawerLabel: 'Home' }}
+        options={{ drawerItemStyle: { height: 0 }, headerShown: false }}
       />
        <Drawer.Screen
         name="Order"
         component={Order}
-        options={{ drawerLabel: 'Order' }} //hides from menu bar {drawerItemStyle: { height: 0 }}
+        options={{ drawerItemStyle: { height: 0 } }}
       />
+
        <Drawer.Screen
         name="Admin"
         component={Admin}
-        options={{ drawerLabel: 'Admin' }}
-      />
-      <Drawer.Screen
-        name="Chart"
-        component={Charts}
-        options={{ drawerLabel: 'Chart' }}
+        options={{ drawerItemStyle: { height: 0 } }}
       />
       <Drawer.Screen
         name="BusinessRegistration"
         component={BusinessRegistration}
-        options={{ drawerLabel: 'BusinessRegistration' }}
+        options={{ drawerItemStyle: { height: 0 }, headerShown: false  }}
       />
       <Drawer.Screen
         name="RestaurantDetails"
         component={RestaurantDetails}
-        options={{ drawerLabel: 'RestaurantDetails' }}
+        options={{ drawerItemStyle: { height: 0 } }}
+      />
+      <Drawer.Screen
+          name="Home"                        
+          component={Page1}                  
+          options={{ drawerLabel: 'Home', drawerActiveTintColor: '#90b2ac', drawerIcon: ({ focused }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={30} color={'#90b2ac'} />) }} 
       />
       <Drawer.Screen
         name="Profile"
         component={Profile}
-        options={{ drawerLabel: 'Profile' }}
+        options={{ drawerLabel: 'Profile', drawerActiveTintColor: '#90b2ac', drawerIcon: ({ focused }) => (
+          <Ionicons name={focused ? 'person' : 'person-outline'} size={30} color={'#90b2ac'} />)  }}
+      />
+      <Drawer.Screen
+        name="Reservation"
+        component={Home}
+        options={{ drawerLabel: 'Reservation', drawerActiveTintColor: '#90b2ac', drawerIcon: ({ focused }) => (
+          <Ionicons name={focused ? 'map' : 'map-outline'} size={30} color={'#90b2ac'} />) }} 
+      />
+      <Drawer.Screen
+        name="Statistics"
+        component={Charts}
+        options={{ drawerLabel: 'Statistics', drawerActiveTintColor: '#90b2ac', drawerIcon: ({ focused }) => (
+          <Ionicons name={focused ? 'bar-chart' : 'bar-chart-outline'} size={30} color={'#90b2ac'} />)  }}
+      />
+      <Drawer.Screen
+          name="Contact"
+          component={Contact}
+          options={{ drawerLabel: 'Contact', drawerActiveTintColor: '#90b2ac', drawerIcon: ({ focused }) => (
+            <Ionicons name={focused ? 'chatbox-ellipses' : 'chatbox-ellipses-outline'} size={30} color={'#90b2ac'} />)  }}
+        />
+      <Drawer.Screen
+        name="About"
+        component={About}
+        options={{ drawerLabel: 'About', drawerActiveTintColor: '#90b2ac', drawerIcon: ({ focused }) => (
+          <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} size={30} color={'#90b2ac'} />)  }}
       />
     </Drawer.Navigator>
   );
@@ -105,7 +136,7 @@ const handleBackPress = (screenName, navigation) => {
     case 'Login':
       BackHandler.exitApp();
       return true;
-    case 'Main':
+    case 'Home':
       navigation.navigate('Login');
       return true;
     case 'Register':
@@ -114,14 +145,11 @@ const handleBackPress = (screenName, navigation) => {
     case 'BusinessRegistration':
       navigation.navigate('Register');
       return true;
-    case 'Home':
-      navigation.navigate('Main');
-      return true;
-    // case 'RestaurantDetails':
-    //   navigation.navigate('Main');
-    //   return true;
-    case 'Order':
+    case 'Reservation':
       navigation.navigate('Home');
+      return true;
+    case 'Order':
+      navigation.navigate('Reservation');
       return true;
     default:
       // For all other screens, use the default back behavior (navigate back)
@@ -171,17 +199,19 @@ export default function App() {
       <MyDrawer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Main" component={Page1} />
+        <Stack.Screen name="Home" component={Page1} />
         <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Reservation" component={Home} />
         <Stack.Screen name="Order" component={Order} />
         <Stack.Screen name="Admin" component={Admin} />
-        <Stack.Screen name="Chart" component={Charts} />
+        <Stack.Screen name="Statistics" component={Charts} />
         <Stack.Screen name="BusinessRegistration" component={BusinessRegistration} />
         <Stack.Screen name="RestaurantDetails" component={RestaurantDetails} />
         <Stack.Screen name="Reservations" component={Reservations} />
         <Stack.Screen name="Reviews" component={Reviews} />
         <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="About" component={About} />
+        <Stack.Screen name="Contact" component={Contact}/>
       </Stack.Navigator>
       </MyDrawer>
   </NavigationContainer>

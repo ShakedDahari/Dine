@@ -148,53 +148,55 @@ export default function Home(props) {
     await locationToCity(reverse);
   }
 
-  const findNearbyRestaurants = async () => {
-    const nearbyRestaurants = await Promise.all(
-      filteredRestaurants.map(async (restaurant) => {
-        if (restaurant.location) {
-          try {
-            const geocode = await Location.geocodeAsync(restaurant.location);
-            if (geocode.length > 0) {
-              const { latitude, longitude } = geocode[0];
-              const distance = calculateDistance(
-                userLocation.latitude,
-                userLocation.longitude,
-                latitude,
-                longitude
-              );
-              return distance <= chosenRange ? restaurant : null;
-            }
-          } catch (error) {
-            console.log(error.message); // Handle error gracefully
-          }
-        }
-      })
-    );
+  const findNearbyRestaurants = async (filtered) => {
+
+    const nearbyRestaurants = [];
   
-    // Filter out null values (restaurants that are not within the chosen range)
-    if (nearbyRestaurants) {
-      const validNearbyRestaurants = nearbyRestaurants.filter((restaurant) => restaurant !== null);
-      if (validNearbyRestaurants) {
-        setFilteredRestaurants(validNearbyRestaurants);
+    for (const restaurant of filtered) {
+      if (restaurant.approved === true && restaurant.location) {
+        try {
+          const geocode = await Location.geocodeAsync(restaurant.location);
+  
+          if (geocode.length > 0) {
+            const { latitude, longitude } = geocode[0];
+            const distance = calculateDistance(
+              newLocation ? newLocation.latitude : userLocation.latitude,
+              newLocation ? newLocation.longitude : userLocation.longitude,
+              latitude,
+              longitude
+            );
+  
+            console.log(`Processing restaurant: ${restaurant.name} - ` + `Distance: ${distance}, Chosen Range: ${chosenRange}`);
+            
+            if (distance <= chosenRange) {
+              nearbyRestaurants.push(restaurant); // Add the restaurant to the result
+            }
+          }
+        } catch (error) {
+          console.log(`Error processing restaurant ${restaurant.name}: ${error.message}`);
+        }
       }
     }
+
+    setFilteredRestaurants(nearbyRestaurants);
   }
 
-  const handleFind = () => {
+  const handleFind = async () => {
     console.log(location, foodType, diners);
     if (location && foodType && diners) {
-      if (searchType === 'city') {
-        findRestaurants(location, foodType, diners);
-      } else {
-        nearbyRestaurants(foodType, diners);
-        findNearbyRestaurants();
-      }
-        setIsLoading(true);
+      setIsLoading(true);
+      try {
+        if (searchType === 'city') {
+          await findRestaurants(location, foodType, diners);
+        } else {
+          let rests = await nearbyRestaurants(foodType, diners);
+          await findNearbyRestaurants(rests);
+        }
         props.navigation.navigate("Order");
+      } catch (error) {
+        console.log("Error:", error.message);
+      }
     } 
-    // else {
-    //     alert('Invalid Error');
-    // }
   }
 
   return (

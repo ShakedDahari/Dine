@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet, Image } from 'react-native';
 import { ContextPage } from '../Context/ContextProvider';
 import WebView from 'react-native-webview';
-import { subMonths, format } from 'date-fns';
 
 //Function to generate background colors
 const generateBackgroundColors = (count) => {
@@ -308,6 +307,11 @@ export default function Charts() {
   return (
     <View style={{ justifyContent: "center", width: "100%", height: "100%" }}>
       <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
+      <View style={styles.container}>
+            <View style={styles.iconCon}>
+            <Image source={require("../assets/icon.png")} style={styles.icon}/>
+            <Text style={styles.text}>DineInTime</Text>
+            </View>
       {restaurants.length === 0 && foodTypes.length === 0 && users.length === 0 ? (
          <ActivityIndicator size={100} color="#D9D9D9" />
       ) : (
@@ -350,8 +354,32 @@ export default function Charts() {
             />
           </View> 
         </View>  )}
+        </View>
       </ScrollView>
     </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: "center",
+    width: "100%",
+    height: "100%",
+  },
+  iconCon: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  icon: {
+    width: 100,
+    height: 100,
+    alignSelf: "center",
+  },
+  text: {
+    alignSelf: "center",
+    fontSize: 18,
+    fontFamily: 'eb-garamond',
+    fontWeight: 500,
+  },
+});

@@ -413,13 +413,11 @@ export default function ContextProvider(props) {
       
             try {
               data = await JSON.parse(text);
-            } catch (error) {
-              throw new Error('Invalid JSON response');
-            }
-            console.log(data);
-            if (data) {
+              console.log(data);
               setFilteredRestaurants(data);
               setIsLoading(false);
+            } catch (error) {
+              throw new Error('Invalid JSON response');
             }
             
             return data;
@@ -446,13 +444,11 @@ export default function ContextProvider(props) {
       
             try {
               data = await JSON.parse(text);
-            } catch (error) {
-              throw new Error('Invalid JSON response');
-            }
-            console.log(data);
-            if (data) {
+              console.log(data);
               setFilteredRestaurants(data);
               setIsLoading(false);
+            } catch (error) {
+              throw new Error('Invalid JSON response');
             }
             
             return data;
@@ -741,6 +737,7 @@ export default function ContextProvider(props) {
     }
   };
 
+  // fetches and converts image URIs into Blobs for uploading
   const getBlobFromUri = async (uri) => {
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -757,6 +754,7 @@ export default function ContextProvider(props) {
     return blob;
   };
 
+  // oversees the upload process
   const manageFileUpload = async (
     fileBlob,
     { onStart, onProgress, onComplete, onFail }
@@ -809,6 +807,7 @@ export default function ContextProvider(props) {
     }
   };
 
+  // Callbacks (onStart, onProgress, onComplete, onFail) handle various upload stages, from initiation to success and failure
   const onStart = () => {
     setIsUploading(true);
   };
@@ -816,6 +815,7 @@ export default function ContextProvider(props) {
   const onProgress = (progress) => {
     setProgress(progress);
   };
+
   const onComplete = (fileUrl) => {
     setImgSrc(fileUrl);
     setIsUploading(false);
@@ -825,6 +825,7 @@ export default function ContextProvider(props) {
     setError(error);
     setIsUploading(false);
   };
+
   const handleCloudImageUpload = async (imgURI) => {
     if (!imgURI) return;
     let fileToUpload = null;

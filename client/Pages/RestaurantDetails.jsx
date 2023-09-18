@@ -129,14 +129,6 @@ export default function RestaurantDetails({ route, navigation }) {
   });
     if (!result.canceled) {
       await handleLocalImageUpload(result.assets[0].uri);
-      // if (!isAddingItem) {
-      //   // setEditedItemImage(result.assets[0].uri);
-      //   // setImgSrc(result.assets[0].uri);
-      // } else {
-      //   // setNewItemImage(result.assets[0].uri);
-      //   // setImgSrc(result.assets[0].uri);
-      //   await handleLocalImageUpload(result.assets[0].uri);
-      // }
     }
 };
 
@@ -166,9 +158,6 @@ const handleAddItem = () => {
         setMenuItems([...menuItems, itemAdded]);
       }  
     } 
-    // else {
-    //   alert('Invalid Error');
-    // }
 
     // Close the modal and reset the captured details
     setIsAddingItem(false);
@@ -226,9 +215,6 @@ const handleAddItem = () => {
         });
       });
     } 
-    // else {
-    //   alert('Invalid Error');
-    // }
 
     // Close the edit modal
     setEditModalVisible(false);
@@ -280,14 +266,14 @@ const handleAddItem = () => {
 
   const renderMenuItem = ({ item }) => {
     return (
-    <View key={item._id} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-      <Image source={{ uri: item?.image }} style={{ width: 70, height: 70, borderRadius: 15, margin: 15 }} />
+    <View key={item._id} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, width: '90%' }}>
+      <Image source={{ uri: item?.image }} style={{ width: '20%', height: 70, borderRadius: 15, margin: 10 }} />
 
-      <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'center', marginHorizontal: 10 }}>
+      <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'center', alignItems: 'center' }}>
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={[styles.itemName, {paddingLeft: 30}]}>{item.price.toFixed(2)} ₪</Text>
+        <Text style={styles.itemName}>{item.price.toFixed(2)} ₪</Text>
     { userType === 'restaurantOwner' && (
-      <View style={{ flexDirection: 'row', marginLeft: 15 }}>
+      <View style={{ flexDirection: 'row', width: '20%' }}>
       <TouchableOpacity onPress={() => handleEditItem(item._id)}>
         <MaterialIcons name="edit" size={40} color="#90b2ac" />
       </TouchableOpacity>
@@ -560,6 +546,8 @@ const styles = StyleSheet.create({
         fontFamily: 'eb-garamond-italic', 
         margin: 3, 
         fontSize: 24,
+        width: '40%',
+        textAlign: "center",
     },
     btn: {
         height: 50,

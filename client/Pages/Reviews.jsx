@@ -17,8 +17,7 @@ export default function Reviews({ restaurant, userType }) {
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        if (restaurant) {
-            //LoadRestaurantReviews(restaurant._id);    
+        if (restaurant) { 
             fetchReviewsData();                          
         }
       }, [restaurant]);

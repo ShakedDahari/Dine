@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal, FlatList, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -14,9 +14,6 @@ export default function BusinessRegistration(props) {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [foodListVisible, setFoodListVisible] = useState(false);
     const [isVerifyVisible, setIsVerifyVisible] = useState(false);
-    const [isCityListVisible, setIsCityListVisible] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredCities, setFilteredCities] = useState([]);
     const [pressed, setPressed] = useState(false);
     const [emailHelper, setEmailHelper] = useState(false);
     const [isEmailOccupied, setIsEmailOccupied] = useState(false);
@@ -54,35 +51,6 @@ export default function BusinessRegistration(props) {
       setPressed(false);
     };  
 
-    const cities = require('../utils/cities.json');
-
-    const handleSearch = (query) => {
-      setSearchQuery(query);
-  
-      // Filter the cities based on the search query
-      const filtered = cities.filter((city) =>
-        city.english_name.toLowerCase().startsWith(query.toLowerCase())  ||
-        city.english_name.toLowerCase().includes(query.toLowerCase()) // In case that startsWith not found --> use includes
-      );
-
-      // Display the top 5 relevant matches
-      const topMatches = filtered.slice(0, 5);
-      setFilteredCities(topMatches);
-    };
-
-
-    const handleSelectCity = (selectedCity) => {
-      setCity(selectedCity);
-      setSearchQuery(selectedCity);
-      setIsCityListVisible(false);
-    };
-  
-    const renderItem = ({ item, index }) => (
-      <TouchableOpacity style={styles.cityItem} onPress={() => handleSelectCity(item.english_name)}>
-        <Text style={styles.cityName}>{item.english_name}</Text>
-      </TouchableOpacity>
-    );  
-
     const resetInputs = async () => {
       setEmailB('');
       setPhoneB('');
@@ -107,8 +75,6 @@ export default function BusinessRegistration(props) {
           quality: 1,
       });
         if (!result.canceled) {
-          // setImgB(result.assets[0].uri);
-          // setImgSrc(result.assets[0].uri);
           await handleLocalImageUpload(result.assets[0].uri);
       }
     };
@@ -461,7 +427,6 @@ export default function BusinessRegistration(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      //backgroundColor: "#94B285",
       paddingTop: 100,
       width: "100%",
       height: "100%",

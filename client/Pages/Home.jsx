@@ -10,7 +10,7 @@ import { Slider } from '@react-native-assets/slider';
 
 export default function Home(props) {
 
-  const { restaurants, location, setLocation, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible, filteredRestaurants, setFilteredRestaurants, 
+  const { location, setLocation, errorMsg, setErrorMsg, foodType, setFoodType, diners, setDiners, foodListVisible, setFilteredRestaurants, 
     setFoodListVisible, dinersListVisible, setDinersListVisible, foodTypes, dinersList, findRestaurants, nearbyRestaurants, setIsLoading } = useContext(ContextPage);
     const [pressed, setPressed] = useState(false);
     const [userLocation, setUserLocation] = useState();
@@ -25,18 +25,17 @@ export default function Home(props) {
       (async () => {
         try {
 
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-      
-      let location = await Location.getCurrentPositionAsync({});
-      //let heading = await Location.getHeadingAsync({});
-      setUserLocation(location.coords);
-      let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
-      await locationToCity(reverse);
-      
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setErrorMsg("Permission to access location was denied");
+          return;
+        }
+        
+        let location = await Location.getCurrentPositionAsync({});
+        setUserLocation(location.coords);
+        let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
+        await locationToCity(reverse);
+        
       } catch (error) {
         console.log(error.message);
       }
@@ -48,6 +47,7 @@ export default function Home(props) {
     if (reverse && reverse[0].city) {
       
       let cityName = reverse[0].city;
+
       l = cities.find((c)=>cityName===c.english_name)?.english_name;  //?.=setting l to the english name of the city
       if (l === undefined) {
         l = cities.find((c) => c.name === cityName)?.english_name;
@@ -118,7 +118,6 @@ export default function Home(props) {
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
-    //console.log(location);
     if (typeof location === "string") {
       text = location;
     } else {
@@ -342,7 +341,6 @@ export default function Home(props) {
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
-    //backgroundColor: "#94B285",
     width: "100%",
     height: "100%",
   },
@@ -382,7 +380,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   outlinedInput2: {
-    // margin: 5,
     width: "75%",
     alignSelf: 'center',
   },

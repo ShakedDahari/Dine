@@ -1,4 +1,4 @@
-import { View, Text, Button, Modal, ScrollView, Image, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 
@@ -110,7 +110,6 @@ export default function Page1(props) {
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
-    //backgroundColor: "#94B285",
     width: "100%",
     height: "100%",
   },

@@ -91,7 +91,6 @@ export default function Register(props) {
     };
     
     const onPictureSaved = async (photo) => {
-      // setImgSrc(photo.uri);
       await handleLocalImageUpload(photo.uri);
       setShowCamera(false);
     }
@@ -104,7 +103,6 @@ export default function Register(props) {
         quality: 1,
     });
       if (!result.canceled) {
-        //setImgSrc(result.assets[0].uri);
         await handleLocalImageUpload(result.assets[0].uri);
       }
   };
@@ -311,7 +309,6 @@ export default function Register(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      // backgroundColor: "#94B285",
       paddingTop: 100,
       width: "100%",
       height: "100%",

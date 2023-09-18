@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, FlatList, ActivityIndicator, Alert, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ActivityIndicator, Alert, TouchableWithoutFeedback } from 'react-native';
 import React, { useContext } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 import { useState } from 'react';
-import { Button, TextInput, HelperText } from 'react-native-paper';
+import { Button, TextInput } from 'react-native-paper';
 
 export default function Order(props) {
 
@@ -153,7 +153,6 @@ export default function Order(props) {
 const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
-      //backgroundColor: "#94B285",
       width: "100%",
       height: "100%",
     },

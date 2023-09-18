@@ -11,10 +11,10 @@ export default function Contact() {
     const appEmail = "dineintimeapp@gmail.com";
     const appPhone = "052-3681396";
 
-    const whatsappURL = `https://api.whatsapp.com/send?phone=${appPhone}`; // Replace with your WhatsApp number
-    const instagramURL = 'https://www.instagram.com/shaked_dahari'; // Replace with your Instagram handle
-    const linkedinURL = 'https://www.linkedin.com/in/shaked-dahari'; // Replace with your LinkedIn profile URL
-    const githubURL = 'https://github.com/ShakedDahari'; // Replace with your GitHub profile URL
+    const whatsappURL = `https://api.whatsapp.com/send?phone=${appPhone}`; 
+    const instagramURL = 'https://www.instagram.com/shaked_dahari'; 
+    const linkedinURL = 'https://www.linkedin.com/in/shaked-dahari';
+    const githubURL = 'https://github.com/ShakedDahari'; 
       
     const handleSocialMediaLink = async (url) => {
       const supported = await Linking.canOpenURL(url);

@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { ContextPage } from '../Context/ContextProvider';
@@ -150,7 +150,6 @@ export default function Profile() {
       };
       
       const onPictureSaved = async (photo) => {
-        // setImgSrc(photo.uri);
         await handleLocalImageUpload(photo.uri);
         setShowCamera(false);
       }
@@ -163,7 +162,6 @@ export default function Profile() {
           quality: 1,
       });
         if (!result.canceled) {
-          //setImgSrc(result.assets[0].uri);
           await handleLocalImageUpload(result.assets[0].uri);
         }
     };

@@ -32,6 +32,7 @@ export default function Home(props) {
         }
         
         let location = await Location.getCurrentPositionAsync({});
+        
         setUserLocation(location.coords);
         let reverse = await Location.reverseGeocodeAsync(location.coords, { language: 'en' });
         await locationToCity(reverse);
@@ -47,37 +48,41 @@ export default function Home(props) {
     if (reverse && reverse[0].city) {
       
       let cityName = reverse[0].city;
-
-      l = cities.find((c)=>cityName===c.english_name)?.english_name;  //?.=setting l to the english name of the city
-      if (l === undefined) {
-        l = cities.find((c) => c.name === cityName)?.english_name;
-      }
-      setLocation(l);        
+      l = cities.find((c) => cityName === c.name);
+      setLocation(cityName);
       
     } else {
       // Handle the case when the city is not available
-      let userLatitude = location.coords.latitude; // User's latitude
-      let userLongitude = location.coords.longitude; // User's longitude
-      
+      let userLatitude;
+      let userLongitude;
+
+      if (newLocation) {
+        userLatitude = newLocation.latitude; // Choice latitude
+        userLongitude = newLocation.longitude; // Choice longitude
+      } else {
+        userLatitude = userLocation.latitude; // User's latitude
+        userLongitude = userLocation.longitude; // User's longitude
+      }
+
       let closestCity = null;
       let shortestDistance = Infinity;
-      
+        
       cities.forEach((city) => {
         const distance = calculateDistance(
           userLatitude,
           userLongitude,
-          city.latt,
-          city.long
-          );
-          
-          if (distance < shortestDistance) {
-            shortestDistance = distance;
-            closestCity = city.english_name;
-          }
-        });
-        
-        setLocation(closestCity);
-      }
+          city.lat,
+          city.lng
+        );
+            
+        if (distance < shortestDistance) {
+          shortestDistance = distance;
+          closestCity = city.name;
+        }
+      });
+
+      setLocation(closestCity);        
+    } 
   }
 
   const handlePressIn = () => {
@@ -197,6 +202,7 @@ export default function Home(props) {
       }
     } 
   }
+
 
   return (
     <View style={styles.container}>

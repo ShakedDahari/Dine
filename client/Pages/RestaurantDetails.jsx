@@ -321,12 +321,13 @@ const handleAddItem = () => {
         <MapView
           key={`${restaurantLocation.latitude}_${restaurantLocation.longitude}`}
           style={{ width: '100%', height: 200 }}
-          initialRegion={{
+          region={{
             latitude: restaurantLocation ? restaurantLocation.latitude : 0,
             longitude: restaurantLocation ? restaurantLocation.longitude : 0,
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121,
-        }}>
+          }}
+          scrollEnabled={false}>
         <Marker
             coordinate={restaurantLocation}
             title={restaurant.name}

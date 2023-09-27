@@ -120,6 +120,7 @@ export default function Order(props) {
                 </View>
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.address}>{item.location}</Text>
+                <Text style={styles.text}>Choose your preferred seat</Text>
                 <Text style={styles.seatContainer}>
                   {item.locationSeats.inside > 0 && (
                     <TouchableOpacity  onPress={() => handleSeatReservation(item, 'inside')}>
@@ -212,6 +213,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
       address: {
+        fontSize: 16,
         color: '#D9D9D9',
         fontStyle: 'italic',
         marginBottom: 5,

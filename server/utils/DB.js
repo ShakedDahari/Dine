@@ -146,7 +146,7 @@ class DB {
             const agg = [
                 {
                   '$match': {
-                    location: location, 
+                    location: { '$regex': new RegExp(location, 'i') },  // 'i' for case-insensitive matching
                     foodType: foodType, 
                     availableSeats: {
                       '$gte': parseInt(diners)

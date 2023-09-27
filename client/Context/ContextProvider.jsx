@@ -827,6 +827,7 @@ export default function ContextProvider(props) {
   };
 
   const handleCloudImageUpload = async (imgURI) => {
+    
     if (!imgURI) return;
     let fileToUpload = null;
 

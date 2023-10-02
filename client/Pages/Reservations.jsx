@@ -3,6 +3,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { ContextPage } from '../Context/ContextProvider';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ActivityIndicator } from 'react-native-paper';
+import { sendPushNotification } from './PushNotification';
 
 export default function Reservations({ restaurant }) {
 
@@ -37,7 +38,7 @@ export default function Reservations({ restaurant }) {
         setSelectedOption(option);
     };
 
-  const handleDeleteOrder = (id, orderId) => {
+  const handleDeleteOrder = (id, orderId, userToken) => {
     console.log(`Delete order with ID: ${orderId}`);
     // show a confirmation alert before deleting the order
     Alert.alert(
@@ -47,6 +48,7 @@ export default function Reservations({ restaurant }) {
         { text: 'Cancel', style: 'cancel' },
         { text: 'Delete', style: 'destructive', onPress: async () => {
           await deleteOrder(id, orderId);
+          await sendPushNotification('Reservation Cancelled', 'Sorry, your order has not been accepted.', userToken);
           await fetchUserDataForOrders(); // Fetch and update orders again
         }},
       ],
@@ -151,7 +153,7 @@ export default function Reservations({ restaurant }) {
               <TouchableOpacity onPress={() => handleApprovedOrder(restaurant._id, item._id, userData.email, item.seatType, item.diners)}>
               <MaterialIcons name="add" size={40} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDeleteOrder(restaurant._id, item._id)}>
+              <TouchableOpacity onPress={() => handleDeleteOrder(restaurant._id, item._id, userData.token)}>
                 <MaterialIcons name="delete" size={40} color="red" />
               </TouchableOpacity>
             </View>

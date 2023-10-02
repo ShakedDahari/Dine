@@ -47,6 +47,10 @@ class User {
         return await new DB().EditById(User.collection, id, image, password, verify);
     }
 
+    static async EditUserToken(id, token){
+        return await new DB().EditToken(User.collection, id, token);
+    }
+
     static async DeleteUser(id){
         return await new DB().DeleteById(User.collection, id);
     }

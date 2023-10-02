@@ -116,6 +116,10 @@ class Restaurant {
     static async EditReview(id, reviewId, user, rating, description) {
         return await new DB().EditReviewItem(Restaurant.collection, id, reviewId, user, rating, description);
     }
+
+    static async EditRestaurantToken(id, token){
+        return await new DB().EditToken(Restaurant.collection, id, token);
+    }
 }
 
 

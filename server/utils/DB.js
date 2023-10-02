@@ -460,6 +460,20 @@ class DB {
             await this.client.close();
         }
     }
+
+    async EditToken(collection, id, token){
+        try {
+            await this.client.connect();
+            return await this.client.db(this.dbName).collection(collection).updateOne(
+                { _id: new ObjectId(id) },
+                {$set: {'token': token}}
+            );
+        } catch (error) {
+            return error;
+        } finally {
+            await this.client.close();
+        }
+    }
 }
 
 module.exports = DB;

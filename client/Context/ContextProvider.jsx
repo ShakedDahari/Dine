@@ -397,6 +397,42 @@ export default function ContextProvider(props) {
     }
   };
 
+  const saveUserToken = async (token,id) => {
+    try {
+    console.log('token token token', token);
+      let res = await fetch(`${apiUrl}/api/users/edit/${id}/token`, {
+        method: "PUT",
+        body: JSON.stringify({ token }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log('SaveUserToken Finished', data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadUsers();
+    }
+  };
+
+  const saveRestaurantToken = async (token,id) => {
+    try {
+      let res = await fetch(`${apiUrl}/api/restaurants/edit/${id}/token`, {
+        method: "PUT",
+        body: JSON.stringify({ token }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await res.json();
+      console.log('SaveRestaurantToken Finished', data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      LoadRestaurants();
+    }
+  };
 
   const findRestaurants = async (location, foodType, diners) => {
     try {
@@ -528,13 +564,15 @@ export default function ContextProvider(props) {
           
           try {
             data = await JSON.parse(text);
-            
+            let res2 = await fetch(`${apiUrl}/api/restaurants/${id}`);
+            let restaurant = await res2.json();
             //handle reservation requests
             let subject = 'New Reservation';
             let message = `We would like to inform you that a new reservation has been made at your restaurant.\n
             To manage and approve the reservation, please access the app.`;
             await sendEmail(email, subject, message);
-            await sendPushNotification('Reservation Request Send', 'We will keep you informed once your reservation request is approved by the restaurant.', expoPushToken);  
+            await sendPushNotification('Reservation Request Send', 'We will keep you informed once your reservation request is approved by the restaurant.', expoPushToken);  //user notificatoin
+            await sendPushNotification('New Reservation', 'There is a new reservation waiting for your approval.', restaurant.token)  //restaurant notification
           } catch (error) {
             throw new Error('Invalid JSON response');
           }
@@ -567,6 +605,10 @@ export default function ContextProvider(props) {
         let message = `Congratulations! Your Order number: ${orderId} has been approved.\n
         You requested ${numDiners} seat(s) of type ${seatType}.\nThank you for choosing us!`;
         await sendEmail(email, subject, message);
+        let u = await fetch(`${apiUrl}/api/users/email/${email}`);
+        let userData = await u.json();
+        let userToken = userData.token
+        await sendPushNotification(subject,`Congratulations! Your Order number: ${orderId} has been approved.`, userToken);
       }
     } catch (error) {
       console.error({error: error.message});
@@ -893,6 +935,7 @@ export default function ContextProvider(props) {
     googleMapsApiKey, GetGoogleApi, handleLocalImageUpload, GetFirebaseConfig,
     imgSrc, setImgSrc, isRestaurantOwner, setIsRestaurantOwner, editRestaurant,
     isUploading, setIsUploading,
+    saveUserToken, saveRestaurantToken,
   };
 
   return (

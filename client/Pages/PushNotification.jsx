@@ -18,8 +18,9 @@ Notifications.setNotificationHandler({
 
 
 export async function sendPushNotification(title, body, expoPushToken) {
-  const message = {
-    to: expoPushToken.data,
+  let toValue = expoPushToken.data || expoPushToken;  //saves the token regardless of type (obj/string)
+  let message = {
+    to: toValue,
     sound: 'default',
     title: title,
     body: body,

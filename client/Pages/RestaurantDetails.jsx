@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
         fontFamily: 'eb-garamond',
     },
     upCon: {
-        marginHorizontal: 30,
+        marginHorizontal: 15,
     },
     image: {
         width: "90%",
